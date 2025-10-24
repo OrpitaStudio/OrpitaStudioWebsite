@@ -1,34 +1,252 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en" dir="ltr">
 <head>
-  <meta charset="UTF-8">
-  <title>Orpita Game Studio</title>
-  <style>
-    body { font-family: Arial; background: #0b0b1e; color: #fff; text-align: center; padding: 50px; }
-    h1 { color: #6a5acd; }
-    .game { margin: 20px; padding: 20px; border: 2px solid #6a5acd; display: inline-block; }
-    a { color: #fff; text-decoration: none; }
-    a:hover { color: #6a5acd; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orpita Game Studio</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Font 'Inter' -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Apply the base font */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Enable Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Violet glow effect */
+        .glow-shadow {
+            box-shadow: 0 0 20px 5px rgba(139, 92, 246, 0.3); /* violet-500 */
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Utility classes for animations */
+        .animate-fade-in {
+            animation: fadeIn 1.5s ease-out forwards;
+        }
+        
+        .animate-fade-in-up {
+            animation: fadeInUp 1.5s ease-out forwards;
+            animation-delay: 1s; /* Start slightly after the logo */
+            opacity: 0; /* Start hidden */
+        }
+
+        /* --- Navigation Bar Styles --- */
+        
+        /* This class is added by JS when scrolling */
+        .header-scrolled {
+            @apply bg-slate-950/80 backdrop-blur-md border-b border-slate-800;
+        }
+
+        /* This class is added by JS to the active link */
+        .active-link {
+            @apply bg-violet-600 text-white;
+            box-shadow: 0 0 15px 3px rgba(139, 92, 246, 0.4);
+        }
+    </style>
 </head>
-<body>
+<body class="bg-slate-950 text-gray-200">
 
-<h1>أهلاً بـ Orpita Game Studio</h1>
-<p> الجذء التاني ده موقع تجريبي بس عشان تجرب الفكرة 😎</p>
+    <!-- Header & Navigation Bar -->
+    <!-- Removed background classes, will be added by JS on scroll -->
+    <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="container mx-auto max-w-6xl px-4 py-4 flex justify-between items-center">
+            
+            <!-- Logo (Image Placeholder) -->
+            <div class="flex-shrink-0 w-32"> <!-- Added fixed width for balance -->
+                <a href="#home">
+                    <!-- TODO: Add your studio logo image file here -->
+                    <img src="https://placehold.co/120x40/1e1b4b/9333ea?text=Orpita+LOGO" 
+                         alt="Orpita Studio Logo" 
+                         class="h-8 md:h-9 w-auto"
+                         onerror="this.src='https://placehold.co/120x40/1e1b4b/9333ea?text=LOGO'">
+                </a>
+            </div>
+            
+            <!-- Centered Navigation -->
+            <!-- Links are now styled as "pills" -->
+            <nav class="flex-1 flex justify-center items-center gap-2 md:gap-4"> <!-- Adjusted gap -->
+                <a id="nav-home" href="#home" class="text-sm md:text-base text-gray-300 hover:text-violet-400 transition-all duration-300 px-4 py-2 rounded-full">Home</a>
+                <a id="nav-games" href="#games" class="text-sm md:text-base text-gray-300 hover:text-violet-400 transition-all duration-300 px-4 py-2 rounded-full">Games</a>
+                <a id="nav-contact" href="#contact" class="text-sm md:text-base text-gray-300 hover:text-violet-400 transition-all duration-300 px-4 py-2 rounded-full">Contact</a>
+            </nav>
 
-<h2>ألعابنا</h2>
-<div class="game">
-  <h3>Infected</h3>
-  <p>لعبة Tower Defense رهيبة</p>
-</div>
+            <!-- Right Placeholder (Now with Social Icons) -->
+            <div class="flex-shrink-0 w-32 flex justify-end items-center gap-4"> 
+                <!-- TODO: Add your social media links -->
+                <a href="#" aria-label="Discord" class="text-gray-400 hover:text-violet-400 transition-colors">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20.317 4.3698a19.7913 19.7913 0 0 0-4.9885-1.5142A.074.074 0 0 0 15.24 2.9.074.074 0 0 0 15.163 2.9c-.4.12-1.883 1.03-3.163 2.301-1.28-1.271-2.763-2.181-3.163-2.301a.074.074 0 0 0-.077.045.074.074 0 0 0 .011.084c1.451 1.29 2.912 2.65 3.947 4.088a18.18 18.18 0 0 0-5.633 1.43c-.074.01-.12.07-.12.14v.02c0 .02.01.04.02.05a17.8182 17.8182 0 0 0 5.488 1.12c-.22.28-.43.56-.64.83a.074.074 0 0 0 .01.09c.02.02.05.03.07.01.07-.04.13-.08.19-.11a14.86 14.86 0 0 0 1.252-.84c.02-.01.03-.02.05-.02a.074.074 0 0 0 .05.02c.3.17.6.33.9.48.07.03.14.01.18-.04a.074.074 0 0 0 .01-.09c-.2-.28-.42-.55-.63-.83a17.8182 17.8182 0 0 0 5.488-1.12.074.074 0 0 0 .02-.05v-.02c0-.07-.05-.13-.12-.14a18.18 18.18 0 0 0-5.633-1.43c1.035-1.438 2.496-2.798 3.947-4.088a.074.074 0 0 0 .01-.08.074.074 0 0 0-.076-.05c-.4.12-1.883 1.03-3.163 2.301-1.28-1.271-2.763-2.181-3.163-2.301a.074.074 0 0 0-.077.045.074.074 0 0 0 .011.084c.891.79 1.732 1.54 2.503 2.25h.01c.03 0 .06.01.08.01s.06-.01.08-.01c.77-.71 1.612-1.46 2.504-2.25a.074.074 0 0 0 .01-.08.074.074 0 0 0-.076-.05c-.4.12-1.883 1.03-3.163 2.301-1.28-1.271-2.763-2.181-3.163-2.301a.074.074 0 0 0-.077.045.074.074 0 0 0 .011.084C7.8 8.16 10.46 10.45 12 10.45s4.2-2.29 5.867-4.832a.074.074 0 0 0 .01-.08.074.074 0 0 0-.076-.05c-.4.12-1.883 1.03-3.163 2.301-1.28-1.271-2.763-2.181-3.163-2.301a.074.074 0 0 0-.077.045.074.074 0 0 0 .011.084 19.7913 19.7913 0 0 0-4.9885 1.5142.074.074 0 0 0-.087.085v.02c0 .07.05.13.12.14a16.03 16.03 0 0 0 1.57.39c.02.01.04.01.06.01s.04-.01.06-.01c.54-.11 1.07-.22 1.6-.33.07-.02.14.03.14.1v.02c0 .07-.05.13-.12.14a14.07 14.07 0 0 1-1.8.29.074.074 0 0 0-.06.07v.01c0 .04.02.07.05.08.03.01.06.01.09.01.21.02.42.04.63.05.07.01.14.06.14.13v.01c0 .07-.05.13-.12.14a11.95 11.95 0 0 1-1.93.18.074.074 0 0 0-.07.07v.01c0 .04.02.07.05.08.03.01.06.01.09.01.3.01.6.02.9.02.07 0 .14.05.14.12v.01c0 .07-.05.13-.12.14a12.04 12.04 0 0 1-2.06.11.074.074 0 0 0-.07.07v.01c0 .04.02.07.05.08.03.01.06.01.09.01.5.01 1 .01 1.5.01h.01c.07 0 .14.05.14.12v.01c0 .07-.05.13-.12.14a11.1 11.1 0 0 1-2.07.07.074.074 0 0 0-.07.07v.01c0 .04.02.07.05.08.03.01.06.01.09.01.22 0 .44 0 .66 0h.01c.07 0 .14.05.14.12v.01c0 .07-.05.13-.12.14a8.9 8.9 0 0 1-1.39.04.074.074 0 0 0-.07.07v.01c0 .04.02.07.05.08.03.01.06.01.09.01h.22c.07 0 .14.05.14.12v.01c0 .07-.05.13-.12.14a8.03 8.03 0 0 1-1.02.01.074.074 0 0 0-.07.07v.01c0 .04.02.07.05.08.03.01.06.01.09.01h.04c.07 0 .14.05.14.12v.01c0 .07-.05.13-.12.14a7.17 7.17 0 0 1-.5.01h-.02a.074.074 0 0 0-.07.07v.01c0 .04.02.07.05.08.03.01.06.01.09.01H12c.07 0 .14.05.14.12v.01c0 .07-.05.13-.12.14h-.1a.074.074 0 0 0-.07.07v.01c0 .04.02.07.05.08.03.01.06.01.09.01h.04c.07 0 .14.05.14.12v.01c0 .07-.05.13-.12.14a8.03 8.03 0 0 1-1.02-.01.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01h-.22a.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01a8.9 8.9 0 0 1-1.39-.04.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01h-.01c-.22 0-.44 0-.66 0a.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01a11.1 11.1 0 0 1-2.07-.07.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01h-.01c-.5 0-1-.01-1.5-.01a.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01a12.04 12.04 0 0 1-2.06-.11.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01c-.3 0-.6-.01-.9-.02a.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01a11.95 11.95 0 0 1-1.93-.18.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01c-.21-.01-.42-.03-.63-.05a.074.074 0 0 0-.06-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01a14.07 14.07 0 0 1-1.8-.29.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01c-.53.11-1.06.22-1.6.33a.074.074 0 0 0-.06.07v.01c0 .04.02.07.05.08.03.01.06.01.09.01.52.12 1.04.25 1.57.39a.074.074 0 0 0 .09-.01.074.074 0 0 0 .05-.08v-.02a.074.074 0 0 0-.09-.09A19.7913 19.7913 0 0 0 3.683 4.3698a.074.074 0 0 0-.087.085v.02c0 .07.05.13.12.14a16.03 16.03 0 0 0 1.57.39c.02.01.04.01.06.01s.04-.01.06-.01c.54-.11 1.07-.22 1.6-.33.07-.02.14.03.14.1v.02c0 .07-.05.13-.12.14a14.07 14.07 0 0 1-1.8.29.074.074 0 0 0-.06.07v.01c0 .04.02.07.05.08.03.01.06.01.09.01.21.02.42.04.63.05.07.01.14.06.14.13v.01c0 .07-.05.13-.12.14a11.95 11.95 0 0 1-1.93.18.074.074 0 0 0-.07.07v.01c0 .04.02.07.05.08.03.01.06.01.09.01.3.01.6.02.9.02.07 0 .14.05.14.12v.01c0 .07-.05.13-.12.14a12.04 12.04 0 0 1-2.06.11.074.074 0 0 0-.07.07v.01c0 .04.02.07.05.08.03.01.06.01.09.01.5.01 1 .01 1.5.01h.01c.07 0 .14.05.14.12v.01c0 .07-.05.13-.12.14a11.1 11.1 0 0 1-2.07.07.074.074 0 0 0-.07.07v.01c0 .04.02.07.05.08.03.01.06.01.09.01.22 0 .44 0 .66 0h.01c.07 0 .14.05.14.12v.01c0 .07-.05.13-.12.14a8.9 8.9 0 0 1-1.39.04.074.074 0 0 0-.07.07v.01c0 .04.02.07.05.08.03.01.06.01.09.01h.22c.07 0 .14.05.14.12v.01c0 .07-.05.13-.12.14a8.03 8.03 0 0 1-1.02.01.074.074 0 0 0-.07.07v.01c0 .04.02.07.05.08.03.01.06.01.09.01h.04c.07 0 .14.05.14.12v.01c0 .07-.05.13-.12.14a7.17 7.17 0 0 1-.5.01h-.02a.074.074 0 0 0-.07.07v.01c0 .04.02.07.05.08.03.01.06.01.09.01H12c.07 0 .14.05.14.12v.01c0 .07-.05.13-.12.14h-.1a.074.074 0 0 0-.07.07v.01c0 .04.02.07.05.08.03.01.06.01.09.01h.04c.07 0 .14.05.14.12v.01c0 .07-.05.13-.12.14a8.03 8.03 0 0 1-1.02-.01.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01h-.22a.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01a8.9 8.9 0 0 1-1.39-.04.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01h-.01c-.22 0-.44 0-.66 0a.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01a11.1 11.1 0 0 1-2.07-.07.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01h-.01c-.5 0-1-.01-1.5-.01a.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01a12.04 12.04 0 0 1-2.06-.11.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01c-.3 0-.6-.01-.9-.02a.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01a11.95 11.95 0 0 1-1.93-.18.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01c-.21-.01-.42-.03-.63-.05a.074.074 0 0 0-.06-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01a14.07 14.07 0 0 1-1.8-.29.074.074 0 0 0-.07-.07v-.01c0-.04-.02-.07-.05-.08a.074.074 0 0 0-.09-.01c-.53.11-1.06.22-1.6.33a.074.074 0 0 0-.06.07v.01c0 .04.02.07.05.08.03.01.06.01.09.01.52.12 1.04.25 1.57.39a.074.074 0 0 0 .09-.01.074.074 0 0 0 .05-.08v-.02a.074.074 0 0 0-.09-.09zM12 14.09c-2.03 0-3.67-1.61-3.67-3.59s1.64-3.59 3.67-3.59c2.03 0 3.67 1.61 3.67 3.59s-1.64 3.59-3.67 3.59z"/>
+                    </svg>
+                </a>
+                <a href="#" aria-label="X (Twitter)" class="text-gray-400 hover:text-violet-400 transition-colors">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </header>
 
-<div class="game">
-  <h3>لعبة تانية</h3>
-  <p>هنا ممكن نضيف أي لعبة جديدة</p>
-</div>
+    <!-- Hero Section -->
+    <section id="home" class="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
+        <!-- ... (Hero section content remains unchanged) ... -->
+        <div class="absolute inset-0 -z-10">
+            <div class="absolute top-0 left-1/4 w-96 h-96 bg-violet-900/50 rounded-full filter blur-3xl opacity-30 animate-pulse"></div>
+            <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-900/50 rounded-full filter blur-3xl opacity-30 animate-pulse" style="animation-delay: 2s;"></div>
+        </div>
+        
+       <div class="container mx-auto px-4 z-10">
+            <!-- Grid changed from md:grid-cols-2 to md:grid-cols-5 for 60/40 split -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-12 items-center">
+                
+             
+              <!-- Left: Logo/Brand Image (Takes 3 of 5 columns on md+) -->
+              <!-- Added animation class -->
+              <div class="flex justify-center md:col-span-3 animate-fade-in">
+                  <img src="Images/logo.png" 
+                       alt="Orpita Studio Main Logo" 
+                       <!-- Sizes adjusted for responsiveness -->
+                      <div class="h-32 w-full md:h-[10rem] md:w-full object-contain bg-transparent" ></div><!-- Changed h-64 w-64 to h-32 w-full for consistency -->
+                      <div onerror="this.src='https://placehold.co/600x160/1e1b4b/9333ea?text=LOGO+(60%25+Width)'"></div>
+              </div>
+            		
+                <!-- Right: Text Content (Takes 2 of 5 columns on md+) -->
+                <!-- Added animation class -->
+                <div class="text-center md:text-left md:col-span-2 animate-fade-in-up">
+                    <h1 class="text-3xl md:text-4xl lg:text-5xl font-black text-white leading-tight">
+                        We Build <span class="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-purple-500">Worlds</span>.
+                        <br>
+                        We Tell <span class="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-violet-500">Stories</span>.
+                    </h1>
+                    <p class="text-lg md:text-xl text-gray-400 mt-6 max-w-2xl mx-auto md:mx-0"> <!-- Removed mx-auto for md -->
+                        Welcome to Orpita Studio, where imagination is forged into interactive reality.
+                    </p>
+                    <div class="mt-10">
+                        <a href="#games" class="bg-violet-600 text-white font-bold py-3 px-10 rounded-full text-lg hover:bg-violet-700 transition-all duration-300 transform hover:scale-105 shadow-lg glow-shadow">
+                            Discover Our Games
+                        </a>
+                   </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<h2>تواصل معنا</h2>
-<p><a href="mailto:contact@orpita.com">ايميلنا</a></p>
+    <!-- 
+        ========================================
+        PLACEHOLDER SECTIONS
+        These sections are added temporarily
+        so the navigation scroll logic works.
+        You can edit or replace these later.
+        ========================================
+    -->
+
+    <!-- Games Section (Placeholder) -->
+    <section id="games" class="min-h-screen bg-slate-900 flex items-center justify-center pt-20">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl md:text-5xl font-black text-white mb-4">
+                Our <span class="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-purple-500">Games</span>
+            </h2>
+            <p class="text-xl text-gray-400">Our game portfolio will be showcased here soon.</p>
+            
+            <!-- TODO: Add your game cards here -->
+            <div class="mt-16">
+                 <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-8 max-w-md mx-auto">
+                    <h3 class="text-2xl font-bold text-white">Project ???</h3>
+                    <p class="text-gray-400 mt-2">Coming Soon...</p>
+                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section (Placeholder) -->
+    <section id="contact" class="min-h-screen bg-slate-950 flex items-center justify-center pt-20">
+        <div class="container mx-auto px-4 text-center max-w-2xl">
+            <h2 class="text-4xl md:text-5xl font-black text-white mb-4">
+                Get In <span class="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-purple-500">Touch</span>
+            </h2>
+            <p class="text-xl text-gray-400 mb-8">
+                We're always looking for new talent and partners. Let's create something amazing together.
+            </p>
+            <!-- TODO: Replace with your contact form or email -->
+            <a href="mailto:contact@orpita.studio" class="bg-violet-600 text-white font-bold py-3 px-10 rounded-full text-lg hover:bg-violet-700 transition-all duration-300 transform hover:scale-105 shadow-lg glow-shadow">
+                contact@orpita.studio
+            </a>
+        </div>
+    </section>
+    
+
+    <!-- JavaScript for Navigation Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const header = document.getElementById('main-header');
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('nav a');
+            const homeLink = document.getElementById('nav-home');
+
+            // Function to handle header background scroll
+            function handleHeaderScroll() {
+                if (window.scrollY > 50) {
+                    header.classList.add('header-scrolled');
+                } else {
+                    header.classList.remove('header-scrolled');
+                }
+            }
+
+            // Function to handle active link highlighting
+            function handleActiveLink() {
+                let currentSection = '';
+
+                sections.forEach(section => {
+                    const rect = section.getBoundingClientRect();
+                    // Check if section is in viewport (with a 200px offset)
+                    if (rect.top <= 200 && rect.bottom >= 200) {
+                        currentSection = section.getAttribute('id');
+                    }
+                });
+
+                // If no section is actively "current" (e.g., at the very bottom), keep last one active
+                if (currentSection) {
+                    navLinks.forEach(link => {
+                        link.classList.remove('active-link');
+                        if (link.getAttribute('href') === '#' + currentSection) {
+                            link.classList.add('active-link');
+                        }
+                    });
+                }
+            }
+
+            // Set 'Home' as active by default on load
+            homeLink.classList.add('active-link');
+
+            // Listen for scroll events to run both functions
+            window.addEventListener('scroll', () => {
+                handleHeaderScroll();
+                handleActiveLink();
+            });
+        });
+    </script> <!-- Fixed the closing tag here -->
 
 </body>
-                                </html>
+</html>
+
