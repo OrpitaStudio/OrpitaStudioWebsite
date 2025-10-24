@@ -17,6 +17,6 @@ jobs:
     - uses: FirebaseExtended/action-hosting-deploy@v0
       with:
         firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
-        projectId: "orpita-studio"
-        target: "orpita-studio"
+        projectId: "orpita-game-studio"
+        target: "orpita-game-studio"
         channelId: live
