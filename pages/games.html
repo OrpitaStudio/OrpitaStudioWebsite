@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Title changed to reflect games page -->
+    <title>Our Games - Orpita Studio</title>
+
+    <!-- Meta Tags (Made more generic) -->
+    <meta name="description" content="Explore the upcoming games and projects from Orpita Studio. See what we're working on and follow our development journey.">
+    <meta name="keywords" content="Orpita Studio, Orpita game studio, game development, indie games, upcoming games, game studio">
+    <meta name="author" content="Orpita Studio">
+
+    <!-- Favicon -->
+    <link rel="icon" href="/images/TapLogo.png" type="image/png"> <!-- Path assumed to be correct -->
+
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Swiper library removed as we are displaying all games in a grid -->
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <style>
+        /* === 1. Base Styles & Fonts === */
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; }
+
+        /* === 2. Animations (Keyframes) === */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0px); } }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 10px 3px rgba(139, 92, 246, 0.1); }
+            50% { box-shadow: 0 0 30px 10px rgba(139, 92, 246, 0.5); }
+        }
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* === 3. Utility Classes === */
+        .animate-fade-in { animation: fadeIn 1.5s ease-out forwards; }
+        .animate-fade-in-up { animation: fadeInUp 1.5s ease-out forwards; opacity: 0; }
+        .animate-pulse-glow { animation: pulse-glow 2.5s infinite ease-in-out; }
+        .animate-gradient-text {
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            animation: gradient-shift 5s ease infinite;
+        }
+
+        /* === 4. Page Structure & Components === */
+
+        /* --- Header (from index.html) --- */
+        .header-scrolled { 
+            background: rgba(3, 7, 18, 0.5); 
+            backdrop-filter: blur(4px) saturate(140%) brightness(1.1); 
+            -webkit-backdrop-filter: blur(4px) saturate(140%) brightness(1.1); 
+            border-bottom: 1px solid rgb(30 41 59 / 0.5); 
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2); 
+            transition: all 0.5s ease; 
+        }
+
+        /* --- Reusable Components (SectionGlow) --- */
+        .SectionGlow {
+            position: relative;
+            border-radius: 3rem;
+            background: rgba(3, 7, 18, 0.5);
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px 4px rgba(139, 92, 246, 0.2),
+                        0 0 60px 12px rgba(139, 92, 246, 0.1),
+                        inset 0 0 15px rgba(139, 92, 246, 0.2),
+                        inset 0 0 35px rgba(139, 92, 246, 0.1);
+        }
+
+        /* === 5. Mobile Menu Styles (Dropdown) === */
+        .mobile-menu {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.95) translateY(-10px); /* Dropdown animation */
+            transform-origin: top right; /* Animate from top right corner */
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .mobile-menu.open {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1) translateY(0);
+        }
+        
+        /* Burger icon animation */
+        #burger-button.open span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+        #burger-button.open span:nth-child(2) {
+            opacity: 0;
+        }
+        #burger-button.open span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+        
+    </style>
+</head>
+<body class="bg-slate-950 text-gray-200 flex flex-col min-h-screen">
+
+    <!-- Animated background (Re-added) -->
+    <div id="tsparticles" class="fixed inset-0 -z-10"></div>
+
+    <!-- ====== Header Start (Re-added and Modified) ====== -->
+    <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="container mx-auto max-w-6xl px-4 py-4 flex justify-between items-center">
+
+            <!-- Logo -->
+            <div class="flex-shrink-0 z-[70]"> <!-- z-index to stay above menu -->
+                <a href="index.html"> <!-- Link changed to index.html -->
+                    <img src="./images/NevLogo.png" alt="Orpita Studio Logo" class="h-8 md:h-9 w-auto" onerror="this.src='https://placehold.co/120x40/1e1b4b/9333ea?text=LOGO'">
+                </a>
+            </div>
+
+            <!-- Burger Menu Button & Dropdown (New) -->
+            <div class="relative"> <!-- Parent for dropdown positioning -->
+                <button id="burger-button" class="z-[70] p-2 space-y-1.5" aria-label="Open menu">
+                    <span class="block w-6 h-0.5 bg-gray-200 transition-all duration-300"></span>
+                    <span class="block w-6 h-0.5 bg-gray-200 transition-all duration-300"></span>
+                    <span class="block w-6 h-0.5 bg-gray-200 transition-all duration-300"></span>
+                </button>
+                
+                <!-- ====== Mobile Menu Panel (Dropdown) ====== -->
+                <!-- Classes changed for dropdown style -->
+                <div id="mobile-menu" class="mobile-menu absolute top-full right-0 mt-2 w-64 bg-slate-800 rounded-lg shadow-xl z-[60] overflow-hidden border border-slate-700">
+                    <!-- Links point to index.html sections -->
+                    <a href="index.html#home" class="mobile-menu-link block text-base text-gray-200 hover:bg-slate-700 px-4 py-3 transition-colors">Home</a>
+                    <a href="index.html#about" class="mobile-menu-link block text-base text-gray-200 hover:bg-slate-700 px-4 py-3 transition-colors">About</a>
+                    <a href="games.html" class="mobile-menu-link block text-base text-violet-400 font-medium hover:bg-slate-700 px-4 py-3 transition-colors">Games</a> <!-- Active page -->
+                    <a href="index.html#contact" class="mobile-menu-link block text-base text-gray-200 hover:bg-slate-700 px-4 py-3 transition-colors">Contact</a>
+                </div>
+            </div>
+
+        </div>
+    </header>
+    <!-- ====== Header End ====== -->
+
+    <!-- ====== (Old Fullscreen Menu Panel Removed) ====== -->
+
+    <!-- ====== Main Content Start ====== -->
+    <main class="flex-1">
+
+        <!-- ====== Page Header Section Start ====== -->
+        <!-- Reduced padding -->
+        <section id="page-header" class="relative pt-32 pb-16 md:pt-40 md:pb-20 overflow-hidden">
+            <div class="container mx-auto px-4 z-10">
+                <div class="text-center">
+                    <h1 class="text-4xl md:text-6xl lg:text-7xl font-black text-white leading-tight animate-fade-in-up">
+                        Our <span class="animate-gradient-text bg-gradient-to-r from-violet-400 to-purple-500">Games</span>
+                    </h1>
+                    <p class="text-lg md:text-xl text-gray-400 mt-6 max-w-2xl mx-auto animate-fade-in-up" style="animation-delay: 0.3s;">
+                        A glimpse into the worlds we are creating.
+                    </p>
+                </div>
+            </div>
+        </section>
+        <!-- ====== Page Header Section End ====== -->
+
+        <!-- ====== Featured Game Section Start ====== -->
+        <!-- Reduced vertical padding -->
+        <section id="featured-game" class="relative py-12 sm:py-16 px-4">
+            <div class="container mx-auto max-w-6xl z-10">
+                <div class="w-full p-8 md:p-12 animate-fade-in SectionGlow">
+                    <!-- Grid modified to be horizontal on larger screens -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
+                        
+                        <!-- Game Poster -->
+                        <div class="lg:col-span-1 animate-fade-in-up" style="animation-delay: 0.2s;">
+                            <img src="https://placehold.co/800x450/1e1b4b/c4b5fd?text=Our+First+Project" alt="Game Banner" class="w-full h-auto rounded-3xl object-cover shadow-2xl border-2 border-slate-700">
+                        </div>
+
+                        <!-- Game Details (Made generic) -->
+                        <div class="lg:col-span-1 animate-fade-in-up" style="animation-delay: 0.4s;">
+                            <span class="text-sm text-yellow-400 font-medium">IN DEVELOPMENT</span>
+                            <h2 class="text-3xl md:text-5xl font-black text-white mt-2">Our Debut Title</h2>
+                            <p class="text-lg text-gray-300 mt-6">
+                                We are hard at work on our debut title. It's an idea we are incredibly passionate about. Follow our journey for updates as we bring this new world to life!
+                            </p>
+
+                            <ul class="text-lg text-gray-300 mt-6 space-y-3">
+                                <li class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-violet-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                    <span>A new world to explore.</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-violet-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                    <span>An experience crafted with passion.</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-violet-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                    <span>More details coming soon!</span>
+                                </li>
+                            </ul>
+
+                            <div class="mt-10 flex flex-wrap gap-4 items-center">
+                                <!-- Link changed to point to index contact section -->
+                                <a href="index.html#contact" class="bg-violet-600 text-white font-bold py-3 px-10 rounded-full text-lg hover:bg-violet-700 transition-all duration-300 transform hover:scale-105 shadow-lg animate-pulse-glow">
+                                    Follow Development
+                                </a>
+                                <!-- "Available on Steam" button removed -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- ====== Featured Game Section End ====== -->
+
+        <!-- ====== All Games Section Start ====== -->
+        <!-- Reduced vertical padding -->
+        <section id="all-games" class="relative py-12 sm:py-16 px-4"> 
+            <div class="container mx-auto max-w-6xl z-10 SectionGlow">
+
+                <!-- Section Header (Padding adjusted for "breathing room") -->
+                <div class="w-full pt-12 md:pt-16 px-4 pb-8 animate-fade-in text-center">
+                    <h2 class="text-3xl md:text-5xl font-black text-white">More From <span class="animate-gradient-text bg-gradient-to-r from-violet-400 to-purple-500">Our Studio</span></h2>
+                </div>
+
+                <!-- Grid changed from slider to display all games -->
+                <!-- Padding adjusted -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-8 md:p-12 pt-4 md:pt-4"> 
+
+                    <!-- Card 1 (Generic) -->
+                    <div class="p-6 animate-fade-in-up bg-slate-800/50 rounded-2xl flex flex-col gap-6 h-full w-full" style="animation-delay: 0.4s;">
+                        <img src="https://placehold.co/400x400/1e1b4b/c4b5fd?text=Coming+Soon" alt="Coming Soon" class="w-full h-48 object-cover rounded-2xl flex-shrink-0">
+                        <div class="flex-1 flex flex-col justify-between h-full w-full">
+                                    <div>
+                                        <h3 class="text-xl font-bold text-white">Coming Soon</h3>
+                                        <p class="text-sm text-yellow-400 font-medium mt-1">PRE-PRODUCTION</p>
+                                        <p class="text-gray-400 mt-3 text-sm">Our next big idea is in the works. More details soon.</p>
+                                    </div>
+                                    <!-- Button made unclickable for now -->
+                                    <a href="#" class="inline-block self-start mt-4 bg-gray-700 text-white text-sm font-medium py-2 px-4 rounded-full transition-all duration-300 opacity-50 cursor-not-allowed">
+                                        View Details
+                                    </a>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 (Generic) -->
+                    <div class="p-6 animate-fade-in-up bg-slate-800/50 rounded-2xl flex flex-col gap-6 h-full w-full" style="animation-delay: 0.6s;">
+                        <img src="https://placehold.co/400x400/1e1b4b/c4b5fd?text=Project+%3F%3F%3F" alt="Future Concept" class="w-full h-48 object-cover rounded-2xl flex-shrink-0">
+                        <div class="flex-1 flex flex-col justify-between h-full w-full">
+                                    <div>
+                                        <h3 class="text-xl font-bold text-white">Future Concept</h3>
+                                        <p class="text-sm text-blue-400 font-medium mt-1">CONCEPTUAL</p>
+                                        <p class="text-gray-400 mt-3 text-sm">We have many ideas brewing for the future.</p>
+                                    </div>
+                                    <!-- Button made unclickable for now -->
+                                    <a href="#" class="inline-block self-start mt-4 bg-gray-700 text-white text-sm font-medium py-2 px-4 rounded-full transition-all duration-300 opacity-50 cursor-not-allowed">
+                                        Stay Tuned
+                                    </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Card 3 (Generic) -->
+                    <div class="p-6 animate-fade-in-up bg-slate-800/50 rounded-2xl flex flex-col gap-6 h-full w-full" style="animation-delay: 0.8s;">
+                        <img src="https://placehold.co/400x400/1e1b4b/c4b5fd?text=More+Ideas" alt="More Ideas" class="w-full h-48 object-cover rounded-2xl flex-shrink-0">
+                        <div class="flex-1 flex flex-col justify-between h-full w-full">
+                                    <div>
+                                        <h3 class="text-xl font-bold text-white">What's Next?</h3>
+                                        <p class="text-sm text-gray-400 font-medium mt-1">PLANNING</p>
+                                        <p class="text-gray-400 mt-3 text-sm">Our journey is just beginning.</p>
+                                    </div>
+                                    <!-- "Play on Itch.io" button removed -->
+                        </div>
+                    </div>
+
+                </div> 
+                <!-- (Pagination removed) -->
+
+            </div>
+        </section>
+        <!-- ====== All Games Section End ====== -->
+
+    </main>
+    <!-- ====== Main Content End ====== -->
+
+    <!-- ====== Footer Start (Re-added) ====== -->
+    <footer class="w-full py-8 border-t border-slate-800 mt-12 md:mt-16">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm text-gray-500">© 2025 Orpita Studio. All Rights Reserved.</p>
+        </div>
+    </footer>
+    <!-- ====== Footer End ====== -->
+
+    <!-- ====== JS Libraries ====== -->
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+    <!-- (Swiper JS removed) -->
+
+    <!-- ====== Custom JS (Re-added and Modified) ====== -->
+    <script>
+        /**
+         * Main function to initialize the app after DOM is loaded
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+        });
+
+        /**
+         * Initialize all app functionalities
+         */
+        function initApp() {
+            initNavigation();
+            initParticles();
+            // initSwiper() and initHeroAnimation() are removed
+        }
+
+        /**
+         * 1. Initialize Header logic and Navigation
+         * - Handles "header-scrolled" effect on scroll.
+         * - Handles burger menu toggle.
+         */
+        function initNavigation() {
+            const header = document.getElementById('main-header');
+            const burgerButton = document.getElementById('burger-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuLinks = document.querySelectorAll('.mobile-menu-link');
+
+            if (!header || !burgerButton || !mobileMenu) {
+                console.warn("Navigation elements not found. Skipping initNavigation.");
+                return;
+            }
+
+            // --- Header Scroll Effect ---
+            const handleScroll = () => {
+                if (window.scrollY > 10) { 
+                    header.classList.add('header-scrolled');
+                } else {
+                    header.classList.remove('header-scrolled');
+                }
+            };
+
+            // --- Burger Menu Toggle ---
+            const toggleMenu = () => {
+                burgerButton.classList.toggle('open');
+                mobileMenu.classList.toggle('open');
+            };
+
+            burgerButton.addEventListener('click', toggleMenu);
+
+            // --- Close menu when a link is clicked ---
+            menuLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (mobileMenu.classList.contains('open')) {
+                        toggleMenu();
+                    }
+                });
+            });
+
+            // Initial check and event listener for scroll
+            window.addEventListener('scroll', handleScroll);
+            handleScroll();
+        }
+
+        /**
+         * 2. Initialize tsParticles background
+         */
+        function initParticles() {
+            if (typeof tsParticles === 'undefined') {
+                console.warn("tsParticles library not loaded. Skipping initParticles.");
+                return;
+            }
+
+            tsParticles.load("tsparticles", {
+                fpsLimit: 60, 
+                background: { color: "#030712" }, 
+                particles: {
+                    number: { value:60, density: { enable: true, value_area: 720 } },
+                    color: { value: ["#8b5cf6", "#a78bfa", "#c4b5fd"] }, 
+                    shape: { type: "circle" },
+                    opacity: { value: 0.4, random: true, },
+                    size: { value: { min: 1, max: 3 }, },
+                    links: { enable: true, distance: 150, color: "#7c3aed", opacity: 0.5, width: 1 },
+                    move: { enable: true, speed: 1, direction: "none", out_mode: "out", random:true, straight: false }
+                },
+                detectRetina: true 
+            }); 
+        }
+
+    </script> 
+    
+</body>
+</html>
+
