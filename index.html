@@ -9,11 +9,11 @@
     <meta name="keywords" content="Orpita Studio, Orpita game studio, game development, indie games, narrative games, interactive experiences, game studio">
     <meta name="author" content="Orpita Studio">
 
-    <link rel="icon" href="./assets/imgs/SLogo.png" type="image/png"> <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="./assets/imgs/SLogoBlack.png" type="image/png"> <script src="https://cdn.tailwindcss.com"></script>
     
     <meta property="og:title" content="Orpita Game Studio">
     <meta property="og:description" content="Independent game development studio creating narrative-driven interactive experiences.">
-    <meta property="og:image" content="https://orpita-studio.web.app/images/HeroLogo.png">
+    <meta property="og:image" content="./assets/imgs/LinkCover.png">
     <meta property="og:url" content="https://orpita-studio.web.app/">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
@@ -94,10 +94,6 @@
                     <a href="index.html#contact" class="mobile-menu-link block text-base text-gray-200 hover:bg-slate-700 px-4 py-3 transition-colors">Contact</a>
                 </div>
             </div>
-            <!-- هذا يحافظ على توسيط الـ nav باستخدام flex-1 -->
-            
-
-            <!-- ملاحظة: زر الموبايل غير موجود حالياً. إذا كنت بحاجة إليه، يجب إضافته هنا. -->
         </div>
     </header>
     <!-- ====== Header End ====== -->
@@ -198,40 +194,68 @@ Each game reflects what excites us and what we love to create.</p>
                     </div>
                 </div>
             </div>
-        </section> <!-- [FIXED] تم إصلاح علامة الإغلاق هنا -->
+        </section>
         <!-- ====== About Section End ====== -->
 
         <!-- ====== Games Section Start ====== -->
-        <section id="games" class="relative py-16 sm:py-20 px-4"> 
+        <section id="games" class="relative py-16 sm:py-20 px-4 animate-on-scroll opacity-0" style="animation-delay: 0.0s;"> 
             <div class="container mx-auto max-w-6xl z-10 SectionGlow" >
 
                 <!-- Section Header -->
-                <div class="w-full p-8 md:p-16 animate-fade-in text-center">
+                <div class="w-full p-8 md:p-16 animate-fade-in text-center animate-on-scroll opacity-0" style="animation-delay: 0.8s;">
                     <h2 class="text-3xl md:text-5xl font-black text-white">Our <span class="animate-gradient-text bg-gradient-to-r from-violet-400 to-purple-500">Games</span></h2>
                     <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto"> A glimpse into the worlds we are creating.</p>
                 </div>
 
                 <!-- Swiper Carousel -->
-                <div class="swiper game-carousel px-4 pb-8"> 
+                <div class="swiper game-carousel px-4 pb-8 animate-on-scroll opacity-0" style="animation-delay: 1.2s;"> 
                     <div class="swiper-wrapper py-4"> 
 
                         <!-- Slide 1 -->
-                        <div class="swiper-slide p-4 animate-fade-in-up" style="animation-delay: 0.4s;">
+                        <div class="swiper-slide p-4 animate-fade-in-up">
                             <div class="flex flex-col items-center gap-9 h-full w-full">
-                                <img src="https://placehold.co/400x400/1e1b4b/c4b5fd?text=Coming Soon" alt="Coming Soon" class="w-full h-48 object-cover rounded-3xl flex-shrink-0">
+                                <img src="./Games/One more day/assets/imgs/Cover.png" alt="Coming Soon" class="w-full h-48 object-cover rounded-3xl flex-shrink-0">
                                 <div class="flex-1 flex flex-col justify-between h-full w-full mt-4">
                                     <div>
                                         <h3 class="text-xl font-bold text-white">One more day</h3>
-                                        <p class="text-sm text-yellow-400 font-medium mt-1">Not available</p>
+                                        <p class="text-sm text-red-400 font-medium mt-1">Not available</p>
                                         <p class="text-gray-400 mt-3 text-sm">One More Day is a narrative-focused game we developed for GMTK Game Jam 2025, where you step into the shoes of Dr. Zain, facing tense hospital situations and making critical decisions under pressure."</p>
                                     </div>
-                                    <a href="#" class="inline-block self-start mt-4 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium py-2 px-4 rounded-full transition-all duration-300">View Details</a>
+                                    <a href="./Games/One more day/One more day.html" class="inline-block self-start mt-4 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium py-2 px-4 rounded-full transition-all duration-300">View details</a>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- أضف المزيد من .swiper-slide هنا -->
-
+                        <!-- Slide 2 -->
+                        <div class="swiper-slide p-4 animate-fade-in-up">
+                            <div class="flex flex-col items-center gap-9 h-full w-full">
+                                <img src="https://placehold.co/400x400/1e1b4b/c4b5fd?text= Reversed !?" alt="Coming Soon" class="w-full h-48 object-cover rounded-3xl flex-shrink-0">
+                                <div class="flex-1 flex flex-col justify-between h-full w-full mt-4">
+                                    <div>
+                                        <h3 class="text-xl font-bold text-white">???</h3>
+                                        <p class="text-sm text-yellow-400 font-medium mt-1">In developing</p>
+                                        <p class="text-gray-400 mt-3 text-sm">More details about the game coming soon 🤫</p>
+                                    </div>
+                                    <a href="#" class="inline-block self-start mt-4 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium py-2 px-4 rounded-full transition-all duration-300">View details</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                         <!-- Slide 3 -->
+                        <div class="swiper-slide p-4 animate-fade-in-up">
+                            <div class="flex flex-col items-center gap-9 h-full w-full">
+                                <img src="https://placehold.co/400x400/1e1b4b/c4b5fd?text= ? ? ? " alt="Coming Soon" class="w-full h-48 object-cover rounded-3xl flex-shrink-0">
+                                <div class="flex-1 flex flex-col justify-between h-full w-full mt-4">
+                                    <div>
+                                        <h3 class="text-xl font-bold text-white">???</h3>
+                                        <p class="text-sm text-yellow-400 font-medium mt-1">In Designing process</p>
+                                        <p class="text-gray-400 mt-3 text-sm">More details about the game coming soon 🤫</p>
+                                    </div>
+                                    <a href="#" class="inline-block self-start mt-4 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium py-2 px-4 rounded-full transition-all duration-300">View details</a>
+                                </div>
+                            </div>
+                        </div>
+                        
                     </div> 
                     <!-- Pagination -->
                     <div class="swiper-pagination !static mt-12"></div> 
@@ -332,7 +356,7 @@ Each game reflects what excites us and what we love to create.</p>
         <!-- ====== Contact Section End ====== -->
     </main>
     <!-- ====== Main Content End ====== -->
-
+    
     <!-- ====== Footer Start ====== -->
     <footer class="w-full py-8 border-t border-slate-800 mt-12 md:mt-16">
         <div class="container mx-auto px-4 text-center">
@@ -344,7 +368,8 @@ Each game reflects what excites us and what we love to create.</p>
     <!-- ====== JS Libraries ====== -->
     <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
-<script src="./assets/js/orpita-main.js"></script>
- 
+    <script src="./assets/js/orpita-main.js"></script>
+    <script src="./assets/js/orpita-index.js"></script>
+</ط
 </body>
 </html>
