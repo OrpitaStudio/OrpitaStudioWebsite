@@ -26,28 +26,99 @@ function updateCounts() {
     mustBombsCountEl.textContent = GameState.grid.mustBombs.size;
 }
 
+/**
+ * تحليل-viewer.js
+ * دالة مساعدة جديدة لتحويل الـ Set إلى مصفوفة الكائنات المطلوبة
+ */
+function getInitialCells() {
+    const initialCells = [];
+    
+    // 1. الخلايا المحظورة (BLOCKS)
+    GameState.grid.blocks.forEach(id => {
+        initialCells.push({ id: id, state: "BLOCK" });
+    });
+
+    // 2. النجوم (STARS)
+    GameState.grid.stars.forEach(id => {
+        initialCells.push({ id: id, state: "STAR" });
+    });
+
+    // 3. المفاتيح (SWITCHES)
+    // لا يمكننا تحديد ما إذا كان "ON" أو "OFF" هنا، سنفترض أنها 'SWITCH' فقط
+    // إذا كنت تحتاج إلى حالة أولية (ON/OFF)، يجب أن يكون هناك مكان لتخزينها في GameState.
+    GameState.grid.switches.forEach(id => {
+        // بما أن النظام لا يخزن حالة البداية، سنستخدم "SWITCH" كتصنيف عام. 
+        // إذا أضفت حقل حالة في GameState، يمكن التمييز هنا.
+        initialCells.push({ id: id, state: "SWITCH" }); 
+    });
+
+    // 4. القنابل المطلوبة (MUST_BOMBS)
+    GameState.grid.mustBombs.forEach(id => {
+        initialCells.push({ id: id, state: "BOMB" }); // بما أنها قنابل موضوعة مسبقًا
+    });
+
+    return initialCells;
+}
+
 function updateExportData() {
+    // 🆕 نحتاج إلى دالة getStarConditionsFromUI() لسحب بيانات الشروط
+    // هذه الدالة موجودة بالفعل في solver.js (سنتصل بها).
+    const starConditionsUI = getStarConditionsFromUI(); // يُفترض أن تكون متاحة هنا
+
+    // 🆕 نختار أفضل حل تم العثور عليه (أول حل في القائمة الحالية)
+    const bestSolution = GameState.results.solutions[0] || null;
+    let solutionPlacement = null;
+
+    if (bestSolution) {
+        // نجمع IDs القنابل من الأنواع الثلاثة (normalBombs, powerBombs, negativeBombs)
+        const allBombs = [
+            ...(bestSolution.normalBombs || []),
+            ...(bestSolution.powerBombs || []),
+            ...(bestSolution.negativeBombs || [])
+        ];
+        // يجب إزالة أي تكرارات قد تنتج عن الدمج
+        solutionPlacement = Array.from(new Set(allBombs)); 
+    }
+
+
     const data = {
-        rows: GameState.config.rows,
-        cols: GameState.config.cols,
-        blocks: Array.from(GameState.grid.blocks),
-        switches: Array.from(GameState.grid.switches),
-        stars: Array.from(GameState.grid.stars),
-        mustBombs: Array.from(GameState.grid.mustBombs),
-        // Inputs
-        bombCount1: parseInt(document.getElementById('bombs1').value) || 0,
-        bombCount2: parseInt(document.getElementById('bombs2').value) || 0,
-        bombCountNeg: parseInt(document.getElementById('bombsNeg').value) || 0,
-        targetMin: parseInt(document.getElementById('targetMin').value) || 0,
-        targetMax: parseInt(document.getElementById('targetMax').value) || 0,
-        starConditions: typeof getStarConditionsFromUI === 'function' ? getStarConditionsFromUI() : []
+        "remoteId": document.getElementById('exportFileName').value.trim() || "level_custom",
+        "gridColumns": GameState.config.cols,
+        "gridRows": GameState.config.rows,
+        
+        // 💣 Bomb Counts
+        "bombsCount": parseInt(document.getElementById('bombs1').value) || 0,
+        "bombsPlusCount": parseInt(document.getElementById('bombs2').value) || 0,
+        "bombsNegCount": parseInt(document.getElementById('bombsNeg').value) || 0,
+        
+        // 🎯 Target Range
+        "targetMin": parseInt(document.getElementById('targetMin').value) || -1,
+        "targetMax": parseInt(document.getElementById('targetMax').value) || -1,
+
+        // 🧱 Initial Grid Configuration
+        "initialCells": getInitialCells(), // نستخدم الدالة المساعدة الجديدة
+
+        // ⭐ Star Conditions
+        "starConditions": starConditionsUI.reduce((acc, cond) => {
+            // تحويل array من الشروط إلى كائن له خصائص (كما في المثال)
+            switch(cond.type) {
+                case 'getScore': acc.getScore = cond.value; break;
+                case 'placeBombAt': acc.placeBombAt = cond.requirements.map(r => r.id); break;
+                case 'anyCellValue': acc.anyCellValue = cond.value; break;
+                case 'cellValues': acc.cellValues = cond.requirements; break;
+                case 'emptyCellsCount': acc.emptyCellsCount = cond.value; break;
+                case 'setSwitches': acc.setSwitches = cond.requirements; break;
+            }
+            return acc;
+        }, {}),
+
+        // 💡 Best Solution (إذا وجد)
+        "solution": bestSolution ? {
+            "placementIds": solutionPlacement
+        } : null
     };
 
-    if (GameState.results.solutions.length > 0) {
-        data.solutionsCount = GameState.results.solutions.length;
-        data.difficultyScore = calculateDifficulty(GameState.results.solutions, GameState.results.lastTotalCombinations);
-        data.maxCustomStarsAchieved = Math.max(...GameState.results.solutions.map(s => s.starsCount));
-    }
+    // ... (بقية الدالة: تحويل data إلى JSON وعرضه)
     exportDataEl.value = JSON.stringify(data, null, 2);
 }
 
