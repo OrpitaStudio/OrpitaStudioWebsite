@@ -521,29 +521,19 @@ input:focus, select:focus { border-color: var(--primary); }
 /* ------------------------------------------------------------
    6. Must-Bomb (visual override + solution view)
    ------------------------------------------------------------ */
-/* --- Must Bomb Styling --- */
-
-/* 1. Design Mode */
 .cell.must-bomb {
-    background: rgba(239,68,68,0.2);
-    border: 2px solid #ef4444;
-    color: #ef4444;
-    box-shadow: 0 0 5px rgba(239,68,68,0.5);
+  background: rgba(239,68,68,0.2);
+  border: 2px solid #ef4444;
+  color: #ef4444;
+  box-shadow: 0 0 5px rgba(239,68,68,0.5);
 }
 
-/* 2. Solution Mode (Override without !important) */
-/* نستخدم ID لرفع الأولوية (Specificity) */
-#grid .cell.bomb.is-must-bomb {
-    background-color: #ef4444;
-    border-color: #b91c1c;
-    color: white;
-    box-shadow: 0 0 10px #ef4444;
-}
-
-/* تحسينات إضافية */
-.solRow {
-    /* تحسين استجابة القائمة */
-    will-change: background-color; 
+/* force visual override when showing solution */
+.cell.bomb.is-must-bomb {
+  background-color: #ef4444 !important; /* stronger visual priority */
+  border-color: #b91c1c !important;
+  color: white !important;
+  box-shadow: 0 0 10px #ef4444 !important;
 }
 
 /* solution view bomb styles */

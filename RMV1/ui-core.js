@@ -1,10 +1,7 @@
-/**
- * ui-core.js
- * Core UI logic (Optimized for Performance & Centralized State):
- * - Grid building, cell interactions, modes.
- * - Interaction with GameState instead of loose globals.
- * - Async Solver handling with UI locking.
- */
+// ui-core.js
+// Core UI logic (style B):
+// - Grid building, cell interactions, modes, and star-condition editor (single condition per star).
+// - Inline notes next to important numeric values explain the effect of changing them.
 
 /* ------------------------------------------------------------------
    I. DOM Elements & Initialization
@@ -31,13 +28,13 @@ function showStatus(message, isError = false) {
   statusMessageEl.className = `status-message ${isError ? 'status-error' : 'status-success'}`;
   statusMessageEl.style.display = 'block';
 
+  // Auto-hide delay: 3000ms -> increasing this keeps messages visible longer (useful for long notices)
   if (!isError) setTimeout(() => { statusMessageEl.style.display = 'none'; }, 3000);
 }
 
 function setMode(m) {
-  // Update global state
-  GameState.config.mode = m;
-
+  // mode is global from state.js
+  mode = m;
   [modeBlockBtn, modeStarBtn, modeSwitchBtn, modeMustBombBtn, modeEraseBtn].forEach(b => b.classList.remove('active'));
   if (m === 'block') modeBlockBtn.classList.add('active');
   if (m === 'star') modeStarBtn.classList.add('active');
@@ -49,9 +46,11 @@ function setMode(m) {
 function resetProgress() {
   document.getElementById('progressBar').style.width = '0%';
   document.getElementById('progressPct').textContent = '0%';
-  document.getElementById('timeInfo').textContent = 'Ready';
+  // timeInfo text is UI-only; increasing format or adding ETA logic will change UX
+  document.getElementById('timeInfo').textContent = '00:00 elapsed — ETA: —';
   document.getElementById('combCount').textContent = '—';
-  
+  // abortFlag is global
+  abortFlag = false;
   document.getElementById('cancel').disabled = true;
   statusMessageEl.style.display = 'none';
 }
@@ -61,53 +60,54 @@ function resetProgress() {
    ------------------------------------------------------------------ */
 
 function buildGrid() {
-  // 1. Update State Configuration
-  GameState.config.cols = Math.max(2, parseInt(document.getElementById('gridCols').value, 10) || 5);
-  GameState.config.rows = Math.max(2, parseInt(document.getElementById('gridRows').value, 10) || 5);
+  // enforce lower bound of 2 on dimensions: raising this minimum makes tiny boards invalid
+  cols = Math.max(2, parseInt(document.getElementById('gridCols').value, 10) || 5); // default 5
+  rows = Math.max(2, parseInt(document.getElementById('gridRows').value, 10) || 5); // default 5
 
-  // 2. Update UI Layout
-  gridEl.style.gridTemplateColumns = `repeat(${GameState.config.cols}, 44px)`;
+  // Visual cell width used in template: 44px -> increasing this makes cells larger and board wider
+  gridEl.style.gridTemplateColumns = `repeat(${cols},44px)`;
 
-  // 3. Reset Results in State
-  GameState.results.solutions = [];
-  GameState.results.lastTotalCombinations = 0n;
-
-  // 4. Re-render
+  // reset solver/UI state
+  solutions = [];
   renderGrid();
-  updateCounts(); // From analysis-viewer.js
-  clearAnalysis(); // From analysis-viewer.js
+  updateCounts();
+  clearAnalysis();
   resetProgress();
-  updateExportData(); // From analysis-viewer.js
-  updateDifficultyAnalysis(); // From analysis-viewer.js
-  
+  updateExportData();
+  updateDifficultyAnalysis();
   showStatus('Grid rebuilt with new dimensions');
 }
 
 function renderGrid() {
-  const total = GameState.config.rows * GameState.config.cols;
+  const total = rows * cols; // total cells: rows*cols — changing rows/cols changes this value directly
   gridEl.innerHTML = '';
 
   for (let i = 0; i < total; i++) {
     const d = document.createElement('div');
     d.className = 'cell heatmap-cell';
-    d.dataset.i = i; 
+    d.dataset.i = i; // store cell index as data attribute
 
+    // index label (static)
     const idxSpan = document.createElement('span');
     idxSpan.className = 'cell-index';
     idxSpan.textContent = i;
 
+    // heatmap overlay (hidden by default)
     const overlay = document.createElement('div');
     overlay.className = 'heatmap-overlay';
     overlay.id = `heatmap-${i}`;
     overlay.style.display = 'none';
 
+    // content container (dynamic: bombs, stars, numbers)
     const content = document.createElement('div');
     content.className = 'cell-content';
 
+    // append order matters: index always present, overlay then content (content cleared/replaced later)
     d.appendChild(idxSpan);
     d.appendChild(overlay);
     d.appendChild(content);
 
+    // cell click listener
     d.addEventListener('click', () => cellClicked(i));
 
     gridEl.appendChild(d);
@@ -117,10 +117,7 @@ function renderGrid() {
 }
 
 function cellClicked(i) {
-  const mode = GameState.config.mode;
-  // Destructure sets from GameState for cleaner code
-  const { blocks, stars, switches, mustBombs } = GameState.grid;
-
+  // Uses global sets and mode from state.js
   if (mode === 'block') {
     if (blocks.has(i)) blocks.delete(i);
     else { blocks.add(i); stars.delete(i); mustBombs.delete(i); switches.delete(i); }
@@ -147,11 +144,11 @@ function cellClicked(i) {
 }
 
 /* ------------------------------------------------------------------
-   IV. Visual refresh
+   IV. Visual refresh: design mode or solution view
+   - solution param: object { normalBombs, powerBombs, negativeBombs, switchState }
    ------------------------------------------------------------------ */
 function refreshGridVisual(solution = null) {
-  const total = GameState.config.rows * GameState.config.cols;
-  const { blocks, stars, switches, mustBombs } = GameState.grid;
+  const total = rows * cols;
 
   let normalBombSet = new Set();
   let powerBombSet  = new Set();
@@ -160,48 +157,36 @@ function refreshGridVisual(solution = null) {
   let currentBlocks;
 
   if (solution) {
-    // Solution View
+    // solution view: bombs are provided by analysis
     normalBombSet = new Set(solution.normalBombs || []);
     powerBombSet  = new Set(solution.powerBombs || []);
     negativeBombSet = new Set(solution.negativeBombs || []);
     const blockedSwitches = new Set(solution.switchState || []);
     currentBlocks = new Set([...blocks, ...blockedSwitches]);
 
-    // Compute neighbors locally for visualization
-    // (Note: Ideally this logic should be shared, but keeping it here for UI instant feedback is fine)
-    const neighbors = []; 
-    for(let k=0; k<total; k++) neighbors[k] = [];
-    for(let k=0; k<total; k++) {
-        if(currentBlocks.has(k)) continue;
-        const r = Math.floor(k/GameState.config.cols), c = k%GameState.config.cols;
-        for(let dr=-1; dr<=1; dr++){
-            for(let dc=-1; dc<=1; dc++){
-                if(dr===0 && dc===0) continue;
-                const rr=r+dr, cc=c+dc;
-                if(rr>=0 && rr<GameState.config.rows && cc>=0 && cc<GameState.config.cols){
-                    const idx = rr*GameState.config.cols + cc;
-                    if(!currentBlocks.has(idx)) neighbors[k].push(idx);
-                }
-            }
-        }
-    }
+    // neighbor map depends on current blocked cells
+    const neighbors = computeNeighbors(currentBlocks);
 
     for (let i = 0; i < total; i++) numbers[i] = 0;
+
     const allBombs = new Set([...normalBombSet, ...powerBombSet, ...negativeBombSet]);
 
+    // compute visible numbers for non-bomb neighbors
     normalBombSet.forEach(b => { for (let nb of neighbors[b] || []) if (!allBombs.has(nb)) numbers[nb] += 1; });
     powerBombSet.forEach(b => { for (let nb of neighbors[b] || []) if (!allBombs.has(nb)) numbers[nb] += 2; });
     negativeBombSet.forEach(b => { for (let nb of neighbors[b] || []) if (!allBombs.has(nb)) numbers[nb] -= 1; });
   } else {
-    // Design Mode
+    // design mode: only original blocks count
     currentBlocks = blocks;
   }
 
+  // update each cell element
   for (let i = 0; i < total; i++) {
     const el = gridEl.children[i];
     const content = el.querySelector('.cell-content');
     const heatmap = el.querySelector('.heatmap-overlay');
 
+    // Reset classes and content
     el.className = 'cell heatmap-cell';
     content.className = 'cell-content';
     content.innerHTML = '';
@@ -210,17 +195,25 @@ function refreshGridVisual(solution = null) {
     const isBomb = solution && (normalBombSet.has(i) || powerBombSet.has(i) || negativeBombSet.has(i));
 
     if (isBomb) {
+      // Bomb variants rendering
       if (normalBombSet.has(i)) { el.classList.add('bomb'); content.textContent = 'B'; }
       else if (powerBombSet.has(i)) { el.classList.add('bomb2'); content.textContent = 'P'; }
       else if (negativeBombSet.has(i)) { el.classList.add('bomb-neg'); content.textContent = 'N'; }
 
+      // Must-bomb visual override (designated bombs that are reserved)
       if (mustBombs.has(i)) {
-        el.classList.add('is-must-bomb');
-        content.textContent = 'MB'; 
+        el.classList.add('is-must-bomb'); // CSS makes this red
+        content.textContent = 'MB'; // more visible marker for must-bomb
       }
+
+      // If the bomb sits on a switch cell, apply switch-bomb treatment
       if (switches.has(i)) el.classList.add('is-switch-bomb');
 
+      // star overlay (if needed) could be invoked here
+      // starOverlay();
+
     } else if (currentBlocks.has(i)) {
+      // Blocked / switch-blocked state
       if (switches.has(i)) {
         el.classList.add('switch-blocked'); content.textContent = 'S';
       } else {
@@ -228,6 +221,7 @@ function refreshGridVisual(solution = null) {
       }
 
     } else if (solution && numbers[i] !== 0) {
+      // Show computed number for affected cells in solution view
       const num = document.createElement('span');
       num.className = 'number';
       num.textContent = numbers[i];
@@ -235,6 +229,7 @@ function refreshGridVisual(solution = null) {
       el.classList.add('affected');
 
     } else {
+      // Design mode / empty cells
       if (switches.has(i)) {
         el.classList.add('switch-off'); content.textContent = 'S';
       } else if (stars.has(i)) {
@@ -248,28 +243,37 @@ function refreshGridVisual(solution = null) {
   }
 }
 
+// Utility to view a specific solution (used by analysis viewer)
 function viewSolution(sol) { refreshGridVisual(sol); }
 
 /* ------------------------------------------------------------------
-   V. Star Condition Editor
+   V. Star Condition Editor (single condition per star)
+   - CONDITION_TEMPLATES include parser + input markup.
    ------------------------------------------------------------------ */
 
 const CONDITION_TEMPLATES = {
+  // 1) Exact sum required
   getScore: {
     label: 'Required Sum:',
     input: id => `<input type="number" data-key="value" id="${id}-value" placeholder="e.g., 23" style="width:100px;"/>`,
     parser: inputs => ({ type: 'getScore', value: Number(inputs.value) })
   },
+
+  // 2) Zero-value cell count
   emptyCellsCount: {
     label: 'Required Zero-Value Cell Count:',
     input: id => `<input type="number" data-key="value" id="${id}-value" min="0" placeholder="e.g., 5" style="width:100px;"/>`,
     parser: inputs => ({ type: 'emptyCellsCount', value: Number(inputs.value) })
   },
+
+  // 3) Specific value in any cell
   anyCellValue: {
     label: 'Specific Value Required:',
     input: id => `<input type="number" data-key="value" id="${id}-value" placeholder="e.g., 10" style="width:100px;"/>`,
     parser: inputs => ({ type: 'anyCellValue', value: Number(inputs.value) })
   },
+
+  // 4) Place a bomb at listed cell IDs
   placeBombAt: {
     label: 'Cell IDs (comma separated):',
     input: id => `<input type="text" data-key="cells" id="${id}-cells" placeholder="e.g., 6, 13, 22" style="flex-grow:1;"/>`,
@@ -279,6 +283,8 @@ const CONDITION_TEMPLATES = {
       return { type: 'placeBombAt', cells };
     }
   },
+
+  // 5) Specific value(s) in specific cell(s)
   cellValues: {
     label: 'Cell ID & Value Pairs (ID1, Val1, ...):',
     input: id => `<input type="text" data-key="requirements" id="${id}-req" placeholder="e.g., 9, 10, 6, 10" style="flex-grow:1;"/>`,
@@ -292,6 +298,8 @@ const CONDITION_TEMPLATES = {
       return { type: 'cellValues', requirements: reqs };
     }
   },
+
+  // 6) Switch state requirements
   setSwitches: {
     label: 'Switch ID & State Pairs (ID1, ON/OFF, ...):',
     input: id => `<input type="text" data-key="requirements" id="${id}-req" placeholder="e.g., 5, ON, 6, OFF" style="flex-grow:1;"/>`,
@@ -311,7 +319,7 @@ const CONDITION_TEMPLATES = {
   }
 };
 
-let conditionIdCounter = 0;
+let conditionIdCounter = 0; // unique id counter for injected inputs
 
 function handleConditionTypeChange(event) {
   const selectEl = event.target;
@@ -343,10 +351,12 @@ function injectSingleConditionRow(starId) {
   const selectEl = row.querySelector('.condition-type-select');
   selectEl.addEventListener('change', handleConditionTypeChange);
   const removeBtn = row.querySelector('.remove-condition-btn');
-  if (removeBtn) removeBtn.style.display = 'none';
+  if (removeBtn) removeBtn.style.display = 'none'; // single mandatory slot
   containerEl.appendChild(row);
 }
 
+// Exposed for solver.js: returns array-of-arrays (one array per star)
+// If a star is empty, its entry is [].
 function getStarConditionsFromUI() {
   const allStarConditions = [];
   for (let starId = 1; starId <= 3; starId++) {
@@ -364,21 +374,23 @@ function getStarConditionsFromUI() {
     const inputs = {};
     let valid = true;
 
+    // collect inputs (any input element must have data-key)
     valueArea.querySelectorAll('[data-key]').forEach(inputEl => {
       const key = inputEl.getAttribute('data-key');
       const value = String(inputEl.value || '').trim();
       if (value === '') {
         showStatus(`Error: condition input empty in Star ${starId}.`, true);
+        abortFlag = true; // global abort flag
         valid = false;
         return;
       }
       inputs[key] = value;
     });
 
-    if (!valid) return [];
+    if (!valid) return []; // abort on invalid input
 
     const conditionObject = template.parser(inputs);
-    if (!conditionObject) { return []; }
+    if (!conditionObject) { abortFlag = true; return []; } // parser handles error messages
     allStarConditions.push([conditionObject]);
   }
   return allStarConditions;
@@ -392,15 +404,16 @@ function initStarEditor() {
    VI. Event listeners & initial boot
    ------------------------------------------------------------------ */
 
+// Mode buttons
 modeBlockBtn.addEventListener('click', () => setMode('block'));
 modeStarBtn.addEventListener('click', () => setMode('star'));
 modeSwitchBtn.addEventListener('click', () => setMode('switch'));
 modeMustBombBtn.addEventListener('click', () => setMode('mustBomb'));
 modeEraseBtn.addEventListener('click', () => setMode('erase'));
 
+// Grid control
 document.getElementById('build').addEventListener('click', buildGrid);
 document.getElementById('clear').addEventListener('click', () => {
-  const { blocks, stars, switches, mustBombs } = GameState.grid;
   blocks.clear(); stars.clear(); mustBombs.clear(); switches.clear();
   refreshGridVisual(); updateCounts(); updateExportData(); updateDifficultyAnalysis();
   showStatus('All special cells cleared');
@@ -408,92 +421,25 @@ document.getElementById('clear').addEventListener('click', () => {
 document.getElementById('gridCols').addEventListener('change', buildGrid);
 document.getElementById('gridRows').addEventListener('change', buildGrid);
 
-// --- Updated Solver Controller for Web Worker Support ---
+// Solver control
 document.getElementById('solve').addEventListener('click', async () => {
-  const solveBtn = document.getElementById('solve');
-  const cancelBtn = document.getElementById('cancel');
-
-  // 1. Lock UI
   resetProgress();
-  solveBtn.disabled = true;
-  solveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Working...';
-  cancelBtn.disabled = false;
-
   const startTime = performance.now();
-
-  try {
-    // 2. Wait for Worker via Controller
-    await solveHandler(); 
-    
-    // 3. Analysis
-    handlePostSolveAnalysis(startTime); 
-
-  } catch (err) {
-    console.error("Solver Error:", err);
-    // Error handled in status
-  } finally {
-    // 4. Unlock UI
-    solveBtn.disabled = false;
-    solveBtn.innerHTML = '<i class="fas fa-play"></i> SOLVE';
-    cancelBtn.disabled = true;
-  }
+  await solveHandler(); // solver.js (external)
+  handlePostSolveAnalysis(startTime);
 });
+document.getElementById('cancel').addEventListener('click', () => { abortFlag = true; });
 
-document.getElementById('cancel').addEventListener('click', () => {
-    cancelSolver(); // Calls the new controller cancellation
-});
-
+// Heatmap toggle (simple inline toggle)
 toggleHeatmapBtn.addEventListener('click', () => {
-  GameState.results.showHeatmap = !GameState.results.showHeatmap;
-  toggleHeatmapBtn.textContent = GameState.results.showHeatmap ? 'Hide Heatmap' : 'Show Heatmap';
+  showHeatmap = !showHeatmap;
+  toggleHeatmapBtn.textContent = showHeatmap ? 'Hide Heatmap' : 'Show Heatmap';
   refreshGridVisual();
 });
 
+// Symmetry checkbox status text (small UX hint)
 countSymCheckbox.addEventListener('change', () => {
   countSymStatus.textContent = countSymCheckbox.checked ? '✓ Counting symmetries' : '✗ Not counting symmetries';
-});
-
-// --- JSON Export with File Picker Support ---
-document.getElementById('exportBtn').addEventListener('click', async () => {
-    const jsonString = document.getElementById('exportData').value;
-    if (!jsonString) { showStatus('No data to export!', true); return; }
-
-    let fileName = document.getElementById('exportFileName').value.trim();
-    if (!fileName) fileName = 'level_custom';
-    if (!fileName.endsWith('.json')) fileName += '.json';
-
-    if ('showSaveFilePicker' in window) {
-        try {
-            const options = {
-                suggestedName: fileName,
-                types: [{
-                    description: 'Minesweeper Level JSON',
-                    accept: { 'application/json': ['.json'] },
-                }],
-            };
-            const handle = await window.showSaveFilePicker(options);
-            const writable = await handle.createWritable();
-            await writable.write(jsonString);
-            await writable.close();
-            showStatus(`File saved successfully!`);
-            return;
-        } catch (err) {
-            if (err.name !== 'AbortError') console.error('File System API failed:', err);
-            else return;
-        }
-    }
-
-    // Fallback
-    const blob = new Blob([jsonString], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showStatus(`File downloaded.`);
 });
 
 // Initial boot sequence
