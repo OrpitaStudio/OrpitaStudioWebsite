@@ -1,0 +1,641 @@
+:root {
+  /* Color palette & global tokens */
+  --bg-app: #090b10;
+  --bg-panel: #121620;
+  --bg-input: #1c2233;
+  --border: #2a324a;
+
+  /* Accents */
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --accent-gold: #fbbf24;
+  --accent-purple: #a855f7;
+  --accent-danger: #ef4444;
+  --accent-success: #10b981;
+
+  /* Text */
+  --text-main: #e2e8f0;
+  --text-muted: #94a3b8;
+
+  /* Grid / cells */
+  --cell-bg: #1e293b;
+  --cell-size: 46px;   /* cell size: increase → larger cells, fewer fit on screen, affects layout & visual weight */
+  --radius: 6px;       /* corner radius: increase → softer rounded cells/cards */
+}
+
+/* ------------------------------------------------------------
+   1. Global Reset & Base Typography
+   ------------------------------------------------------------ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  outline: none;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Inter', 'Cairo', sans-serif;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  overflow: hidden;        /* prevent full-page scroll; grid area handles internal scrolling */
+  font-size: 14px;         /* base font size: increase → larger UI text everywhere */
+}
+
+/* Scrollbar styling (WebKit) */
+::-webkit-scrollbar { width: 6px; height: 6px; } /* scrollbar size: increase → thicker scrollbars */
+::-webkit-scrollbar-track { background: var(--bg-app); }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+/* ------------------------------------------------------------
+   2. Main Layout Structure
+   ------------------------------------------------------------ */
+.app-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* -------------------------
+   LEFT SIDEBAR (Settings)
+   ------------------------- */
+.sidebar {
+  width: 300px;            /* sidebar width: increase → more room for controls, reduces workspace width */
+  min-width: 300px;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+.logo-area {
+  padding: 15px;           /* spacing around logo area: increase → more vertical space used */
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--primary);
+}
+.logo-area i { font-size: 1.5em; }
+.logo-area h1 {
+  font-size: 1.2em;
+  color: #fff;
+  margin: 0;
+  font-weight: 700;
+  line-height: 1;
+}
+.logo-area .subtitle {
+  font-size: 0.75em;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.scrollable-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;           /* panel inner padding: increase → more white space inside sidebar */
+}
+
+.panel-group {
+  margin-bottom: 20px;     /* spacing between panels: increase → more vertical separation */
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.panel-group:last-child { border-bottom: none; }
+
+.panel-group h3 {
+  font-size: 0.9em;        /* section heading size */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Sidebar footer */
+.sidebar-footer {
+  padding: 15px;           /* footer padding */
+  border-top: 1px solid var(--border);
+  background: rgba(0,0,0,0.2);
+}
+
+/* -------------------------
+   CENTER WORKSPACE
+   ------------------------- */
+.workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-app);
+  position: relative;
+}
+
+/* Floating toolbar */
+.toolbar-dock {
+  padding: 10px 20px;      /* toolbar padding: horizontal padding increases center spacing */
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+.toolbar-divider { width: 1px; height: 24px; background: var(--border); }
+
+.modes {
+  display: flex;
+  gap: 5px;
+  background: var(--bg-input);
+  padding: 4px;            /* modes padding: increase → larger clickable area */
+  border-radius: 8px;
+}
+
+.tool-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 8px 16px;       /* button padding: increase → larger hit target */
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+.tool-btn:hover { color: #fff; background: rgba(255,255,255,0.05); }
+.tool-btn.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 2px 5px rgba(59, 130, 246, 0.4);
+}
+/* mode-specific active colors */
+.tool-btn.switchMode.active { background: var(--accent-purple); box-shadow: 0 2px 5px rgba(168,85,247,0.4); }
+.tool-btn.mustBombMode.active { background: var(--accent-gold); color: #000; box-shadow: 0 2px 5px rgba(251,191,36,0.4); }
+.tool-btn.eraseMode.active { background: var(--accent-danger); box-shadow: 0 2px 5px rgba(239,68,68,0.4); }
+
+/* -------------------------
+   GRID CANVAS AREA
+   ------------------------- */
+.grid-canvas {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  background-image: radial-gradient(#1e293b 1px, transparent 1px);
+  background-size: 20px 20px; /* background dot pattern size: change → density of dots */
+}
+
+.grid-container-scroll {
+  padding: 40px;          /* outer grid padding: increase → more breathing room around board */
+  overflow: auto;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* The grid element */
+#grid {
+  display: grid;
+  gap: 8px;               /* gap between cells: increase → more separation, affects board compactness */
+  padding: 10px;          /* inner grid padding: increase → larger border area around cells */
+  background: rgba(0,0,0,0.3);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* -------------------------
+   Grid Stats Overlay
+   ------------------------- */
+.grid-stats {
+  position: absolute;
+  bottom: 20px;           /* offset from bottom: increase → push stats up */
+  left: 20px;             /* offset from left */
+  display: flex;
+  gap: 8px;
+}
+.stat-pill {
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 4px 10px;      /* pill padding: increase → bigger pills */
+  border-radius: 20px;
+  font-size: 0.8em;       /* pill font size */
+  color: var(--text-muted);
+}
+.stat-pill i { margin-right: 4px; color: var(--primary); }
+
+/* -------------------------
+   Bottom Action Bar
+   ------------------------- */
+.action-bar {
+  height: 70px;           /* action bar height: increase → more vertical room for controls */
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.progress-section {
+  flex: 1;
+  max-width: 400px;       /* progress area max width: change → affects layout of progress + actions */
+  margin-right: 20px;
+}
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85em;
+  margin-bottom: 5px;
+  color: var(--text-muted);
+}
+.progress {
+  height: 6px;            /* progress bar thickness: increase → more visible progress indicator */
+  background: var(--bg-input);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progressBar {
+  height: 100%;
+  width: 0%;              /* dynamic width controlled by JS; starting width */
+  background: linear-gradient(90deg, var(--primary), #60a5fa);
+  transition: width 0.3s ease;
+}
+
+.main-actions { display: flex; gap: 10px; }
+
+.btn-solve {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 24px;     /* solve button padding: increase → stronger call-to-action */
+  border-radius: 6px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+.btn-solve:hover { background: var(--primary-hover); transform: translateY(-1px); }
+
+.btn-cancel {
+  background: var(--bg-input);
+  color: var(--accent-danger);
+  border: 1px solid var(--border);
+  padding: 0 15px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn-cancel:disabled { opacity: 0.3; cursor: not-allowed; color: var(--text-muted); }
+
+/* -------------------------
+   RIGHT PANEL (Results)
+   ------------------------- */
+.results-panel {
+  width: 320px;           /* results panel width: increase → more space for solution details */
+  min-width: 320px;
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.panel-header {
+  padding: 15px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.panel-header h2 { font-size: 1em; margin: 0; }
+.badge-count {
+  background: var(--primary);
+  color: white;
+  padding: 2px 8px;       /* badge padding: increase → larger badge */
+  border-radius: 10px;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+
+.difficulty-card {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  margin: 15px;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.diff-header { display: flex; justify-content: space-between; font-size: 0.85em; margin-bottom: 8px; }
+.difficulty-meter { height: 8px; background: rgba(0,0,0,0.3); border-radius: 4px; overflow: hidden; margin-bottom: 8px; }
+.difficulty-fill { height: 100%; background: var(--accent-success); transition: width 0.5s; }
+.difficulty-fill.difficulty-medium { background: var(--accent-gold); }
+.difficulty-fill.difficulty-hard { background: var(--accent-danger); }
+
+.filters-area {
+  padding: 0 15px 15px;
+  border-bottom: 1px solid var(--border);
+
+  max-height: 30vh;       /* cap height to 30% of viewport: increase → larger filter area */
+  overflow-y: auto;
+  flex-shrink: 0;
+
+  scrollbar-width: thin;
+  scrollbar-color: #334155 var(--bg-app);
+}
+/* Chrome scrollbar inside filters */
+.filters-area::-webkit-scrollbar { width: 6px; }
+.filters-area::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+.filters-area::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+
+.tags-cloud { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; margin-bottom: 10px; }
+.tags-cloud div {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 8px;       /* tag padding: increase → larger clickable tags */
+  font-size: 0.8em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cond-filters { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px; }
+.cond-filters .toggle-row { display: flex; align-items: center; gap: 8px; font-size: 0.9em; margin-bottom: 4px; }
+
+.solutions-list-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.list-controls {
+  padding: 10px 15px;
+  display: flex;
+  gap: 8px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  min-height: 0;
+}
+
+.solutions-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  min-block-size: 0;
+  scrollbar-width: thin;
+  scrollbar-color: #334155 var(--bg-app);
+}
+.solRow {
+  background: var(--bg-input);
+  border: 1px solid transparent;
+  padding: 10px;           /* solution row padding: increase → easier to read */
+  border-radius: 6px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+.solRow:hover { border-color: var(--primary); background: rgba(59,130,246,0.1); }
+
+/* ------------------------------------------------------------
+   3. Form Controls
+   ------------------------------------------------------------ */
+input[type="number"], input[type="text"], select, textarea {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: #fff;
+  padding: 8px 10px;       /* form control padding: increase → larger input fields */
+  border-radius: 6px;
+  font-size: 0.95em;
+  transition: border 0.2s;
+}
+input:focus, select:focus { border-color: var(--primary); }
+
+.input-row { display: flex; align-items: center; gap: 10px; }
+.input-wrapper { flex: 1; }
+.input-wrapper label, .setting-item label { display: block; font-size: 0.8em; color: var(--text-muted); margin-bottom: 4px; }
+.setting-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.setting-item input { width: 70px; text-align: center; } /* numeric input width: change → visual density of controls */
+.full-width { width: 100%; }
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.btn-primary:hover { background: #1d4ed8; }
+.btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-muted); width: 100%; padding: 8px; border-radius: 6px; cursor: pointer; }
+.btn-secondary:hover { color: #fff; border-color: #fff; }
+.btn-xs { padding: 4px 8px; font-size: 0.8em; background: var(--bg-input); border: 1px solid var(--border); color: #fff; border-radius: 4px; cursor: pointer; }
+.btn-xs:hover { background: #334155; }
+
+/* ------------------------------------------------------------
+   4. Grid Cells (GAME STYLES)
+   ------------------------------------------------------------ */
+.cell {
+  width: var(--cell-size);
+  height: var(--cell-size);
+  background: var(--cell-bg);
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,255,225,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1em;        /* cell text size: increase → numbers/labels become more readable */
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.1s ease-out;
+  position: relative;
+  user-select: none;
+}
+.cell:hover { transform: scale(1.05); border-color: var(--primary); z-index: 2; } /* hover scale: change → hover feedback strength */
+
+/* Cell states */
+.cell.block {
+  background: #222233;
+  color: transparent;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+.cell.block::after {
+  content: '';
+  width: 6px;              /* small block dot size: change → visual prominence */
+  height: 6px;
+  background: #333344;
+  border-radius: 50%;
+}
+
+.cell.star {
+  background: rgba(251,191,36,0.1);
+  border: 1px solid var(--accent-gold);
+  color: var(--accent-gold);
+  text-shadow: 0 0 8px var(--accent-gold);
+}
+
+/* -------------------------
+   5. Switch States
+   ------------------------- */
+.cell.switch-off {
+  background: var(--cell-bg);
+  border: 1px dashed var(--accent-purple);
+  color: var(--accent-purple);
+  font-weight: bold;
+}
+
+.cell.switch-blocked {
+  background-color: var(--cell-bg); /* fallback if --block-color not set by JS */
+  border: 2px dashed var(--accent-purple);
+  color: var(--accent-purple);
+}
+
+/* switch overlay badge */
+.overlay-switch {
+  position: absolute;
+  top: 2px;                /* offset from top: increase → move badge down */
+  right: 2px;              /* offset from right */
+  font-size: 0.75em;       /* overlay font size */
+  font-weight: bold;
+  color: var(--accent-purple);
+  line-height: 1;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+}
+
+/* when bombs live inside a switch (visual treatment) */
+.cell.bomb.is-switch-bomb,
+.cell.bomb2.is-switch-bomb,
+.cell.bomb-neg.is-switch-bomb {
+  border: 2px solid var(--accent-purple);
+  box-shadow: 0 0 8px var(--accent-purple);
+}
+
+/* ------------------------------------------------------------
+   6. Must-Bomb (visual override + solution view)
+   ------------------------------------------------------------ */
+/* --- Must Bomb Styling --- */
+
+/* 1. Design Mode */
+.cell.must-bomb {
+    background: rgba(239,68,68,0.2);
+    border: 2px solid #ef4444;
+    color: #ef4444;
+    box-shadow: 0 0 5px rgba(239,68,68,0.5);
+}
+
+/* 2. Solution Mode (Override without !important) */
+/* نستخدم ID لرفع الأولوية (Specificity) */
+#grid .cell.bomb.is-must-bomb {
+    background-color: #ef4444;
+    border-color: #b91c1c;
+    color: white;
+    box-shadow: 0 0 10px #ef4444;
+}
+
+/* تحسينات إضافية */
+.solRow {
+    /* تحسين استجابة القائمة */
+    will-change: background-color; 
+}
+
+/* solution view bomb styles */
+.cell.bomb {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 0 10px var(--primary);
+  border: none;
+}
+.cell.bomb2 { background: #ec4899; color: #fff; }   /* power bomb */
+.cell.bomb-neg { background: #64748b; color: #000; } /* negative bomb */
+
+.cell .number { color: #fff; font-size: 1em; z-index: 2; }
+
+/* ------------------------------------------------------------
+   7. Star Conditions UI
+   ------------------------------------------------------------ */
+.star-editor-group {
+  background: rgba(0,0,0,0.2);
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  border-left: 3px solid var(--accent-gold);
+}
+.star-editor-group h4 { margin: 0 0 5px 0; font-size: 0.85em; color: var(--accent-gold); }
+.condition-row { display: flex; flex-direction: column; gap: 5px; }
+.condition-type-select { font-size: 0.85em; padding: 4px; }
+
+/* ------------------------------------------------------------
+   8. Utilities, status messages & heatmap
+   ------------------------------------------------------------ */
+.status-message {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-size: 0.9em;
+  z-index: 100;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  animation: slideDown 0.3s ease;
+}
+.status-success { background: rgba(16,185,129,0.2); border: 1px solid var(--accent-success); color: var(--accent-success); }
+.status-error { background: rgba(239,68,68,0.2); border: 1px solid var(--accent-danger); color: var(--accent-danger); }
+
+@keyframes slideDown { from { top: -20px; opacity: 0; } to { top: 20px; opacity: 1; } }
+
+.warnings-section {
+  width: 100%;
+  max-width: 600px;       /* warning area max width: change → control text wrap length */
+  margin-top: 10px;
+  padding: 10px;
+  background: rgba(251,146,60,0.1);
+  border-left: 4px solid #fb923c;
+  color: #fdba74;
+  font-size: 0.9em;
+}
+
+/* heatmap overlay */
+.heatmap-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  border-radius: var(--radius);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.heatmap-label { font-size: 0.5em; color: #fff; font-weight: bold; text-shadow: 0 1px 2px #000; }
+
+/* ------------------------------------------------------------
+   9. Fixed Cell Index
+   ------------------------------------------------------------ */
+.cell { position: relative; } /* ensure index positioning works */
+
+.cell-index {
+  position: absolute;
+  bottom: 1px;            /* small bottom offset for index */
+  right: 3px;             /* small right offset for index */
+  font-size: 0.6rem;      /* index font size: increase → easier reading on dense boards */
+  font-family: monospace;
+  color: rgba(255,255,255,0.5);
+  z-index: 20;            /* keep index above other visuals */
+  pointer-events: none;   /* allows clicks to pass through index */
+  user-select: none;
+  line-height: 1;
+}
+
+/* make index slightly clearer on bright states */
+.cell.star .cell-index,
+.cell.must-bomb .cell-index {
+  color: rgba(255,255,255,0.8);
+}
