@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ar" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reversed Minesweeper — Level Designer</title>
+
+  <!-- Fonts & icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+  <!-- Core styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-layout">
+
+    <!-- SIDEBAR: controls, panels and export -->
+    <aside class="sidebar">
+      <div class="logo-area">
+        <i class="fas fa-bomb"></i>
+        <div>
+          <h1>Reversed Minesweeper</h1>
+          <span class="subtitle">Level Designer V2.1</span>
+        </div>
+      </div>
+
+      <div class="scrollable-content">
+
+        <!-- PANEL: Grid Size -->
+        <!-- Controls grid dimensions. Changing these rebuilds the board (more cells = longer solve time). -->
+        <div class="panel-group">
+          <h3><i class="fas fa-ruler-combined"></i> Grid Size</h3>
+          <div class="input-row">
+            <div class="input-wrapper">
+              <label>Columns</label>
+              <input id="gridCols" type="number" min="0" max="12" value="4" />
+              <!-- default cols: 4 — increase to add more columns (increases total cells and solver complexity) -->
+            </div>
+            <div class="input-wrapper">
+              <label>Rows</label>
+              <input id="gridRows" type="number" min="0" max="12" value="4" />
+              <!-- default rows: 4 — increase to add more rows (increases total cells and solver complexity) -->
+            </div>
+          </div>
+          <button id="build" class="btn-primary full-width">Update Grid</button>
+        </div>
+
+        <!-- PANEL: Bomb Rules -->
+        <!-- Configure how many bombs of each type are placed by the designer. -->
+        <div class="panel-group">
+          <h3><i class="fas fa-crosshairs"></i> Bomb Rules</h3>
+
+          <div class="setting-item">
+            <label>Normal (1)</label>
+            <input id="bombs1" type="number" min="0" value="2" />
+            <!-- default normal bombs: 2 — raising this increases positive normal bombs on the board -->
+          </div>
+
+          <div class="setting-item">
+            <label>Power (2)</label>
+            <input id="bombs2" type="number" min="0" value="2" />
+            <!-- default power bombs: 2 — power bombs usually contribute higher score; increasing makes level harder/easier depending on scoring -->
+          </div>
+
+          <div class="setting-item">
+            <label>Negative (-1)</label>
+            <input id="bombsNeg" type="number" min="0" value="2" />
+            <!-- default negative bombs: 2 — negative bombs reduce total score; more negatives typically lower average solution score -->
+          </div>
+        </div>
+
+        <!-- PANEL: Target Score -->
+        <!-- Target range or exact target affects win condition and solver filtering. -->
+        <div class="panel-group">
+          <h3><i class="fas fa-trophy"></i> Target Score</h3>
+          <div class="input-row">
+            <input id="targetMin" type="number" placeholder="Min" value="-20" />
+            <!-- default target min: -20 — lowering min expands acceptable low-end scores -->
+            <span class="sep">-</span>
+            <input id="targetMax" type="number" placeholder="Max" value="30" />
+            <!-- default target max: 30 — increasing max expands acceptable high-end scores -->
+          </div>
+          <select id="modeTarget" style="margin-top:8px;">
+            <option value="range" selected>Range Mode</option>
+            <option value="exact">Exact Value</option>
+          </select>
+          <!-- modeTarget: "range" accepts any sum between min and max; "exact" requires a single precise sum -->
+        </div>
+
+        <!-- PANEL: Star Logic -->
+        <!-- Define star conditions (1..3). Each star has a list of conditions evaluated during analysis. -->
+        <div class="panel-group">
+          <h3><i class="fas fa-star"></i> Star Logic</h3>
+
+          <div class="star-editor-group" id="star1Group">
+            <h4>★ Star 1</h4>
+            <div class="single-condition-container" data-star-id="1"></div>
+          </div>
+
+          <div class="star-editor-group" id="star2Group">
+            <h4>★★ Star 2</h4>
+            <div class="single-condition-container" data-star-id="2"></div>
+          </div>
+
+          <div class="star-editor-group" id="star3Group">
+            <h4>★★★ Star 3</h4>
+            <div class="single-condition-container" data-star-id="3"></div>
+          </div>
+
+          <!-- Template for adding condition rows for each star -->
+          <template id="conditionRowTemplate">
+            <div class="condition-row">
+              <select class="condition-type-select" style="width: 100%; margin-bottom: 5px;">
+                <option value="" disabled selected>Select Condition Type</option>
+                <option value="getScore">Exact Target Value (Sum)</option>
+                <option value="placeBombAt">Bomb In Specific Cell ID(s)</option>
+                <option value="anyCellValue">Specific Value In Any Cell</option>
+                <option value="cellValues">Specific Value In Specific Cell(s)</option>
+                <option value="emptyCellsCount">Zero-Value Cells Count</option>
+                <option value="setSwitches">Switch State Requirement</option>
+              </select>
+
+              <div class="condition-value-area" style="flex-grow: 1; display: flex; align-items: center; gap: 5px;">
+                <span class="small" style="color:var(--text-muted)">Select a type to configure.</span>
+              </div>
+
+              <button class="btn-xs remove-condition-btn" style="display: none;">&times;</button>
+            </div>
+          </template>
+        </div>
+
+        <!-- PANEL: Advanced -->
+        <!-- Misc advanced toggles that influence solver and analysis. -->
+        <div class="panel-group collapsed-settings">
+          <h3><i class="fas fa-cogs"></i> Advanced</h3>
+
+          <label class="checkbox-row">
+            <input id="countSym" type="checkbox" checked />
+            Check Symmetry
+          </label>
+          <div id="countSymStatus" class="status-text small"></div>
+          <!-- countSym: when checked, solver may skip asymmetric layouts (affects solution count and speed) -->
+
+          <label style="margin-top:10px; display:block">Max Solutions</label>
+          <input id="maxSolutions" type="number" value="5000" />
+          <!-- default max solutions: 5000 — cap for solver results; lower this to limit time/memory usage -->
+        </div>
+      </div>
+
+      <!-- SIDEBAR FOOTER: Export area -->
+      <div class="sidebar-footer">
+        <div style="margin-bottom: 8px;">
+          <input type="text" id="exportFileName" placeholder="File Name (e.g. level_01)" value="level_custom" style="margin-bottom:5px;" />
+          <!-- default export filename: "level_custom" -->
+          <button id="exportBtn" class="btn-secondary"><i class="fas fa-download"></i> Download JSON</button>
+        </div>
+        <textarea id="exportData" readonly style="display:none"></textarea>
+      </div>
+    </aside>
+
+    <!-- MAIN WORKSPACE: toolbar, grid canvas and actions -->
+    <main class="workspace">
+      <div class="toolbar-dock">
+        <!-- TOOL MODES: pick editing mode -->
+        <div class="modes" role="tablist">
+          <button id="modeBlock" class="tool-btn active" title="Block (X)"><i class="fas fa-square"></i> Block</button>
+          <button id="modeStar" class="tool-btn" title="Star"><i class="fas fa-star"></i> Star</button>
+          <button id="modeSwitch" class="tool-btn switchMode" title="Switch"><i class="fas fa-toggle-on"></i> Switch</button>
+          <button id="modeMustBomb" class="tool-btn mustBombMode" title="Must Bomb"><i class="fas fa-bomb"></i> Must</button>
+          <button id="modeErase" class="tool-btn eraseMode" title="Erase"><i class="fas fa-eraser"></i> Erase</button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+        <button id="clear" class="tool-btn ghost" title="Clear Map"><i class="fas fa-trash"></i> Clear</button>
+      </div>
+
+      <!-- GRID CANVAS: actual board rendered here -->
+      <div class="grid-canvas">
+        <div class="grid-container-scroll">
+          <div id="grid" role="grid"></div>
+        </div>
+
+        <!-- QUICK STATS: runtime counts updated by JS -->
+        <div class="grid-stats">
+          <div class="stat-pill"><i class="fas fa-th"></i> <span id="cellCount">0</span> Cells</div>
+          <div class="stat-pill"><i class="fas fa-square"></i> <span id="blocksCount">0</span> Blocks</div>
+          <div class="stat-pill"><i class="fas fa-toggle-on"></i> <span id="switchesCount">0</span> Switches</div>
+          <div class="stat-pill"><i class="fas fa-star"></i> <span id="starsCount">0</span> Stars</div>
+          <div class="stat-pill"><i class="fas fa-bomb"></i> <span id="mustBombsCount">0</span> Must</div>
+        </div>
+
+        <div id="statusMessage" class="status-message" style="display:none"></div>
+        <div id="warningsContainer" class="warnings-section"></div>
+      </div>
+
+      <!-- ACTION BAR: estimator, solver controls and progress -->
+      <div class="action-bar">
+        <div class="progress-section">
+          <div class="progress-info">
+            <span id="timeInfo">Ready</span>
+            <span style="margin-left: 10px; color: var(--accent-gold);"> Est: <span id="combCount">—</span></span>
+            <span id="progressPct" style="margin-left: auto;">0%</span>
+          </div>
+          <div class="progress"><div id="progressBar" class="progressBar"></div></div>
+        </div>
+
+        <div class="main-actions">
+          <button id="estimateBtn" class="btn-ghost">Estimate</button>
+          <button id="solve" class="btn-solve"><i class="fas fa-play"></i> SOLVE</button>
+          <button id="cancel" class="btn-cancel" disabled><i class="fas fa-stop"></i></button>
+        </div>
+      </div>
+    </main>
+
+    <!-- RESULTS PANEL: shows solutions, difficulty and filters -->
+    <aside class="results-panel">
+      <div class="panel-header">
+        <h2>Analysis & Solutions</h2>
+        <div style="display:flex; gap:5px">
+          <span id="maxStarSeen" style="display:none">0</span>
+          <span id="solutionsCount" class="badge-count">0</span>
+        </div>
+      </div>
+
+      <!-- DIFFICULTY: visual meter and details -->
+      <div class="difficulty-card">
+        <div class="diff-header">
+          <span>Difficulty</span>
+          <span id="difficultyLabel">—</span>
+        </div>
+        <div class="difficulty-meter"><div id="difficultyFill" class="difficulty-fill"></div></div>
+        <div id="difficultyScore" class="small-text"></div>
+        <div id="difficultyDetails" class="small-text"></div>
+        <button id="toggleHeatmap" class="btn-small-outline">Probability Heatmap</button>
+      </div>
+
+      <!-- FILTERS: narrow solutions and toggle conditions -->
+      <div class="filters-area">
+        <h4>Filters</h4>
+        <div id="analysisTargets" class="tags-cloud"></div>
+        <div id="analysisStars" class="tags-cloud"></div>
+
+        <div id="conditionFiltersContainer" class="cond-filters">
+          <div class="toggle-row"><input type="checkbox" id="filterC1" checked> <label>Cond 1</label></div>
+          <div class="toggle-row"><input type="checkbox" id="filterC2" checked> <label>Cond 2</label></div>
+          <div class="toggle-row"><input type="checkbox" id="filterC3" checked> <label>Cond 3</label></div>
+          <div class="btn-row">
+            <button id="applyFiltersBtn" class="btn-xs">Apply</button>
+            <button id="resetFiltersBtn" class="btn-xs">Reset</button>
+          </div>
+        </div>
+
+        <div id="analysisConditions" class="analysis-box"></div>
+      </div>
+
+      <!-- SOLUTIONS LIST: paginated/limited results -->
+      <div class="solutions-list-wrapper">
+        <div class="list-controls">
+          <input id="maxShow" type="number" value="1000" title="Limit" />
+          <!-- default max show: 1000 — limits how many solutions are rendered in the UI (lower = faster UI). -->
+          <button id="sortStars" class="btn-xs" title="Sort by Stars"><i class="fas fa-star"></i></button>
+          <button id="filterTopStars" class="btn-xs" title="Best Only"><i class="fas fa-trophy"></i></button>
+        </div>
+
+        <div id="solutionsList" class="solutions-container">
+          <div class="empty-state">Hit Solve to see results</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- CORE SCRIPTS: logic separated into modules -->
+  <script src="utils.js"></script>
+  <script src="state.js"></script>
+  <script src="solver.js"></script>
+  <script src="analysis-viewer.js"></script>
+  <script src="ui-core.js"></script>
+</body>
+</html>
