@@ -38,8 +38,8 @@ html, body {
   font-family: 'Inter', 'Cairo', sans-serif;
   background-color: var(--bg-app);
   color: var(--text-main);
-  overflow: hidden;        /* prevent full-page scroll; grid area handles internal scrolling */
-  font-size: 14px;         /* base font size: increase → larger UI text everywhere */
+  overflow: hidden;     /* prevent full-page scroll; grid area handles internal scrolling */
+  font-size: 14px;      /* base font size: increase → larger UI text everywhere */
 }
 
 /* Scrollbar styling (WebKit) */
@@ -59,10 +59,14 @@ html, body {
 
 /* -------------------------
    LEFT SIDEBAR (Settings)
+   (تم التعديل ليصبح مرناً - يستخدم vw)
    ------------------------- */
 .sidebar {
-  width: 300px;            /* sidebar width: increase → more room for controls, reduces workspace width */
-  min-width: 300px;
+  /* Default: 20% of viewport width, clamped between 250px and 350px */
+  width: 20vw; 
+  min-width: 250px;
+  max-width: 350px;
+  
   background: var(--bg-panel);
   border-right: 1px solid var(--border);
   display: flex;
@@ -71,7 +75,7 @@ html, body {
 }
 
 .logo-area {
-  padding: 15px;           /* spacing around logo area: increase → more vertical space used */
+  padding: 15px;      /* spacing around logo area: increase → more vertical space used */
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -95,18 +99,18 @@ html, body {
 .scrollable-content {
   flex: 1;
   overflow-y: auto;
-  padding: 15px;           /* panel inner padding: increase → more white space inside sidebar */
+  padding: 15px;      /* panel inner padding: increase → more white space inside sidebar */
 }
 
 .panel-group {
-  margin-bottom: 20px;     /* spacing between panels: increase → more vertical separation */
+  margin-bottom: 20px;    /* spacing between panels: increase → more vertical separation */
   padding-bottom: 15px;
   border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 .panel-group:last-child { border-bottom: none; }
 
 .panel-group h3 {
-  font-size: 0.9em;        /* section heading size */
+  font-size: 0.9em;     /* section heading size */
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-muted);
@@ -118,13 +122,14 @@ html, body {
 
 /* Sidebar footer */
 .sidebar-footer {
-  padding: 15px;           /* footer padding */
+  padding: 15px;      /* footer padding */
   border-top: 1px solid var(--border);
   background: rgba(0,0,0,0.2);
 }
 
 /* -------------------------
    CENTER WORKSPACE
+   (مرن افتراضياً)
    ------------------------- */
 .workspace {
   flex: 1;
@@ -136,7 +141,7 @@ html, body {
 
 /* Floating toolbar */
 .toolbar-dock {
-  padding: 10px 20px;      /* toolbar padding: horizontal padding increases center spacing */
+  padding: 10px 20px;     /* toolbar padding: horizontal padding increases center spacing */
   background: var(--bg-panel);
   border-bottom: 1px solid var(--border);
   display: flex;
@@ -150,7 +155,7 @@ html, body {
   display: flex;
   gap: 5px;
   background: var(--bg-input);
-  padding: 4px;            /* modes padding: increase → larger clickable area */
+  padding: 4px;       /* modes padding: increase → larger clickable area */
   border-radius: 8px;
 }
 
@@ -158,7 +163,7 @@ html, body {
   background: transparent;
   border: none;
   color: var(--text-muted);
-  padding: 8px 16px;       /* button padding: increase → larger hit target */
+  padding: 8px 16px;      /* button padding: increase → larger hit target */
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.9em;
@@ -194,7 +199,7 @@ html, body {
 }
 
 .grid-container-scroll {
-  padding: 40px;          /* outer grid padding: increase → more breathing room around board */
+  padding: 40px;      /* outer grid padding: increase → more breathing room around board */
   overflow: auto;
   max-width: 100%;
   max-height: 100%;
@@ -205,8 +210,8 @@ html, body {
 /* The grid element */
 #grid {
   display: grid;
-  gap: 8px;               /* gap between cells: increase → more separation, affects board compactness */
-  padding: 10px;          /* inner grid padding: increase → larger border area around cells */
+  gap: 8px;           /* gap between cells: increase → more separation, affects board compactness */
+  padding: 10px;      /* inner grid padding: increase → larger border area around cells */
   background: rgba(0,0,0,0.3);
   border-radius: 12px;
   border: 1px solid var(--border);
@@ -218,8 +223,8 @@ html, body {
    ------------------------- */
 .grid-stats {
   position: absolute;
-  bottom: 20px;           /* offset from bottom: increase → push stats up */
-  left: 20px;             /* offset from left */
+  bottom: 20px;       /* offset from bottom: increase → push stats up */
+  left: 20px;         /* offset from left */
   display: flex;
   gap: 8px;
 }
@@ -238,7 +243,7 @@ html, body {
    Bottom Action Bar
    ------------------------- */
 .action-bar {
-  height: 70px;           /* action bar height: increase → more vertical room for controls */
+  height: 70px;       /* action bar height: increase → more vertical room for controls */
   background: var(--bg-panel);
   border-top: 1px solid var(--border);
   padding: 0 20px;
@@ -260,14 +265,14 @@ html, body {
   color: var(--text-muted);
 }
 .progress {
-  height: 6px;            /* progress bar thickness: increase → more visible progress indicator */
+  height: 6px;        /* progress bar thickness: increase → more visible progress indicator */
   background: var(--bg-input);
   border-radius: 3px;
   overflow: hidden;
 }
 .progressBar {
   height: 100%;
-  width: 0%;              /* dynamic width controlled by JS; starting width */
+  width: 0%;          /* dynamic width controlled by JS; starting width */
   background: linear-gradient(90deg, var(--primary), #60a5fa);
   transition: width 0.3s ease;
 }
@@ -299,10 +304,14 @@ html, body {
 
 /* -------------------------
    RIGHT PANEL (Results)
+   (تم التعديل ليصبح مرناً - يستخدم vw)
    ------------------------- */
 .results-panel {
-  width: 320px;           /* results panel width: increase → more space for solution details */
-  min-width: 320px;
+  /* Default: 20% of viewport width, clamped between 280px and 350px */
+  width: 20vw;
+  min-width: 280px;
+  max-width: 350px;
+  
   background: var(--bg-panel);
   border-left: 1px solid var(--border);
   display: flex;
@@ -392,7 +401,7 @@ html, body {
 .solRow {
   background: var(--bg-input);
   border: 1px solid transparent;
-  padding: 10px;           /* solution row padding: increase → easier to read */
+  padding: 10px;          /* solution row padding: increase → easier to read */
   border-radius: 6px;
   margin-bottom: 6px;
   cursor: pointer;
@@ -410,7 +419,7 @@ input[type="number"], input[type="text"], select, textarea {
   background: var(--bg-input);
   border: 1px solid var(--border);
   color: #fff;
-  padding: 8px 10px;       /* form control padding: increase → larger input fields */
+  padding: 8px 10px;      /* form control padding: increase → larger input fields */
   border-radius: 6px;
   font-size: 0.95em;
   transition: border 0.2s;
@@ -452,7 +461,7 @@ input:focus, select:focus { border-color: var(--primary); }
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 1.1em;        /* cell text size: increase → numbers/labels become more readable */
+  font-size: 1.1em;       /* cell text size: increase → numbers/labels become more readable */
   color: var(--text-muted);
   cursor: pointer;
   transition: all 0.1s ease-out;
@@ -469,7 +478,7 @@ input:focus, select:focus { border-color: var(--primary); }
 }
 .cell.block::after {
   content: '';
-  width: 6px;              /* small block dot size: change → visual prominence */
+  width: 6px;           /* small block dot size: change → visual prominence */
   height: 6px;
   background: #333344;
   border-radius: 50%;
@@ -501,9 +510,9 @@ input:focus, select:focus { border-color: var(--primary); }
 /* switch overlay badge */
 .overlay-switch {
   position: absolute;
-  top: 2px;                /* offset from top: increase → move badge down */
-  right: 2px;              /* offset from right */
-  font-size: 0.75em;       /* overlay font size */
+  top: 2px;             /* offset from top: increase → move badge down */
+  right: 2px;           /* offset from right */
+  font-size: 0.75em;    /* overlay font size */
   font-weight: bold;
   color: var(--accent-purple);
   line-height: 1;
@@ -553,7 +562,7 @@ input:focus, select:focus { border-color: var(--primary); }
   box-shadow: 0 0 10px var(--primary);
   border: none;
 }
-.cell.bomb2 { background: #ec4899; color: #fff; }   /* power bomb */
+.cell.bomb2 { background: #ec4899; color: #fff; }     /* power bomb */
 .cell.bomb-neg { background: #64748b; color: #000; } /* negative bomb */
 
 .cell .number { color: #fff; font-size: 1em; z-index: 2; }
@@ -638,4 +647,104 @@ input:focus, select:focus { border-color: var(--primary); }
 .cell.star .cell-index,
 .cell.must-bomb .cell-index {
   color: rgba(255,255,255,0.8);
+}
+
+
+/* ============================================================
+   NEW: RESPONSIVENESS (Horizontal Layout Preservation)
+   ============================================================ */
+
+/* -------------------------
+   10. Desktop/Tablet Adjustments (Screens <= 1200px)
+   ------------------------- */
+@media (max-width: 1200px) {
+  /* تقليل الحد الأقصى للعرض للسماح للوحة العمل بالتوسع على الأجهزة اللوحية */
+  .sidebar {
+    width: 25vw; /* زيادة النسبة المئوية قليلاً */
+    min-width: 200px; /* تقليل الحد الأدنى للحجم */
+    max-width: 280px;
+  }
+  
+  .results-panel {
+    width: 22vw;
+    min-width: 220px;
+    max-width: 250px;
+  }
+  
+  .toolbar-dock {
+      gap: 10px; /* تقليل الفراغات في شريط الأدوات */
+      padding: 10px;
+  }
+}
+
+/* -------------------------
+   11. Mobile / Very Small Screens (Screens <= 768px)
+   يتم هنا تقليص الحجم والأبعاد بشكل كبير للحفاظ على التخطيط الأفقي.
+   ------------------------- */
+@media (max-width: 768px) {
+  
+  /* 1. تقليل حجم الخط الأساسي */
+  html, body {
+    font-size: 10px; /* تصغير حجم الخط ليتناسب مع الواجهة الضيقة */
+  }
+
+  /* 2. تقليل حجم الخلية (الأمر الأهم لكي تتسع الشبكة) */
+  :root {
+    --cell-size: 30px; /* تصغير حجم الخلية من 46px إلى 30px */
+  }
+
+  /* 3. ضغط الأشرطة الجانبية إلى أقصى حد */
+  .sidebar,
+  .results-panel {
+    width: 15vw; /* 15% من عرض الشاشة لكل جانب، مع ترك 70% للوسط */
+    min-width: 90px; /* حد أدنى ضيق جداً */
+    max-width: 150px;
+    flex-shrink: 0; /* ضمان عدم انكماش الشريط الجانبي أكثر من اللازم */
+  }
+  
+  /* 4. إخفاء أو تصغير العناصر غير الأساسية في الشريط الجانبي */
+  .logo-area {
+      padding: 10px 5px;
+      gap: 5px;
+  }
+  .logo-area h1 { font-size: 1em; }
+  .logo-area .subtitle {
+    display: none; /* إخفاء النص الفرعي لربح المساحة */
+  }
+  
+  /* 5. تعديلات على شريط الأدوات المركزي */
+  .toolbar-dock {
+    padding: 5px;
+    gap: 5px;
+    flex-wrap: wrap; /* السماح للأزرار بالنزول لسطر جديد إذا لزم الأمر */
+    justify-content: center;
+  }
+  .toolbar-divider { display: none; } /* إخفاء الفواصل */
+
+  .tool-btn {
+    padding: 6px 8px; 
+    font-size: 0.75em; 
+    gap: 3px;
+  }
+  
+  /* 6. تعديلات على شريط الإجراءات السفلي */
+  .action-bar {
+    height: 50px; /* تقليل الارتفاع */
+    padding: 0 10px;
+  }
+  
+  /* 7. تعديل موقع إحصائيات الشبكة */
+  .grid-stats {
+    bottom: 60px; /* رفعه فوق شريط الإجراءات */
+    left: 50%;
+    transform: translateX(-50%);
+    gap: 4px;
+    font-size: 0.9em;
+  }
+  .stat-pill { padding: 3px 6px; }
+
+  /* 8. تقليل الحشو حول الشبكة لزيادة مساحة العمل */
+  .grid-container-scroll {
+    padding: 10px; 
+  }
 }

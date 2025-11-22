@@ -15,7 +15,163 @@ const maxStarSeenEl = document.getElementById('maxStarSeen');
 const exportDataEl = document.getElementById('exportData');
 const warningsContainer = document.getElementById('warningsContainer');
 
-// --- II. Pre/Post-Solve Status Updates ---
+// --- II. Helper Functions for Export Data Structure ---
+
+/**
+ * Parses GameState.grid Sets into the array of objects required by the export format.
+ * Format: { id: number, state: 'BLOCK' | 'STAR' | 'SWITCH_ON' | 'BOMB' }
+ * @returns {Array<{id: number, state: string}>} Sorted array of initial cells.
+ */
+function getInitialCells() {
+    const initialCells = [];
+    
+    // Helper to register cell state, ensuring no duplicates.
+    const registerCell = (id, state) => {
+        if (!initialCells.find(c => c.id === id)) {
+            initialCells.push({ id: id, state: state });
+        }
+    };
+
+    // 1. Blocks
+    GameState.grid.blocks.forEach(id => registerCell(id, 'BLOCK'));
+    // 2. Stars
+    GameState.grid.stars.forEach(id => registerCell(id, 'STAR'));
+    // 3. Switches (defaulting to ON state for export)
+    GameState.grid.switches.forEach(id => registerCell(id, 'SWITCH_ON'));
+    // 4. Must-Bombs
+    GameState.grid.mustBombs.forEach(id => registerCell(id, 'BOMB'));
+    
+    // Sort by ID for canonical/clean output
+    return initialCells.sort((a, b) => a.id - b.id);
+}
+
+/**
+ * Reads star conditions from the UI, flattens them, and filters out invalid ones.
+ * IMPORTANT FIX: Flattens the array of arrays and filters out invalid conditions correctly.
+ * @returns {Array<Object>} Flat array of valid star condition objects.
+ */
+function getStarConditionsFromUI() {
+    const allStarConditions = [];
+    for (let starId = 1; starId <= 3; starId++) {
+        const containerEl = document.querySelector(`.single-condition-container[data-star-id="${starId}"]`);
+        if (!containerEl) { allStarConditions.push([]); continue; }
+        const row = containerEl.querySelector('.condition-row');
+        if (!row) { allStarConditions.push([]); continue; }
+
+        const typeSelect = row.querySelector('.condition-type-select');
+        const type = typeSelect.value;
+        if (!type) { allStarConditions.push([]); continue; }
+
+        const template = CONDITION_TEMPLATES[type]; // Assumes CONDITION_TEMPLATES is global
+        const valueArea = row.querySelector('.condition-value-area');
+        const inputs = {};
+        let valid = true;
+
+        valueArea.querySelectorAll('[data-key]').forEach(inputEl => {
+            const key = inputEl.getAttribute('data-key');
+            const value = String(inputEl.value || '').trim();
+            if (value === '') {
+                // showStatus(`Error: condition input empty in Star ${starId}.`, true);
+                valid = false;
+                return;
+            }
+            inputs[key] = value;
+        });
+
+        if (!valid) {
+             allStarConditions.push([]);
+             continue;
+        }
+
+        const conditionObject = template.parser(inputs);
+        if (!conditionObject) { 
+             allStarConditions.push([]);
+             continue;
+        }
+        allStarConditions.push([conditionObject]);
+    }
+    // Flatten the array of arrays and filter out empty/null conditions.
+    return allStarConditions.flat().filter(c => c); 
+}
+
+/**
+ * Updates the export text area with the current level configuration.
+ * This function converts the list of star conditions into the required flat object structure 
+ * and generates the JSON data for export.
+ */
+function updateExportData() {
+    
+    // 1. Get and flatten star conditions array
+    const starConditionsArray = getStarConditionsFromUI().flat();
+    
+    // 2. Read remoteId
+    const remoteId = document.getElementById('exportFileName').value.trim() || "level_custom";
+    
+    // 3. Extract best solution's placement IDs
+    const bestSolution = GameState.results.solutions[0] || null;
+    let solutionPlacementIds = null;
+    
+    if (bestSolution) {
+        const allBombs = [
+            ...(bestSolution.normalBombs || []),
+            ...(bestSolution.powerBombs || []),
+            ...(bestSolution.negativeBombs || [])
+        ];
+        solutionPlacementIds = Array.from(new Set(allBombs));
+    }
+    
+    // 4. Convert conditions into final flat object
+    const starConditionsObject = starConditionsArray.reduce((acc, cond) => {
+        
+        switch (cond.type) {
+            case 'getScore':
+                acc.getScore = cond.value;
+                break;
+                
+            case 'placeBombAt':
+                acc.placeBombAt = cond.cells || cond.requirements?.map(r => r.id);
+                break;
+                
+            case 'anyCellValue':
+                acc.anyCellValue = cond.value;
+                break;
+                
+            case 'cellValues':
+                acc.cellValues = cond.requirements;
+                break;
+                
+            case 'emptyCellsCount':
+                acc.emptyCellsCount = cond.value;
+                break;
+                
+            case 'setSwitches':
+                acc.setSwitches = cond.requirements;
+                break;
+        }
+        
+        return acc;
+    }, {});
+    
+    // 5. Build final JSON
+    const data = {
+        remoteId,
+        gridColumns: GameState.config.cols,
+        gridRows: GameState.config.rows,
+        bombsCount: parseInt(document.getElementById('bombs1').value) || 0,
+        bombsPlusCount: parseInt(document.getElementById('bombs2').value) || 0,
+        bombsNegCount: parseInt(document.getElementById('bombsNeg').value) || 0,
+        targetMin: parseInt(document.getElementById('targetMin').value) || -1,
+        targetMax: parseInt(document.getElementById('targetMax').value) || -1,
+        initialCells: getInitialCells(),
+        starConditions: starConditionsObject,
+        solution: bestSolution ? { placementIds: solutionPlacementIds } : null
+    };
+    
+    exportDataEl.value = JSON.stringify(data);
+}
+
+
+// --- III. Pre/Post-Solve Status Updates ---
 
 function updateCounts() {
     const total = GameState.config.rows * GameState.config.cols;
@@ -26,101 +182,7 @@ function updateCounts() {
     mustBombsCountEl.textContent = GameState.grid.mustBombs.size;
 }
 
-/**
- * تحليل-viewer.js
- * دالة مساعدة جديدة لتحويل الـ Set إلى مصفوفة الكائنات المطلوبة
- */
-function getInitialCells() {
-    const initialCells = [];
-    
-    // 1. الخلايا المحظورة (BLOCKS)
-    GameState.grid.blocks.forEach(id => {
-        initialCells.push({ id: id, state: "BLOCK" });
-    });
-
-    // 2. النجوم (STARS)
-    GameState.grid.stars.forEach(id => {
-        initialCells.push({ id: id, state: "STAR" });
-    });
-
-    // 3. المفاتيح (SWITCHES)
-    // لا يمكننا تحديد ما إذا كان "ON" أو "OFF" هنا، سنفترض أنها 'SWITCH' فقط
-    // إذا كنت تحتاج إلى حالة أولية (ON/OFF)، يجب أن يكون هناك مكان لتخزينها في GameState.
-    GameState.grid.switches.forEach(id => {
-        // بما أن النظام لا يخزن حالة البداية، سنستخدم "SWITCH" كتصنيف عام. 
-        // إذا أضفت حقل حالة في GameState، يمكن التمييز هنا.
-        initialCells.push({ id: id, state: "SWITCH" }); 
-    });
-
-    // 4. القنابل المطلوبة (MUST_BOMBS)
-    GameState.grid.mustBombs.forEach(id => {
-        initialCells.push({ id: id, state: "BOMB" }); // بما أنها قنابل موضوعة مسبقًا
-    });
-
-    return initialCells;
-}
-
-function updateExportData() {
-    // 🆕 نحتاج إلى دالة getStarConditionsFromUI() لسحب بيانات الشروط
-    // هذه الدالة موجودة بالفعل في solver.js (سنتصل بها).
-    const starConditionsUI = getStarConditionsFromUI(); // يُفترض أن تكون متاحة هنا
-
-    // 🆕 نختار أفضل حل تم العثور عليه (أول حل في القائمة الحالية)
-    const bestSolution = GameState.results.solutions[0] || null;
-    let solutionPlacement = null;
-
-    if (bestSolution) {
-        // نجمع IDs القنابل من الأنواع الثلاثة (normalBombs, powerBombs, negativeBombs)
-        const allBombs = [
-            ...(bestSolution.normalBombs || []),
-            ...(bestSolution.powerBombs || []),
-            ...(bestSolution.negativeBombs || [])
-        ];
-        // يجب إزالة أي تكرارات قد تنتج عن الدمج
-        solutionPlacement = Array.from(new Set(allBombs)); 
-    }
-
-
-    const data = {
-        "remoteId": document.getElementById('exportFileName').value.trim() || "level_custom",
-        "gridColumns": GameState.config.cols,
-        "gridRows": GameState.config.rows,
-        
-        // 💣 Bomb Counts
-        "bombsCount": parseInt(document.getElementById('bombs1').value) || 0,
-        "bombsPlusCount": parseInt(document.getElementById('bombs2').value) || 0,
-        "bombsNegCount": parseInt(document.getElementById('bombsNeg').value) || 0,
-        
-        // 🎯 Target Range
-        "targetMin": parseInt(document.getElementById('targetMin').value) || -1,
-        "targetMax": parseInt(document.getElementById('targetMax').value) || -1,
-
-        // 🧱 Initial Grid Configuration
-        "initialCells": getInitialCells(), // نستخدم الدالة المساعدة الجديدة
-
-        // ⭐ Star Conditions
-        "starConditions": starConditionsUI.reduce((acc, cond) => {
-            // تحويل array من الشروط إلى كائن له خصائص (كما في المثال)
-            switch(cond.type) {
-                case 'getScore': acc.getScore = cond.value; break;
-                case 'placeBombAt': acc.placeBombAt = cond.requirements.map(r => r.id); break;
-                case 'anyCellValue': acc.anyCellValue = cond.value; break;
-                case 'cellValues': acc.cellValues = cond.requirements; break;
-                case 'emptyCellsCount': acc.emptyCellsCount = cond.value; break;
-                case 'setSwitches': acc.setSwitches = cond.requirements; break;
-            }
-            return acc;
-        }, {}),
-
-        // 💡 Best Solution (إذا وجد)
-        "solution": bestSolution ? {
-            "placementIds": solutionPlacement
-        } : null
-    };
-
-    // ... (بقية الدالة: تحويل data إلى JSON وعرضه)
-    exportDataEl.value = JSON.stringify(data, null, 2);
-}
+// ... (Rest of the analysis-viewer.js file content, such as postSolveUpdates, setupConditionFilters, etc.)
 
 function clearAnalysis() {
     document.getElementById('analysisTargets').innerHTML = '';

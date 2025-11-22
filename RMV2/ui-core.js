@@ -453,49 +453,117 @@ countSymCheckbox.addEventListener('change', () => {
   countSymStatus.textContent = countSymCheckbox.checked ? '✓ Counting symmetries' : '✗ Not counting symmetries';
 });
 
-// --- JSON Export with File Picker Support ---
+// ui-core.js (تعديل مستمع الحدث لـ exportBtn)
+
 document.getElementById('exportBtn').addEventListener('click', async () => {
-    const jsonString = document.getElementById('exportData').value;
-    if (!jsonString) { showStatus('No data to export!', true); return; }
-
-    let fileName = document.getElementById('exportFileName').value.trim();
-    if (!fileName) fileName = 'level_custom';
-    if (!fileName.endsWith('.json')) fileName += '.json';
-
-    if ('showSaveFilePicker' in window) {
-        try {
-            const options = {
-                suggestedName: fileName,
-                types: [{
-                    description: 'Minesweeper Level JSON',
-                    accept: { 'application/json': ['.json'] },
-                }],
-            };
-            const handle = await window.showSaveFilePicker(options);
-            const writable = await handle.createWritable();
-            await writable.write(jsonString);
-            await writable.close();
-            showStatus(`File saved successfully!`);
-            return;
-        } catch (err) {
-            if (err.name !== 'AbortError') console.error('File System API failed:', err);
-            else return;
-        }
+  // 1. قراءة الاسم الحالي كقيمة افتراضية
+  let currentFileName = document.getElementById('exportFileName').value.trim() || 'level_custom';
+  
+  // 2. عرض نافذة مطالبة (Prompt) لاسم المستوى (remoteId)
+  const levelName = prompt("Enter Level ID (used for remoteId):", currentFileName);
+  
+  if (!levelName) {
+    if (typeof showStatus === 'function') showStatus('Export cancelled.', true);
+    return;
+  }
+  
+  // 3. توليد JSON بالهيكلة الجديدة والاسم المُدخَل (تُنفذ في analysis-viewer.js)
+  document.getElementById('exportFileName').value = levelName;
+  if (typeof updateExportData === 'function') {
+    updateExportData();
+  } else {
+    if (typeof showStatus === 'function') showStatus('Error: updateExportData function not found!', true);
+    return;
+  }
+  
+  // 4. قراءة سلسلة JSON المُحدَّثة
+  let rawJson = document.getElementById('exportData').value;
+  let jsonObj;
+  try {
+    jsonObj = JSON.parse(rawJson);
+  } catch (e) {
+    if (typeof showStatus === 'function') showStatus('Invalid JSON data!', true);
+    return;
+  }
+  
+  // JSON منسق
+  let formattedJson = JSON.stringify(jsonObj, null, 2);
+  
+  const initialCellsRegex = /\{\n\s*"id": (\d+),\n\s*"state": "(.*?)"\n\s*\}/g;
+  
+  formattedJson = formattedJson.replace(initialCellsRegex, (match, id, state) => {
+    // هنا يتم تحويل الكائن متعدد الأسطر إلى: { "id": 1, "state": "BLOCK" }
+    return `{ "id": ${id}, "state": "${state}" }`;
+  });
+  
+  // ... تابع باقي الكود (النسخ والتحميل) باستخدام formattedJson
+  // تعديل placementIds لسطر واحد
+  if (jsonObj.solution && Array.isArray(jsonObj.solution.placementIds)) {
+    const singleLinePlacement = JSON.stringify(jsonObj.solution.placementIds);
+    formattedJson = formattedJson.replace(
+      /"placementIds": \[[^\]]*\]/,
+      `"placementIds": ${singleLinePlacement}`
+    );
+  }
+  if (!formattedJson) {
+    if (typeof showStatus === 'function') showStatus('No data to export after generation!', true);
+    return;
+  }
+  
+  // 5. 🆕 سؤال المستخدم: نسخ أم تصدير؟
+  const shouldCopy = confirm("Do you want to copy the JSON content to the clipboard? (Click 'Cancel' to download the file instead.)");
+  
+  if (shouldCopy) {
+    // 6. 🆕 منطق النسخ إلى الحافظة
+    try {
+      await navigator.clipboard.writeText(formattedJson);
+      if (typeof showStatus === 'function') showStatus('JSON content copied to clipboard successfully!');
+      return; // الخروج بعد النسخ بنجاح
+    } catch (err) {
+      console.error('Copy to clipboard failed:', err);
+      // الفشل في النسخ (قد يحدث بسبب إعدادات المتصفح)
+      if (typeof showStatus === 'function') showStatus('Failed to copy to clipboard. Proceeding to download...', true);
+      // المتابعة إلى منطق التحميل في حالة الفشل
     }
-
-    // Fallback
-    const blob = new Blob([jsonString], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showStatus(`File downloaded.`);
+  }
+  
+  // 7. منطق التصدير/التحميل (يتم الوصول إليه إذا لم يختار المستخدم النسخ أو فشل النسخ)
+  let fileName = levelName;
+  if (!fileName.endsWith('.json')) fileName += '.json';
+  
+  if ('showSaveFilePicker' in window) {
+    try {
+      const options = {
+        suggestedName: fileName,
+        types: [{
+          description: 'Minesweeper Level JSON',
+          accept: { 'application/json': ['.json'] },
+        }],
+      };
+      const handle = await window.showSaveFilePicker(options);
+      const writable = await handle.createWritable();
+      await writable.write(formattedJson);
+      await writable.close();
+      if (typeof showStatus === 'function') showStatus(`File saved successfully!`);
+      return;
+    } catch (err) {
+      if (err.name !== 'AbortError') console.error('File System API failed:', err);
+      else return;
+    }
+  }
+  
+  // Fallback Download
+  const blob = new Blob([formattedJson], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  if (typeof showStatus === 'function') showStatus(`File downloaded.`);
 });
-
 // Initial boot sequence
 buildGrid();
 resetProgress();

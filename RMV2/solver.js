@@ -60,6 +60,36 @@ async function solveHandler() {
   });
 }
 
+/**
+ * solver.js
+ *
+ * (Add this helper function globally)
+ */
+function getStarConditionsFromUI() {
+    // نفترض أن محرر الشروط يقوم بتخزين JSON الخاص بالشروط في عنصر بمعرف 'starConditionsJson'
+    const conditionsEl = document.getElementById('starConditionsJson');
+    if (!conditionsEl || !conditionsEl.value) {
+        // إذا لم يتم العثور على العنصر أو كان فارغًا، نرجع كائنًا فارغًا
+        return {}; 
+    }
+    
+    try {
+        // نقوم بتحليل (Parse) النص الموجود داخل العنصر
+        const parsed = JSON.parse(conditionsEl.value);
+        
+        // يجب أن نضمن أن ما يتم إرجاعه هو الكائن الصحيح (عادةً يكون مصفوفة)
+        // إذا كان المحرر يعيد هيكل JSON كامل، فسنعيد الكائن بالكامل
+        return parsed; 
+        
+    } catch (e) {
+        console.error("Error parsing star conditions JSON from UI:", e);
+        // في حال حدوث خطأ في الـ JSON المُدخَل، نرجع كائنًا فارغًا لتجنب الأعطال
+        return {}; 
+    }
+}
+
+// ... باقي محتوى solver.js (حيث يتم استدعاء الدالة داخل solveHandler)
+
 function cancelSolver() {
   if (activeWorker) {
     activeWorker.terminate();
@@ -70,3 +100,4 @@ function cancelSolver() {
     document.getElementById('solve').innerHTML = '<i class="fas fa-play"></i> SOLVE';
   }
 }
+
