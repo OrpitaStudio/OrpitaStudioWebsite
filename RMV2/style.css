@@ -33,6 +33,7 @@
   outline: none;
 }
 
+/* تم التعديل هنا: استخدام dvh و vh لضمان الارتفاع الثابت على الهاتف */
 html, body {
   height: 100%;
   font-family: 'Inter', 'Cairo', sans-serif;
@@ -53,7 +54,10 @@ html, body {
    ------------------------------------------------------------ */
 .app-layout {
   display: flex;
-  height: 100vh;
+  /* التعديل الرئيسي: استخدام dvh للحصول على ارتفاع ثابت على كروم وسفاري */
+  height: 100dvh; 
+  /* Fallback for older browsers (using 100vh as a backup, though dvh is preferred) */
+  height: 100vh; 
   width: 100vw;
 }
 
