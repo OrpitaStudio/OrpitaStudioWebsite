@@ -51,323 +51,47 @@
  <link rel="stylesheet" href="assets/css/style.css">
          
 </head>
+
 <body class="bg-slate-950 text-gray-200 flex flex-col min-h-screen">
-
-    <div id="tsparticles" class="fixed inset-0 -z-10"></div>
-
-    <!-- ====== Header Start ====== -->
-    <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
-        <div class="container mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
-            <!-- Logo -->
-            <div class="w-32"> 
-    <a class="sm:hidden md:flex flex-1 "href="https://orpita-studio.web.app" target="_blank" rel="noopener noreferrer">
-        <img src="./assets/imgs/SLogo.png" alt="Orpita Studio Logo" class="h-10 md:h-10 w-auto" onerror="this.src='https://placehold.co/120x40/1e1b4b/9333ea?text=LOGO'">
-    </a>
-</div>
-
-            <!-- Navigation -->
-            <nav class="hidden md:flex absolute left-1/2 transform -translate-x-1/2 gap-4">
-                <a id="nav-home" href="#home" class="text-sm md:text-base text-gray-300 hover:text-violet-400 transition-all duration-300 px-3 md:px-4 py-2 rounded-full">Home</a>
-                <a id="nav-about" href="#about" class="text-sm md:text-base text-gray-300 hover:text-violet-400 transition-all duration-300 px-3 md:px-4 py-2 rounded-full">About</a>
-                <a id="nav-games" href="#games" class="text-sm md:text-base text-gray-300 hover:text-violet-400 transition-all duration-300 px-3 md:px-4 py-2 rounded-full">Games</a>
-                <a id="nav-contact" href="#contact" class="text-sm md:text-base text-gray-300 hover:text-violet-400 transition-all duration-300 px-3 md:px-4 py-2 rounded-full">Contact</a>
-            </nav>
-
-            <!-- Burger Menu Button & Dropdown (New) -->
-            <div class="relative"> <!-- Parent for dropdown positioning -->
-                <button id="burger-button" class="z-[70] p-2 space-y-1.5" aria-label="Open menu">
-                    <span class="block w-6 h-0.5 bg-gray-200 transition-all duration-300"></span>
-                    <span class="block w-6 h-0.5 bg-gray-200 transition-all duration-300"></span>
-                    <span class="block w-6 h-0.5 bg-gray-200 transition-all duration-300"></span>
-                </button>
-
-                <!-- ====== Mobile Menu Panel (Dropdown) ====== -->
-                <!-- Classes changed for dropdown style -->
-                <div id="mobile-menu" class="mobile-menu absolute top-full right-0 mt-2 w-64 bg-slate-800 rounded-lg shadow-xl z-[60] overflow-hidden border border-slate-700">
-                    <!-- Links point to index.html sections -->
-                    <a href="index.html#home" class="mobile-menu-link block text-base text-violet-400 hover:bg-slate-700 px-4 py-3 transition-colors">Home</a>
-                    <a href="index.html#about" class="mobile-menu-link block text-base text-gray-200 hover:bg-slate-700 px-4 py-3 transition-colors">About</a>
-                    <a href="./Games/Games.html" class="mobile-menu-link block text-base text-gray-200 font-medium hover:bg-slate-700 px-4 py-3 transition-colors">Games</a> <!-- Active page -->
-                    <a href="index.html#contact" class="mobile-menu-link block text-base text-gray-200 hover:bg-slate-700 px-4 py-3 transition-colors">Contact</a>
-                </div>
-            </div>
-        </div>
-    </header>
-    <!-- ====== Header End ====== -->
-
-    <!-- ====== Main Content Start ====== -->
-    <main class="flex-1">
-
-        <!-- ====== Hero Section Start ====== -->
-        <section id="home" class="relative flex items-center pt-48 pb-32 md:pt-56 md:pb-40 overflow-hidden">
-            <div class="container mx-auto px-4 z-10">
-                <div class="grid grid-cols-1 md:grid-cols-10 gap-2 items-center">
-
-                    <!-- Hero Logo -->
-                    <div class="flex justify-center md:col-span-5 animate-fade-in">
-                        <img src="./assets/imgs/FLogo.png" alt="Orpita Studio Main Logo" class=" w-full md:w-full object-contain bg-transparent" onerror="this.src='https://placehold.co/600x160/1e1b4b/9333ea?text=LOGO+(60%25+Width)'">
-                    </div>
-
-                    <!-- Hero Text -->
-                    <div class="text-center md:text-left md:col-span-5">
-                        <h1 class="text-3xl md:text-2xl lg:text-5xl font-black text-white leading-tight">
-
-                            <!-- السطر الأول: "We [Dynamic]" -->
-                            <span class="hero-line-container" style="animation-delay: 0.8s;">
-                                <span class="static-hero-text">We </span>
-                                <span class="dynamic-text-container"> 
-                                    <span id="dynamic-line1" class="dynamic-text">See <span class="gradient-text-js">The Universe</span>.</span>
-                                </span>
-                            </span>
-
-                            <!-- السطر الثاني: "We [Dynamic]" -->
-                            <span class="hero-line-container" style="animation-delay: 1.1s;">
-                                <span class="static-hero-text">We </span> 
-                                <span class="dynamic-text-container">
-                                    <span id="dynamic-line2" class="dynamic-text">Build <span class="gradient-text-js">Our Own</span>.</span>
-                                </span>
-                            </span>
-                        </h1>
-
-                        <p class="text-lg md:text-xl text-gray-400 mt-6 max-w-2xl mx-auto md:mx-0 animate-fade-in-up" style="animation-delay: 1.4s;">
-                            Hi, Welcome to Orpita’s page !!<br>
-Take a tour, check out our games, and let us know what you think.
-                        </p>
-
-                        <div class="mt-10 animate-fade-in-up" style="animation-delay: 1.7s;">
-                            <a href="#games" class="bg-violet-600 text-white font-bold py-3 px-10 rounded-full text-lg hover:bg-violet-700 transition-all duration-300 transform hover:scale-105 shadow-lg animate-pulse-glow">
-                                Discover Our Games
-                            </a>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-        <!-- ====== Hero Section End ====== -->
-
-        <!-- ====== About Section Start ====== -->
-        <section id="about" class="relative py-16 sm:py-20 px-4"> 
-            <div class="container mx-auto max-w-6xl z-10">
-                <div class="wOne-full p-8 md:p-16 animate-fade-in SectionGlow">
-
-                    <!-- Section Header -->
-                    <div class="text-center mb-12">
-                        <h2 class="text-3xl md:text-5xl font-black text-white animate-fade-in-up" style="animation-delay: 0.2s;">
-                            About <span class="animate-gradient-text bg-gradient-to-r from-violet-300 to-purple-500">Orpita Studio</span>
-                        </h2>
-                        <p class="text-lg text-gray-400 mt-4 max-w-2xl mx-auto animate-fade-in-up" style="animation-delay: 0.4s;">
-                            Forging new realities, one story at a time.
-                        </p>
-                    </div>
-
-                    <!-- Main Text -->
-                    <div class="text-center max-w-2xl mx-auto text-lg text-gray-300 animate-fade-in-up" style="animation-delay: 0.6s;">
-                        <p>Orpita is an indie game studio based in Egypt.
-Founded in May 2025, it started as a small team making games we enjoy ourselves.
-The studio experiments with ideas, builds worlds, and learns along the way.
-Each game reflects what excites us and what we love to create.</p>
-                    </div>
-
-                    <!-- Founder's Word -->
-                    <div class="mt-16 pt-12 border-t border-slate-800 animate-fade-in-up" style="animation-delay: 0.8s;">
-                        <h3 class="text-center text-3xl font-bold text-white mb-8">A Word From Our <span class="animate-gradient-text bg-gradient-to-r from-violet-400 to-purple-500">Founder</span></h3>
-                        <div class="flex flex-col md:flex-row items-center gap-8">
-                            <img src="./assets/imgs/Founder1.jpg" alt="Studio Founder" class="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover flex-shrink-0 border-4 border-slate-700 shadow-lg">
-                            <div class="text-lg text-gray-300 text-center md:text-left flex-1">
-                                <p class="italic">"Many games recently have started relying on tricks to make players come back, rather than focusing on solid game mechanics or good design. That’s what we wanted to change with Orpita, a studio where a team of designers, artists, and of course programmers work together to create fun games without mind tricks or manipulating players."
-</p>
-                                <p class="text-violet-400 font-bold mt-4">- Amr Elmahdy</p>
-                                <p class="text-gray-500 text-base">Founder & CEO</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Call to Action -->
-                    <div class="text-center mt-16 pt-12 border-t border-slate-800 animate-fade-in-up" style="animation-delay: 1.0s;">
-                        <a href="#" class="bg-violet-600 text-white font-bold py-3 px-10 rounded-full text-lg hover:bg-violet-700 transition-all duration-300 transform hover:scale-105 shadow-lg animate-pulse-glow">
-                            Learn More
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- ====== About Section End ====== -->
-
-        <!-- ====== Games Section Start ====== -->
-        <section id="games" class="relative py-16 sm:py-20 px-4 animate-on-scroll opacity-0"> 
-            <div class="container mx-auto max-w-6xl z-10 SectionGlow" >
-
-                <!-- Section Header -->
-                <div class="w-full p-8 md:p-16 animate-fade-in text-center animate-on-scroll opacity-0" style="animation-delay: 0.8s;">
-                    <h2 class="text-3xl md:text-5xl font-black text-white">Our <span class="animate-gradient-text bg-gradient-to-r from-violet-400 to-purple-500">Games</span></h2>
-                    <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto"> A glimpse into the worlds we are creating.</p>
-                </div>
-
-                <!-- Swiper Carousel -->
-                <div class="swiper game-carousel px-4 pb-8 animate-on-scroll opacity-0" style="animation-delay: 0.5s;"> 
-                    <div class="swiper-wrapper py-4"> 
-
-                        <!-- Slide 1 -->
-                        <div class="swiper-slide p-4 animate-fade-in-up">
-                            <div class="flex flex-col items-center gap-9 h-full w-full">
-                                <img src="./Games/OneMoreDay/assets/imgs/Cover.png" alt="Coming Soon" class="w-full h-48 object-cover rounded-3xl flex-shrink-0">
-                                <div class="flex-1 flex flex-col justify-between h-full w-full mt-4">
-                                    <div>
-                                        <h3 class="text-xl font-bold text-white">One more day</h3>
-                                        <p class="text-sm text-red-400 font-medium mt-1">Not available</p>
-                                        <p class="text-gray-400 mt-3 text-sm">One More Day is a narrative-focused game we developed for GMTK Game Jam 2025, where you step into the shoes of Dr. Zain, facing tense hospital situations and making critical decisions under pressure."</p>
-                                    </div>
-                                    <a href="./Games/OneMoreDay/index.html" class="inline-block self-start mt-4 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium py-2 px-4 rounded-full transition-all duration-300">View details</a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Slide 2 -->
-                        <div class="swiper-slide p-4 animate-fade-in-up">
-                            <div class="flex flex-col items-center gap-9 h-full w-full">
-                                <img src="https://placehold.co/400x400/1e1b4b/c4b5fd?text= Reversed !?" alt="Coming Soon" class="w-full h-48 object-cover rounded-3xl flex-shrink-0">
-                                <div class="flex-1 flex flex-col justify-between h-full w-full mt-4">
-                                    <div>
-                                        <h3 class="text-xl font-bold text-white">???</h3>
-                                        <p class="text-sm text-yellow-400 font-medium mt-1">In developing</p>
-                                        <p class="text-gray-400 mt-3 text-sm">More details about the game coming soon 🤫</p>
-                                    </div>
-                                    <a href="#" class="inline-block self-start mt-4 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium py-2 px-4 rounded-full transition-all duration-300">View details</a>
-                                </div>
-                            </div>
-                        </div>
-                        
-                         <!-- Slide 3 -->
-                        <div class="swiper-slide p-4 animate-fade-in-up">
-                            <div class="flex flex-col items-center gap-9 h-full w-full">
-                                <img src="https://placehold.co/400x400/1e1b4b/c4b5fd?text= ? ? ? " alt="Coming Soon" class="w-full h-48 object-cover rounded-3xl flex-shrink-0">
-                                <div class="flex-1 flex flex-col justify-between h-full w-full mt-4">
-                                    <div>
-                                        <h3 class="text-xl font-bold text-white">???</h3>
-                                        <p class="text-sm text-yellow-400 font-medium mt-1">In Designing process</p>
-                                        <p class="text-gray-400 mt-3 text-sm">More details about the game coming soon 🤫</p>
-                                    </div>
-                                    <a href="#" class="inline-block self-start mt-4 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium py-2 px-4 rounded-full transition-all duration-300">View details</a>
-                                </div>
-                            </div>
-                        </div>
-                        
-                    </div> 
-                    <!-- Pagination -->
-                    <div class="swiper-pagination !static mt-12"></div> 
-                </div> 
-
-                <!-- Call to Action -->
-                <div class="text-center p-8 md:p-16 pt-0 md:pt-0"> 
-                    <a href="./Games/Games.html" class="bg-violet-600 text-white font-bold py-3 px-10 rounded-full text-lg hover:bg-violet-700 transition-all duration-300 transform hover:scale-105 shadow-lg animate-pulse-glow">
-                        Explore All Games
-                    </a>
-                </div>
-            </div>
-        </section>
-        <!-- ====== Games Section End ====== -->
-<!-- ====== Contact Section Start ====== -->
-<section id="contact" class="relative py-16 sm:py-20 px-4 container mx-auto max-w-6xl z-10 w-full p-8 md:p-16 animate-on-scroll opacity-0 SectionGlow">
-
-            <!-- Section Header -->
-            <div class="text-center mb-12 animate-on-scroll opacity-0" style="animation-delay: 0.8s;">
-                <h2 class="text-3xl md:text-5xl font-black text-white">Get In <span class="animate-gradient-text bg-gradient-to-r from-violet-400 to-purple-500">Touch</span></h2>
-                <p class="text-lg text-gray-400 mt-4 max-w-2xl mx-auto">Whether you're a player, creator, or a future partner, we'd love to connect.</p>
-            </div>
-
-            <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start"> 
-
-                <!-- Socials Card -->
-                <div class="flex flex-col items-left text-center p-6 bg-slate-800/50 rounded-2xl border border-slate-700 h-full justify-between animate-on-scroll opacity-0" style="animation-delay: 1.2s;">
-                    <div class="mb-8 w-full">
-                        <h3 class="text-2xl font-bold text-white mb-4">Follow Our Journey</h3>
-                        <p class="text-gray-400">Get the latest updates, behind-the-scenes, and community news.</p>
-                    </div>
-
-                    <!-- Social Icons Grid -->
-                    <!-- Updated Grid: Removed Discord, Added Facebook, Instagram, TikTok. Kept X, LinkedIn, YouTube -->
-                    <div class="grid grid-cols-2 gap-x-8 gap-y-6"> 
-
-                        <!-- X (Twitter) -->
-                        <a href="#" aria-label="X" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center md:justify-start gap-3 text-gray-300 hover:text-violet-400 transform hover:scale-110 transition-all duration-200">
-                            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                            <span class="text-lg">Twitter / X</span>
-                        </a>
-
-                        <!-- LinkedIn -->
-                        <a href="https://www.linkedin.com/company/orpita-game-studio/" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center md:justify-start gap-3 text-gray-300 hover:text-violet-400 transform hover:scale-110 transition-all duration-200">
-                            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                            <span class="text-lg">LinkedIn</span>
-                        </a>
-
-                        <!-- YouTube -->
-                        <a href="https://www.youtube.com/@OrpitaStudioudio" aria-label="YouTube" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center md:justify-start gap-3 text-gray-300 hover:text-violet-400 transform hover:scale-110 transition-all duration-200">
-                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                            <span class="text-lg">YouTube</span>
-                        </a>
-
-                        <!-- Facebook (Added) -->
-                        <a href="https://www.facebook.com/OrpitaStudio" aria-label="Facebook" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center md:justify-start gap-3 text-gray-300 hover:text-violet-400 transform hover:scale-110 transition-all duration-200">
-                            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v7.03C18.343 21.128 22 16.991 22 12z"/></svg>
-                            <span class="text-lg">Facebook</span>
-                        </a>
-
-                        <!-- Instagram (Added) -->
-                        <a href="https://www.instagram.com/orpitastudio" aria-label="Instagram" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center md:justify-start gap-3 text-gray-300 hover:text-violet-400 transform hover:scale-110 transition-all duration-200">
-                           <svg class="w-7 h-7"  fill="currentColor"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M224.3 141a115 115 0 1 0 -.6 230 115 115 0 1 0 .6-230zm-.6 40.4a74.6 74.6 0 1 1 .6 149.2 74.6 74.6 0 1 1 -.6-149.2zm93.4-45.1a26.8 26.8 0 1 1 53.6 0 26.8 26.8 0 1 1 -53.6 0zm129.7 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM399 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg>
-                            <span class="text-lg">Instagram</span>
-                        </a>
-
-                        <!-- itch.io (Added) -->
-                        <a href="#" aria-label="itch.io" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center md:justify-start gap-3 text-gray-300 hover:text-violet-400 transform hover:scale-110 transition-all duration-200">
-                           <svg class="w-7 h-7"  fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free v5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M71.92 34.77C50.2 47.67 7.4 96.84 7 109.73v21.34c0 27.06 25.29 50.84 48.25 50.84 27.57 0 50.54-22.85 50.54-50 0 27.12 22.18 50 49.76 50s49-22.85 49-50c0 27.12 23.59 50 51.16 50h.5c27.57 0 51.16-22.85 51.16-50 0 27.12 21.47 50 49 50s49.76-22.85 49.76-50c0 27.12 23 50 50.54 50 23 0 48.25-23.78 48.25-50.84v-21.34c-.4-12.9-43.2-62.07-64.92-75C372.56 32.4 325.76 32 256 32S91.14 33.1 71.92 34.77zm132.32 134.39c-22 38.4-77.9 38.71-99.85.25-13.17 23.14-43.17 32.07-56 27.66-3.87 40.15-13.67 237.13 17.73 269.15 80 18.67 302.08 18.12 379.76 0 31.65-32.27 21.32-232 17.75-269.15-12.92 4.44-42.88-4.6-56-27.66-22 38.52-77.85 38.1-99.85-.24-7.1 12.49-23.05 28.94-51.76 28.94a57.54 57.54 0 0 1-51.75-28.94zm-41.58 53.77c16.47 0 31.09 0 49.22 19.78a436.91 436.91 0 0 1 88.18 0C318.22 223 332.85 223 349.31 223c52.33 0 65.22 77.53 83.87 144.45 17.26 62.15-5.52 63.67-33.95 63.73-42.15-1.57-65.49-32.18-65.49-62.79-39.25 6.43-101.93 8.79-155.55 0 0 30.61-23.34 61.22-65.49 62.79-28.42-.06-51.2-1.58-33.94-63.73 18.67-67 31.56-144.45 83.88-144.45zM256 270.79s-44.38 40.77-52.35 55.21l29-1.17v25.32c0 1.55 21.34.16 23.33.16 11.65.54 23.31 1 23.31-.16v-25.28l29 1.17c-8-14.48-52.35-55.24-52.35-55.24z"/></svg>
-                            <span class="text-lg">itch.io</span>
-                        </a>
-                    </div>
-
-                    <!-- General Inquiries -->
-                    <div class="mt-10 border-t border-slate-700 w-full pt-6">
-                        <p class="text-gray-400">Or for general inquiries:</p>
-                        <a href="mailto:OrpitaStudio@Gmail.com" class="text-violet-400 hover:text-violet-300 text-lg font-medium transition-all duration-200">
-                            OrpitaStudios@Gmail.com
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Careers Card -->
-                <div class="flex flex-col items-center text-center p-6 bg-slate-800/50 rounded-2xl border border-slate-700 h-full justify-between animate-on-scroll opacity-0" style="animation-delay: 1.4s;">
-                    <div class="mb-6">
-                        <h3 class="text-2xl font-bold text-white mb-4">Want To Join Us?</h3>
-                        <p class="text-gray-400">We're always looking for passionate artists, developers, and storytellers.</p>
-                    </div>
-                    <a href="#" class="bg-violet-600 text-white font-bold py-3 px-10 rounded-full text-lg hover:bg-violet-700 transition-all duration-300 transform hover:scale-105 shadow-lg animate-pulse-glow">
-                        See Open Positions
-                    </a>
-                </div>
-            </div>
-</section>
-<!-- ====== Contact Section End ====== -->
-
-
-        <!-- ====== Contact Section End ====== -->
-    </main>
-    <!-- ====== Main Content End ====== -->
     
-    <!-- ====== Footer Start ====== -->
-    <footer class="w-full py-8 border-t border-slate-800 mt-12 md:mt-16">
+    <main class="flex-1 flex items-center justify-center text-center">
+        <section class="container mx-auto max-w-4xl px-4 py-32">
+            
+            <div class="SectionGlow p-8 md:p-16 rounded-3xl border border-slate-800">
+                
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-black leading-tight mb-6">
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-purple-500">
+                        SITE UNDER MAINTENANCE
+                    </span>
+                </h1>
+
+                <p class="text-lg md:text-xl text-gray-400 mt-6 max-w-2xl mx-auto">
+                    We are currently making crucial updates to enhance your experience. 
+                    <br>
+                    We apologize for the inconvenience. Please check back later!
+                </p>
+
+                <div class="mt-10">
+                    <p class="text-base text-violet-400 font-medium">
+                        Expected downtime: A few days.
+                    </p>
+                </div>
+
+                
+            </div>
+
+            <div class="mt-16 opacity-70">
+                <img src="./assets/imgs/SLogo.png" alt="Orpita Studio Logo" class="h-10 w-auto mx-auto" onerror="this.src='https://placehold.co/120x40/1e1b4b/9333ea?text=LOGO'">
+            </div>
+
+        </section>
+    </main>
+
+    <footer class="w-full py-8 border-t border-slate-800">
         <div class="container mx-auto px-4 text-center">
             <p class="text-sm text-gray-500">© 2025 Orpita Studio. All Rights Reserved.</p>
         </div>
     </footer>
-    <!-- ====== Footer End ====== -->
 
-    <!-- ====== JS Libraries ====== -->
-    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
-    <script src="./assets/js/orpita-main.js"></script>
-    <script src="./assets/js/orpita-index.js"></script>
-    <!-- فاضي انت درجة تقعد تدور على اي عيب فيا ، صح ؟ 
-    ركز على نفسك احسن و متخليش شكلك صغير -->
-</body>
+    </body>
 </html>
