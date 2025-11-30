@@ -1,6 +1,7 @@
 /**
  * solver-worker.js
- * Updated to send progress updates.
+ * Optimized worker for solving Minesetter levels using combinatorics and pruning.
+ * Computes all valid bomb placements (normal, power, negative) that match target scores and star conditions.
  */
 
 self.onmessage = function(e) {
@@ -9,7 +10,12 @@ self.onmessage = function(e) {
     }
 };
 
-// دالة التوافيق (مضمنة للسرعة)
+/**
+ * Calculates nCr (combinations) using BigInt for large numbers.
+ * @param {bigint|number} nv - total items (n)
+ * @param {bigint|number} kv - items to choose (r)
+ * @returns {bigint} The number of combinations.
+ */
 function nCrBig(nv, kv) {
     nv = BigInt(nv); kv = BigInt(kv);
     if (kv < 0n || kv > nv) return 0n;
@@ -20,6 +26,10 @@ function nCrBig(nv, kv) {
     return res;
 }
 
+/**
+ * Main solver function running in the worker thread.
+ * @param {object} config - Configuration object containing grid, bomb counts, target, etc.
+ */
 function runSolver(config) {
     const { 
         rows, cols, blocks, mustBombs, switches, 
@@ -32,10 +42,10 @@ function runSolver(config) {
     const switchArr = switches; 
     const numSwitchStates = 1 << switchArr.length;
 
-    // 1. حساب التقدير الكلي للعملية (لأجل شريط التقدم)
-    // سنقوم بتقدير تقريبي بناءً على عدد السويتشات والتوافيق المتاحة في أول حالة
-    // (التقدير الدقيق صعب لأن عدد الخلايا المتاحة يتغير مع كل سويتش، لكن هذا يكفي للـ Progress)
-    const initialAvailableCount = totalCells - blocks.length - mustBombs.length; // تقريبي
+    // --- I. Estimation and Setup ---
+
+    // 1. Calculate Total Estimated Combinations (for progress bar)
+    const initialAvailableCount = totalCells - blocks.length - mustBombs.length;
     let estimatedTotalCombos = 1n;
     if (initialAvailableCount >= (bombs1 + bombs2 + bombsNeg)) {
         const c1 = nCrBig(initialAvailableCount, bombs1);
@@ -44,13 +54,19 @@ function runSolver(config) {
         estimatedTotalCombos = c1 * c2 * c3 * BigInt(numSwitchStates);
     }
 
-    // إرسال التقدير للواجهة
+    // Send estimation to UI
     self.postMessage({ type: 'estUpdate', value: estimatedTotalCombos.toString() });
 
     let processedCount = 0n;
     let lastProgressTime = Date.now();
 
-    // --- Helper Functions ---
+    // --- II. Helper Functions (Grid & Combinatorics) ---
+
+    /**
+     * Pre-computes the neighbors for every cell on the grid, excluding block cells.
+     * @param {Set<number>} currentBlocksSet - Set of all blocked cells (fixed + switches).
+     * @returns {Array<Array<number>>} Array where index i holds an array of cell indices neighboring i.
+     */
     function computeNeighbors(currentBlocksSet) {
         const neighbors = Array.from({ length: totalCells }, () => []);
         for (let i = 0; i < totalCells; i++) {
@@ -69,7 +85,13 @@ function runSolver(config) {
         }
         return neighbors;
     }
-
+    
+    /**
+     * Generator function to yield combinations of k items from an array.
+     * @param {Array<number>} arr - The array to choose from.
+     * @param {number} k - The number of items to choose.
+     * @yields {Array<number>} A combination.
+     */
     function* getCombinations(arr, k) {
         if (k === 0) { yield []; return; }
         if (k > arr.length) return;
@@ -83,8 +105,35 @@ function runSolver(config) {
             for (let j = idx + 1; j < k; j++) indices[j] = indices[j - 1] + 1;
         }
     }
+    
+    /**
+     * Calculates the total score (sum) for a specific bomb configuration.
+     * Note: Cells that are bombs themselves do not count as points.
+     * @param {Array<number>} normal - Player-placed normal bombs (excluding mustBombs).
+     * @param {Array<number>} power - Power bombs.
+     * @param {Array<number>} neg - Negative bombs.
+     * @param {Set<number>} allBombsSet - Set of ALL bombs (must + normal + power + neg).
+     * @param {Array<Array<number>>} neighborsMap - Pre-computed neighbors map.
+     * @returns {number} The calculated total score.
+     */
+    function calculateScoreImpact(normal, power, neg, allBombsSet, neighborsMap) {
+        let s = 0;
+        // mustBombs are combined with player-placed normal bombs here
+        const allNormal = [...mustBombs, ...normal];
+        
+        // Positive Bomb Impact (Normal: +1, Power: +2)
+        for (let b of allNormal) { for(let n of neighborsMap[b]) if (!allBombsSet.has(n)) s += 1; }
+        for (let b of power) { for(let n of neighborsMap[b]) if (!allBombsSet.has(n)) s += 2; }
+        
+        // Negative Bomb Impact (Negative: -1)
+        for (let b of neg) { for(let n of neighborsMap[b]) if (!allBombsSet.has(n)) s -= 1; }
 
-    // --- Main Loop ---
+        return s;
+    }
+
+    // --- III. Main Looping Logic ---
+
+    // Loop through all possible switch states
     for (let i = 0; i < numSwitchStates; i++) {
         const blockedSwitches = new Set();
         for (let j = 0; j < switchArr.length; j++) {
@@ -94,6 +143,7 @@ function runSolver(config) {
         const currentBlocksSet = new Set([...blocks, ...blockedSwitches]);
         const neighbors = computeNeighbors(currentBlocksSet);
 
+        // Cells available for the player to place bombs
         const availableForPlayer = [];
         for (let k = 0; k < totalCells; k++) {
             if (!currentBlocksSet.has(k) && !mustBombs.includes(k)) {
@@ -103,29 +153,30 @@ function runSolver(config) {
 
         const totalPlayerBombs = bombs1 + bombs2 + bombsNeg;
         if (availableForPlayer.length < totalPlayerBombs) {
-             // حتى لو تجاوزنا، يجب حساب ما تم تخطيه لتحديث البروجرس بدقة
-             // لكن للتبسيط سنتجاوز التحديث هنا
-             continue; 
+            continue; // Not enough space for the required bombs
         }
 
-        // Pre-calc combinations count for this branch to add to progress
-        // (We update progress inside the loops, but knowing the branch size helps)
-
+        // Loop through combinations for Normal Bombs
         for (const normalCombo of getCombinations(availableForPlayer, bombs1)) {
             const rem1 = availableForPlayer.filter(x => !normalCombo.includes(x));
             
+            // Loop through combinations for Power Bombs
             for (const powerCombo of getCombinations(rem1, bombs2)) {
                 const rem2 = rem1.filter(x => !powerCombo.includes(x));
                 
-                // تحسين: حساب عدد الاحتمالات في الحلقة الأخيرة دفعة واحدة لتحديث العداد
-                // لأن الحلقة الأخيرة سريعة جداً
+                // -----------------------------------------------------
+                // --- A. Early Pruning (تم إلغاؤها هنا) ---
+                // تم حذف منطق الحساب والتحقق من (minPossibleScore) و (currentSumNoNeg)
+                // -----------------------------------------------------
+
+                // --- B. Progress Update & Inner Loop for Negative Bombs ---
+
+                // Calculate the size of the inner loop and count it as processed work.
                 const innerLoopSize = nCrBig(rem2.length, bombsNeg); 
                 processedCount += innerLoopSize;
 
-                // تحديث البروجرس كل 100ms لتجنب إغراق الواجهة بالرسائل
+                // Send progress update to UI
                 if (Date.now() - lastProgressTime > 100) {
-                    // حساب النسبة المئوية (integer 0-100)
-                    // نستخدم BigInt للحساب لتجنب الدقة المفقودة
                     let pct = 0;
                     if (estimatedTotalCombos > 0n) {
                         pct = Number((processedCount * 100n) / estimatedTotalCombos);
@@ -136,24 +187,27 @@ function runSolver(config) {
                     lastProgressTime = Date.now();
                 }
 
+                // Loop through combinations for Negative Bombs
                 for (const negCombo of getCombinations(rem2, bombsNeg)) {
                     
                     const finalNormal = [...mustBombs, ...normalCombo];
                     const allBombsSet = new Set([...finalNormal, ...powerCombo, ...negCombo]);
                     
-                    let sum = 0;
-                    // حساب المجموع (Optimized)
-                    for (let b of finalNormal) { for(let n of neighbors[b]) if (!allBombsSet.has(n)) sum += 1; }
-                    for (let b of powerCombo) { for(let n of neighbors[b]) if (!allBombsSet.has(n)) sum += 2; }
-                    for (let b of negCombo) { for(let n of neighbors[b]) if (!allBombsSet.has(n)) sum -= 1; }
+                    // 💥 Final Score Calculation
+                    const sum = calculateScoreImpact(normalCombo, powerCombo, negCombo, allBombsSet, neighbors);
 
+                    // --- C. Final Score Filter & Star Condition Check ---
+                    
+                    // Final filter check: Ensure the calculated sum is within the exact range [tmin, tmax]
                     if (sum >= tmin && sum <= tmax) {
-                        // تحقق الشروط (Stars Logic)
+                        
+                        // Star Conditions Logic: Calculate individual cell values
                         const cellValues = new Map();
                         for(let c=0; c<totalCells; c++) cellValues.set(c, 0);
                         
                         const addVal = (bombs, val) => {
                             for(let b of bombs) {
+                                // Only count values for non-bomb cells (as per Minesetter rules)
                                 for(let n of neighbors[b]) if(!allBombsSet.has(n)) cellValues.set(n, cellValues.get(n) + val);
                             }
                         };
@@ -172,6 +226,7 @@ function runSolver(config) {
                                 case 'setSwitches':
                                     met = cond.requirements.every(req => {
                                         const isBlocked = blockedSwitches.has(req.id);
+                                        // SWITCH_ON means the switch is 'blocked' and thus the block is on the grid
                                         return (req.state === 'SWITCH_ON' && isBlocked) || (req.state === 'SWITCH_OFF' && !isBlocked);
                                     }); break;
                                 case 'getScore': met = (sum === cond.value); break;
@@ -187,12 +242,14 @@ function runSolver(config) {
                             if(met) { starsCount++; conditionStatus[idx] = true; }
                         });
 
+                        // Store the found solution
                         solutions.push({
                             normalBombs: finalNormal, powerBombs: powerCombo, negativeBombs: negCombo,
                             sum: sum, starsCount: starsCount, conditionStatus: conditionStatus,
                             switchState: Array.from(blockedSwitches)
                         });
 
+                        // Check if max solutions limit is reached
                         if (solutions.length >= maxSolutions) {
                             self.postMessage({ type: 'done', solutions: solutions });
                             return; 
@@ -203,5 +260,6 @@ function runSolver(config) {
         }
     }
 
+    // All loops finished
     self.postMessage({ type: 'done', solutions: solutions });
 }

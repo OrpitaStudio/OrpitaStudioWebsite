@@ -6,12 +6,11 @@
 
 // --- I. DOM Elements for Analysis & Display ---
 const blocksCountEl = document.getElementById('blocksCount');
-const starsCountEl = document.getElementById('starsCount');
 const switchesCountEl = document.getElementById('switchesCount');
 const mustBombsCountEl = document.getElementById('mustBombsCount');
 const cellCountEl = document.getElementById('cellCount');
 const solutionsCountEl = document.getElementById('solutionsCount');
-const maxStarSeenEl = document.getElementById('maxStarSeen');
+// [!] تم حذف: const maxStarSeenEl = document.getElementById('maxStarSeen');
 const exportDataEl = document.getElementById('exportData');
 const warningsContainer = document.getElementById('warningsContainer');
 
@@ -19,7 +18,7 @@ const warningsContainer = document.getElementById('warningsContainer');
 
 /**
  * Parses GameState.grid Sets into the array of objects required by the export format.
- * Format: { id: number, state: 'BLOCK' | 'STAR' | 'SWITCH_ON' | 'BOMB' }
+ * Format: { id: number, state: 'BLOCK' | 'SWITCH_ON' | 'BOMB' }
  * @returns {Array<{id: number, state: string}>} Sorted array of initial cells.
  */
 function getInitialCells() {
@@ -34,8 +33,7 @@ function getInitialCells() {
 
     // 1. Blocks
     GameState.grid.blocks.forEach(id => registerCell(id, 'BLOCK'));
-    // 2. Stars
-    GameState.grid.stars.forEach(id => registerCell(id, 'STAR'));
+    // [!] تم حذف منطق النجوم
     // 3. Switches (defaulting to ON state for export)
     GameState.grid.switches.forEach(id => registerCell(id, 'SWITCH_ON'));
     // 4. Must-Bombs
@@ -51,6 +49,11 @@ function getInitialCells() {
  * @returns {Array<Object>} Flat array of valid star condition objects.
  */
 function getStarConditionsFromUI() {
+    // بما أننا ألغينا مفهوم النجوم كشرط، يمكن تبسيط هذه الدالة لإرجاع مصفوفة فارغة 
+    // إذا كنت لا تزال تستخدم شروط C1, C2, C3 لأغراض أخرى (كالتحليل الشرطي)، فاحتفظ بالمنطق
+    // إذا كان مفهوم الـ "Stars" في الكود يشير إلى شروط C1، C2، C3، فسنترك المنطق كما هو
+    // (بناءً على الكود المرفق، StarConditions هي شروط الحل C1, C2, C3، وليست نجوم اللعبة)
+    // لذلك، سنحافظ على هذه الدالة كما هي.
     const allStarConditions = [];
     for (let starId = 1; starId <= 3; starId++) {
         const containerEl = document.querySelector(`.single-condition-container[data-star-id="${starId}"]`);
@@ -163,6 +166,7 @@ function updateExportData() {
         targetMin: parseInt(document.getElementById('targetMin').value) || -1,
         targetMax: parseInt(document.getElementById('targetMax').value) || -1,
         initialCells: getInitialCells(),
+        // [!] Star Conditions ما زالت مطلوبة لتصدير شروط C1/C2/C3، لذا نتركها
         starConditions: starConditionsObject,
         solution: bestSolution ? { placementIds: solutionPlacementIds } : null
     };
@@ -177,8 +181,8 @@ function updateCounts() {
     const total = GameState.config.rows * GameState.config.cols;
     cellCountEl.textContent = total;
     blocksCountEl.textContent = GameState.grid.blocks.size;
+    // [!] تم حذف: starsCountEl.textContent = GameState.grid.stars.size;
     switchesCountEl.textContent = GameState.grid.switches.size;
-    starsCountEl.textContent = GameState.grid.stars.size;
     mustBombsCountEl.textContent = GameState.grid.mustBombs.size;
 }
 
@@ -186,11 +190,11 @@ function updateCounts() {
 
 function clearAnalysis() {
     document.getElementById('analysisTargets').innerHTML = '';
-    document.getElementById('analysisStars').innerHTML = '';
+    // [!] تم حذف: document.getElementById('analysisStars').innerHTML = '';
     document.getElementById('analysisConditions').innerHTML = '';
     document.getElementById('solutionsList').innerHTML = '';
     solutionsCountEl.textContent = 0;
-    maxStarSeenEl.textContent = 0;
+    // [!] تم حذف: maxStarSeenEl.textContent = 0;
     warningsContainer.innerHTML = '';
     warningsContainer.style.display = 'none';
     
@@ -258,6 +262,39 @@ function updateDifficultyAnalysis() {
     updateExportData();
 }
 
+function calculateHeatmap() {
+    const solutions = GameState.results.solutions;
+    const totalCells = GameState.config.rows * GameState.config.cols;
+    const heatmapData = new Array(totalCells).fill(0);
+    let maxFrequency = 0;
+
+    if (solutions.length === 0) {
+        GameState.results.heatmapData = null;
+        GameState.results.heatmapMax = 0;
+        return;
+    }
+
+    solutions.forEach(sol => {
+        // جمع كل أنواع القنابل
+        const allBombs = new Set([
+            ...(sol.normalBombs || []), 
+            ...(sol.powerBombs || []), 
+            ...(sol.negativeBombs || [])
+        ]);
+        allBombs.forEach(id => {
+            if (id >= 0 && id < totalCells) {
+                heatmapData[id]++;
+                if (heatmapData[id] > maxFrequency) {
+                    maxFrequency = heatmapData[id];
+                }
+            }
+        });
+    });
+
+    GameState.results.heatmapData = heatmapData;
+    GameState.results.heatmapMax = maxFrequency;
+}
+
 // دالة حساب الهيت ماب (تم استرجاعها)
 function calculateBombProbability() {
     const solutions = GameState.results.solutions;
@@ -284,6 +321,117 @@ function calculateBombProbability() {
     }
 }
 
+// analysis-viewer.js: إضافة/تعديل منطق Heatmap
+
+// ... (التعريفات في بداية الملف) ...
+
+/**
+ * دالة رئيسية لتحديث عرض الشبكة بالكامل
+ * (يفترض وجودها أو يجب إنشاؤها لاستدعاء renderHeatmap)
+ */
+function updateGridDisplay() {
+    // ... (منطق إنشاء الخلايا وتحديثها) ...
+    
+    // التأكد من استدعاء renderHeatmap في نهاية عملية تحديث الشبكة
+    renderHeatmap();
+}
+
+/**
+ * تحسب وتصوّر خريطة الكثافة (Heatmap) بناءً على نوع القنبلة المختار وحالة الحلول.
+ * اللوجيك المحدث:
+ * 1. إذا كان هناك حلول: تعرض الأرقام فقط.
+ * 2. إذا لم يكن هناك حلول: تعرض الأرقام + تدرج اللون الأحمر.
+ */
+// analysis-viewer.js
+
+
+
+// 2. الدالة الجديدة للـ Heatmap بالمنطق المطلوب
+// analysis-viewer.js
+
+function renderHeatmap() {
+    const { rows, cols } = GameState.config;
+    const solutions = GameState.results.solutions;
+    const showHeatmap = GameState.results.showHeatmap;
+    const heatmapType = GameState.results.heatmapType;
+    
+    const totalSolutions = solutions.length;
+    const hasSolutions = totalSolutions > 0;
+    
+    // تنظيف العرض القديم
+    for (let i = 0; i < rows * cols; i++) {
+        const cellEl = document.getElementById(`c${i}`);
+        if (!cellEl) continue;
+        
+        cellEl.style.backgroundColor = '';
+        const percentEl = cellEl.querySelector('.heatmap-percent');
+        if (percentEl) percentEl.textContent = '';
+    }
+    
+    if (!showHeatmap) return;
+    
+    // حساب التكرارات
+    const counts = new Array(rows * cols).fill(0);
+    
+    solutions.forEach(sol => {
+        let bombIndices = [];
+        if (heatmapType === 'all') {
+            bombIndices = [...sol.normalBombs, ...sol.powerBombs, ...sol.negativeBombs];
+        } else if (heatmapType === 'normal') {
+            bombIndices = sol.normalBombs;
+        } else if (heatmapType === 'power') {
+            bombIndices = sol.powerBombs;
+        } else if (heatmapType === 'negative') {
+            bombIndices = sol.negativeBombs;
+        }
+        
+        bombIndices.forEach(id => {
+            // [تم التعديل] نسمح بحساب السويتشات، نستثني فقط البلوكات والـ MustBombs
+            if (!GameState.grid.blocks.has(id) && !GameState.grid.mustBombs.has(id)) {
+                counts[id]++;
+            }
+        });
+    });
+    
+    // الرسم
+    for (let i = 0; i < rows * cols; i++) {
+        const cellEl = document.getElementById(`c${i}`);
+        // [تم التعديل] السماح بالرسم داخل السويتشات
+        if (!cellEl || GameState.grid.blocks.has(i) || GameState.grid.mustBombs.has(i)) continue;
+        
+        const count = counts[i];
+        
+        // إذا كان هناك حلول، والخلية صفرية، لا نرسم شيئاً
+        if (count === 0 && hasSolutions) continue;
+        
+        let maxCount = Math.max(...counts, 1);
+        let percent = 0;
+        
+        if (hasSolutions) {
+            percent = Math.round((count / totalSolutions) * 100);
+        } else {
+            percent = Math.round((count / maxCount) * 100);
+        }
+        
+        let percentEl = cellEl.querySelector('.heatmap-percent');
+        if (percentEl && (percent > 0 || !hasSolutions)) {
+            percentEl.textContent = `${percent}%`;
+        }
+        
+        // تطبيق الألوان
+        if (hasSolutions) {
+            cellEl.style.backgroundColor = '';
+        } else {
+            // اللون الأحمر عند عدم وجود حلول
+            const opacity = (percent / 100) * 0.8;
+            if (opacity > 0) {
+                cellEl.style.backgroundColor = `rgba(239, 68, 68, ${opacity})`;
+            }
+        }
+    }
+}
+
+// ... (باقي محتوى الملف) ...
 // 2. دالة التحليل الشرطي (الجدول الأول: If Solved First)
 function updateConditionalAnalysis() {
     const container = document.getElementById('analysisConditions');
@@ -338,7 +486,7 @@ function renderSolutionsList(limit) {
         row.className = 'solRow';
         
         let switchInfo = sol.switchState.length > 0 ? `SW_ON: [${sol.switchState.join(',')}]` : 'SW_ON: []';
-        const starBadge = `<span class="badge">★=${sol.starsCount}</span>`;
+        // [!] تم حذف: const starBadge = `<span class="badge">★=${sol.starsCount}</span>`;
         
         // استرجاع عرض نقاط الشروط (C1, C2, C3)
         const condStatus = sol.conditionStatus || [false, false, false];
@@ -353,8 +501,8 @@ function renderSolutionsList(limit) {
         row.innerHTML = `
             <div class="solMeta" style="display:flex; justify-content: space-between;">
                 <div>#${i+1} ${switchInfo} ${statusHtml}</div>
-                <div><span class="badge">S=${sol.sum}</span> ${starBadge}</div>
-            </div>`;
+                <div><span class="badge">S=${sol.sum}</span></div> 
+                </div>`;
         
         row.addEventListener('click', () => viewSolution(sol));
         fragment.appendChild(row);
@@ -376,10 +524,7 @@ window.filterBySum = function(sum){
     renderFilteredList(filtered);
 }
 
-window.filterByStars = function(k){
-    const filtered = GameState.results.solutions.filter(s => s.starsCount === k);
-    renderFilteredList(filtered);
-}
+// [!] تم حذف دالة filterByStars بالكامل
 
 function renderFilteredList(list){
     const cont = document.getElementById('solutionsList');
@@ -394,7 +539,7 @@ function renderFilteredList(list){
         row.className = 'solRow';
         
         let switchInfo = sol.switchState.length > 0 ? `SW_ON: [${sol.switchState.join(',')}]` : 'SW_ON: []';
-        const starBadge = `<span class="badge">★=${sol.starsCount}</span>`;
+        // [!] تم حذف: const starBadge = `<span class="badge">★=${sol.starsCount}</span>`;
         
         const condStatus = sol.conditionStatus || [false, false, false];
         const statusHtml = `
@@ -408,8 +553,8 @@ function renderFilteredList(list){
         row.innerHTML = `
             <div class="solMeta" style="display:flex; justify-content: space-between;">
                 <div>#${i+1} ${switchInfo} ${statusHtml}</div>
-                <div><span class="badge">S=${sol.sum}</span>${starBadge}</div>
-            </div>`;
+                <div><span class="badge">S=${sol.sum}</span></div>
+                </div>`;
         
         row.addEventListener('click', ()=> viewSolution(sol));
         fragment.appendChild(row);
@@ -429,13 +574,14 @@ function handlePostSolveAnalysis(startTime) {
     document.getElementById('progressPct').textContent = '100%';
     document.getElementById('timeInfo').textContent = `${Math.round(totalTime)}ms - Done`;
     document.getElementById('cancel').disabled = true;
-
+    calculateHeatmap(); 
     // 2. فرز الحلول
-    solutions.sort((a,b)=> (b.starsCount - a.starsCount) || (a.sum - b.sum));
+    // [!] تم تعديل الفرز ليعتمد فقط على المجموع (Sum) بدلاً من النجوم
+    solutions.sort((a,b)=> (a.sum - b.sum)); // فرز تصاعدي حسب المجموع
     solutionsCountEl.textContent = solutions.length;
     
     const countsByTarget = {}, countsByStars = {};
-    let maxStar = 0;
+    // [!] تم حذف: let maxStar = 0;
     
     // حساب تداخل الشروط (المنطق الذي كان مفقوداً)
     const countsByConditionStatus = {
@@ -447,8 +593,8 @@ function handlePostSolveAnalysis(startTime) {
 
     for(let s of solutions){
         countsByTarget[s.sum] = (countsByTarget[s.sum] || 0) + 1;
-        countsByStars[s.starsCount] = (countsByStars[s.starsCount] || 0) + 1;
-        if(s.starsCount > maxStar) maxStar = s.starsCount;
+        // [!] تم حذف: countsByStars[s.starsCount] = (countsByStars[s.starsCount] || 0) + 1;
+        // [!] تم حذف: if(s.starsCount > maxStar) maxStar = s.starsCount;
 
         const [c1, c2, c3] = s.conditionStatus || [false, false, false];
         const count = [c1, c2, c3].filter(v => v).length;
@@ -463,7 +609,7 @@ function handlePostSolveAnalysis(startTime) {
         else if (c3) countsByConditionStatus['C3_Only']++;
     }
     
-    maxStarSeenEl.textContent = maxStar;
+    // [!] تم حذف: maxStarSeenEl.textContent = maxStar;
     
     // 3. عرض الملخصات
     let tHtml = '';
@@ -472,14 +618,8 @@ function handlePostSolveAnalysis(startTime) {
     });
     document.getElementById('analysisTargets').innerHTML = tHtml;
     
-    let sHtml = '';
-    for(let k=0; k<=3; k++){
-        const count = countsByStars[k] || 0;
-        if (count > 0 || k === 0) { 
-           sHtml += `<div>Stars = ${k}: ${count} <button class="btnSmall" onclick="filterByStars(${k})">View</button></div>`;
-        }
-    }
-    document.getElementById('analysisStars').innerHTML = sHtml;
+    // [!] تم حذف عرض ملخص النجوم
+    document.getElementById('analysisStars').innerHTML = ''; // للتأكد من مسح أي محتوى قديم
 
     // بناء الجدول الأول (Conditional Analysis)
     updateConditionalAnalysis();
@@ -528,9 +668,10 @@ function handlePostSolveAnalysis(startTime) {
     }
 
     const totalBombs = bombs1Count + bombs2Count + bombsNegCount;
-    const totalConstraints = GameState.grid.stars.size + GameState.grid.mustBombs.size; 
+    // [!] تم تعديل حساب totalConstraints لإزالة النجوم
+    const totalConstraints = GameState.grid.mustBombs.size; 
     if (totalBombs > 0 && totalConstraints / totalBombs >= 0.5) {
-        warningsContainer.innerHTML += `<div>تحذير: قيود كثيرة. عدد النجوم والقنابل الإلزامية يمثل 50% أو أكثر من إجمالي القنابل.</div>`;
+        warningsContainer.innerHTML += `<div>تحذير: قيود كثيرة. عدد القنابل الإلزامية يمثل 50% أو أكثر من إجمالي القنابل.</div>`;
         warningsFound = true;
     }
     

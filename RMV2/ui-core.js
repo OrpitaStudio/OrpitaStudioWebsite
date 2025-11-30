@@ -17,7 +17,7 @@ const countSymStatus = document.getElementById('countSymStatus');
 
 // Mode buttons
 const modeBlockBtn = document.getElementById('modeBlock');
-const modeStarBtn = document.getElementById('modeStar');
+
 const modeSwitchBtn = document.getElementById('modeSwitch');
 const modeMustBombBtn = document.getElementById('modeMustBomb');
 const modeEraseBtn = document.getElementById('modeErase');
@@ -38,9 +38,9 @@ function setMode(m) {
   // Update global state
   GameState.config.mode = m;
 
-  [modeBlockBtn, modeStarBtn, modeSwitchBtn, modeMustBombBtn, modeEraseBtn].forEach(b => b.classList.remove('active'));
+  [modeBlockBtn, modeSwitchBtn, modeMustBombBtn, modeEraseBtn].forEach(b => b.classList.remove('active'));
   if (m === 'block') modeBlockBtn.classList.add('active');
-  if (m === 'star') modeStarBtn.classList.add('active');
+
   if (m === 'switch') modeSwitchBtn.classList.add('active');
   if (m === 'mustBomb') modeMustBombBtn.classList.add('active');
   if (m === 'erase') modeEraseBtn.classList.add('active');
@@ -83,61 +83,75 @@ function buildGrid() {
   showStatus('Grid rebuilt with new dimensions');
 }
 
+// ui-core.js
+
 function renderGrid() {
   const total = GameState.config.rows * GameState.config.cols;
   gridEl.innerHTML = '';
-
+  
   for (let i = 0; i < total; i++) {
     const d = document.createElement('div');
     d.className = 'cell heatmap-cell';
-    d.dataset.i = i; 
-
+    d.id = `c${i}`; // ID مهم للهيت ماب
+    d.dataset.i = i;
+    
+    // 1. إضافة نسبة الهيت ماب (أعلى اليسار)
+    const pct = document.createElement('span');
+    pct.className = 'heatmap-percent';
+    d.appendChild(pct);
+    
+    // 2. إضافة ترقيم الخلية (أسفل اليمين) - [تم الإصلاح هنا]
     const idxSpan = document.createElement('span');
     idxSpan.className = 'cell-index';
     idxSpan.textContent = i;
-
-    const overlay = document.createElement('div');
-    overlay.className = 'heatmap-overlay';
-    overlay.id = `heatmap-${i}`;
-    overlay.style.display = 'none';
-
+    d.appendChild(idxSpan);
+    
+    // 3. محتوى الخلية (للقنابل والأيقونات)
     const content = document.createElement('div');
     content.className = 'cell-content';
-
-    d.appendChild(idxSpan);
-    d.appendChild(overlay);
     d.appendChild(content);
-
+    
     d.addEventListener('click', () => cellClicked(i));
-
     gridEl.appendChild(d);
   }
-
+  
   refreshGridVisual();
 }
+
+window.toggleHeatmapView = function() {
+    const cb = document.getElementById('toggleHeatmap');
+    GameState.results.showHeatmap = cb.checked;
+    
+    const opts = document.getElementById('heatmapOptions');
+    if(opts) opts.style.display = cb.checked ? 'block' : 'none';
+    
+    // إعادة رسم الهيت ماب
+    if(typeof renderHeatmap === 'function') renderHeatmap();
+};
+
+window.setHeatmapType = function(val) {
+    GameState.results.heatmapType = val;
+    if(typeof renderHeatmap === 'function') renderHeatmap();
+};
 
 function cellClicked(i) {
   const mode = GameState.config.mode;
   // Destructure sets from GameState for cleaner code
-  const { blocks, stars, switches, mustBombs } = GameState.grid;
+  const { blocks, switches, mustBombs } = GameState.grid;
 
   if (mode === 'block') {
     if (blocks.has(i)) blocks.delete(i);
-    else { blocks.add(i); stars.delete(i); mustBombs.delete(i); switches.delete(i); }
-  } else if (mode === 'star') {
-    if (blocks.has(i)) return;
-    if (stars.has(i)) stars.delete(i);
-    else { stars.add(i); mustBombs.delete(i); }
+    else { blocks.add(i); mustBombs.delete(i); switches.delete(i); }
   } else if (mode === 'switch') {
     if (blocks.has(i)) return;
     if (switches.has(i)) switches.delete(i);
-    else { switches.add(i); stars.delete(i); mustBombs.delete(i); }
+    else { switches.add(i); mustBombs.delete(i); }
   } else if (mode === 'mustBomb') {
     if (blocks.has(i) || switches.has(i)) return;
     if (mustBombs.has(i)) mustBombs.delete(i);
-    else { mustBombs.add(i); stars.delete(i); }
+    else { mustBombs.add(i); }
   } else { // erase
-    blocks.delete(i); stars.delete(i); mustBombs.delete(i); switches.delete(i);
+    blocks.delete(i); mustBombs.delete(i); switches.delete(i);
   }
 
   refreshGridVisual();
@@ -151,7 +165,7 @@ function cellClicked(i) {
    ------------------------------------------------------------------ */
 function refreshGridVisual(solution = null) {
   const total = GameState.config.rows * GameState.config.cols;
-  const { blocks, stars, switches, mustBombs } = GameState.grid;
+  const { blocks, switches, mustBombs } = GameState.grid;
 
   let normalBombSet = new Set();
   let powerBombSet  = new Set();
@@ -201,51 +215,103 @@ function refreshGridVisual(solution = null) {
     const el = gridEl.children[i];
     const content = el.querySelector('.cell-content');
     const heatmap = el.querySelector('.heatmap-overlay');
-
+    
+    // Reset
     el.className = 'cell heatmap-cell';
     content.className = 'cell-content';
     content.innerHTML = '';
     if (heatmap) heatmap.style.display = 'none';
-
-    const isBomb = solution && (normalBombSet.has(i) || powerBombSet.has(i) || negativeBombSet.has(i));
-
-    if (isBomb) {
-      if (normalBombSet.has(i)) { el.classList.add('bomb'); content.textContent = 'B'; }
-      else if (powerBombSet.has(i)) { el.classList.add('bomb2'); content.textContent = 'P'; }
-      else if (negativeBombSet.has(i)) { el.classList.add('bomb-neg'); content.textContent = 'N'; }
-
-      if (mustBombs.has(i)) {
-        el.classList.add('is-must-bomb');
-        content.textContent = 'MB'; 
-      }
-      if (switches.has(i)) el.classList.add('is-switch-bomb');
-
-    } else if (currentBlocks.has(i)) {
-      if (switches.has(i)) {
-        el.classList.add('switch-blocked'); content.textContent = 'S';
-      } else {
-        el.classList.add('block'); content.textContent = 'X';
-      }
-
-    } else if (solution && numbers[i] !== 0) {
-      const num = document.createElement('span');
-      num.className = 'number';
-      num.textContent = numbers[i];
-      content.appendChild(num);
-      el.classList.add('affected');
-
-    } else {
-      if (switches.has(i)) {
-        el.classList.add('switch-off'); content.textContent = 'S';
-      } else if (stars.has(i)) {
-        el.classList.add('star'); content.textContent = '★';
-      } else if (mustBombs.has(i)) {
-        el.classList.add('must-bomb'); content.textContent = 'MB';
-      } else {
-        content.textContent = '';
+    
+    if (!solution && GameState.results.showHeatmap && GameState.results.heatmapData) {
+      const data = GameState.results.heatmapData[i];
+      const max = GameState.results.heatmapMax || 1;
+      
+      if (data > 0 && heatmap) {
+        const intensity = max > 0 ? (data / max) : 0;
+        
+        // تطبيق تدرج الألوان بناءً على التكرار
+        heatmap.style.backgroundColor = `rgba(255, 10, 10, ${intensity * 0.5})`;
+        heatmap.style.display = 'block';
+        
+        // عرض عدد مرات الظهور (Count)
+        const label = document.createElement('span');
+        label.className = 'heatmap-label';
+        label.textContent = data;
+        content.appendChild(label);
+        
+        el.classList.add('heatmap-visible');
       }
     }
-  }
+    // ----------------------------------------------------
+    
+    const isBomb = solution && (normalBombSet.has(i) || powerBombSet.has(i) || negativeBombSet.has(i));
+    
+    if (isBomb) {
+    // اضبط نوع القنبلة
+    if (normalBombSet.has(i)) { el.classList.add('bomb'); content.textContent = 'B'; }
+    else if (powerBombSet.has(i)) { el.classList.add('bomb2'); content.textContent = 'P'; }
+    else if (negativeBombSet.has(i)) { el.classList.add('bomb-neg'); content.textContent = 'N'; }
+
+    if (mustBombs.has(i)) {
+        el.classList.add('is-must-bomb');
+        content.textContent = 'MB'; 
+    }
+
+    // ✅ السويتش الذي يحتوي قنبلة: أضف فقط الإطار البنفسجي
+    if (switches.has(i)) {
+        el.classList.add('is-switch-bomb');  // تعطي مؤشر داخلي
+        el.classList.add('switch-open');     // إطار بنفسجي فقط
+        // لا تغيّر الخلفية أو النص
+    }
+
+} else if (currentBlocks.has(i)) {
+    // سويتش مغلق/محجوز
+    if (switches.has(i)) {
+        el.classList.add('switch-blocked'); 
+        content.textContent = 'S';
+    } else {
+        el.classList.add('block'); 
+        content.textContent = 'X';
+    }
+
+} else if (solution && numbers[i] !== 0) {
+    // سويتش مفتوح مع رقم
+    if (switches.has(i)) {
+        el.classList.add('switch-open'); // إطار بنفسجي
+        // محتوى الرقم يبقى كما هو
+    }
+    const num = document.createElement('span');
+    num.className = 'number';
+    num.textContent = numbers[i];
+    content.appendChild(num);
+    el.classList.add('affected');
+
+} else {
+    // خلايا فارغة أو سويتش فارغ
+    if (switches.has(i)) {
+        if (solution) {
+            el.classList.add('switch-open'); // إطار بنفسجي فقط، محتوى فارغ
+            content.textContent = '';
+        } else {
+            el.classList.add('switch-off'); // مربع بنفسجي صلب 'S'
+            content.textContent = 'S';
+        }
+    } else if (mustBombs.has(i)) {
+        el.classList.add('must-bomb'); 
+        content.textContent = 'MB';
+    } else {
+        content.textContent = '';
+    }
+}
+  if (typeof renderHeatmap === 'function') {
+  renderHeatmap();
+}
+}}
+
+// في ui-core.js، بعد تعريف refreshGridVisual
+function updateGridDisplay() {
+  // لعرض الحالة الحالية، وليس حلاً معيناً
+  refreshGridVisual(null);
 }
 
 function viewSolution(sol) { refreshGridVisual(sol); }
@@ -388,20 +454,54 @@ function initStarEditor() {
   for (let starId = 1; starId <= 3; starId++) injectSingleConditionRow(starId);
 }
 
+// ui-core.js: إضافة دوال التحكم الجديدة
+
+// ... (باقي محتوى الملف) ...
+
+/**
+ * تبديل حالة عرض خريطة الكثافة (Heatmap)
+ */
+function toggleHeatmapView() {
+  const toggleCheckbox = document.getElementById('toggleHeatmap');
+  const optionsDiv = document.getElementById('heatmapOptions');
+  
+  GameState.results.showHeatmap = toggleCheckbox.checked;
+  // عرض أو إخفاء خيارات نوع القنبلة
+  optionsDiv.style.display = toggleCheckbox.checked ? 'block' : 'none';
+  
+  // استدعاء دالة تحديث الشبكة (يفترض أنها متاحة)
+  if (typeof updateGridDisplay === 'function') {
+    updateGridDisplay();
+  }
+}
+
+/**
+ * تحديد نوع خريطة الكثافة المراد عرضها
+ * @param {string} type - 'all' | 'normal' | 'power' | 'negative'
+ */
+function setHeatmapType(type) {
+  GameState.results.heatmapType = type;
+  
+  // استدعاء دالة تحديث الشبكة
+  if (typeof updateGridDisplay === 'function') {
+    updateGridDisplay();
+  }
+}
+
+// ... (باقي محتوى الملف) ...
 /* ------------------------------------------------------------------
    VI. Event listeners & initial boot
    ------------------------------------------------------------------ */
 
 modeBlockBtn.addEventListener('click', () => setMode('block'));
-modeStarBtn.addEventListener('click', () => setMode('star'));
 modeSwitchBtn.addEventListener('click', () => setMode('switch'));
 modeMustBombBtn.addEventListener('click', () => setMode('mustBomb'));
 modeEraseBtn.addEventListener('click', () => setMode('erase'));
 
 document.getElementById('build').addEventListener('click', buildGrid);
 document.getElementById('clear').addEventListener('click', () => {
-  const { blocks, stars, switches, mustBombs } = GameState.grid;
-  blocks.clear(); stars.clear(); mustBombs.clear(); switches.clear();
+  const { blocks, switches, mustBombs } = GameState.grid;
+  blocks.clear(); mustBombs.clear(); switches.clear();
   refreshGridVisual(); updateCounts(); updateExportData(); updateDifficultyAnalysis();
   showStatus('All special cells cleared');
 });
@@ -442,12 +542,15 @@ document.getElementById('solve').addEventListener('click', async () => {
 document.getElementById('cancel').addEventListener('click', () => {
     cancelSolver(); // Calls the new controller cancellation
 });
-
-toggleHeatmapBtn.addEventListener('click', () => {
+const toggleH = document.getElementById('toggleHeatmap');
+if (toggleH) {
+  toggleH.addEventListener('change', window.toggleHeatmapView);
+}
+/*toggleHeatmapBtn.addEventListener('click', () => {
   GameState.results.showHeatmap = !GameState.results.showHeatmap;
   toggleHeatmapBtn.textContent = GameState.results.showHeatmap ? 'Hide Heatmap' : 'Show Heatmap';
   refreshGridVisual();
-});
+});*/
 
 countSymCheckbox.addEventListener('change', () => {
   countSymStatus.textContent = countSymCheckbox.checked ? '✓ Counting symmetries' : '✗ Not counting symmetries';

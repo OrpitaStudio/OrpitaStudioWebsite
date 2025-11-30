@@ -11,7 +11,7 @@ const GameState = {
   // محتوى الشبكة
   grid: {
     blocks: new Set(),
-    stars: new Set(),
+    //stars: new Set(),
     switches: new Set(),
     mustBombs: new Set()
   },
@@ -21,7 +21,8 @@ const GameState = {
     solutions: [],
     abortFlag: false,
     lastTotalCombinations: 0n,
-    showHeatmap: false
+    showHeatmap: false,
+    heatmapType: 'all' // Default
   }
 };
 
