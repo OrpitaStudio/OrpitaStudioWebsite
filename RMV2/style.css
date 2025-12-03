@@ -1,31 +1,36 @@
+/**
+ * style.css - Main UI Stylesheet
+ * Defines the color palette, global structure, layout, and component styling 
+ * for the Minesweeper Solver application. Includes responsive design adjustments.
+ */
+
+/* --- 1. COLOR PALETTE & GLOBAL TOKENS --- */
 :root {
-    /* Color palette & global tokens */
-    --bg-app: #090b10;          /* Main application background */
-    --bg-panel: #121620;        /* Sidebar and results panel background */
-    --bg-input: #1c2233;        /* Input fields and secondary backgrounds */
-    --border: #2a324a;          /* Separator lines and borders */
+    /* Backgrounds & Borders */
+    --bg-app: #090b10;
+    --bg-panel: #121620;
+    --bg-input: #1c2233;
+    --border: #2a324a;
 
     /* Accents */
-    --primary: #3b82f6;         /* Primary interactive color (Blue) */
-    --primary-hover: #2563eb;   /* Primary hover state color */
-    --accent-gold: #fbbf24;     /* Gold accent (e.g., Star 1, Must Bomb in solution) */
-    --accent-purple: #a855f7;   /* Purple accent (e.g., Switches) */
-    --accent-danger: #ef4444;   /* Red accent (e.g., Error, Erase) */
-    --accent-success: #10b981;  /* Green accent (e.g., Success, Easy Difficulty) */
+    --primary: #3b82f6;
+    --primary-hover: #2563eb;
+    --accent-gold: #fbbf24;
+    --accent-purple: #a855f7;
+    --accent-danger: #ef4444;
+    --accent-success: #10b981;
 
     /* Text */
-    --text-main: #e2e8f0;       /* Main text color */
-    --text-muted: #94a3b8;      /* Secondary/muted text color */
+    --text-main: #e2e8f0;
+    --text-muted: #94a3b8;
 
-    /* Grid / cells */
-    --cell-bg: #1e293b;         /* Default cell background */
-    --cell-size: 46px;          /* Base cell dimension (Adjust for layout scale) */
-    --radius: 6px;              /* Corner radius for UI elements */
+    /* Grid & Layout */
+    --cell-bg: #1e293b;
+    --cell-size: 46px; /* Base cell dimension */
+    --radius: 6px;
 }
 
-/* ------------------------------------------------------------
-    1. Global Reset & Base Typography
-    ------------------------------------------------------------ */
+/* --- 2. GLOBAL RESET & BASE TYPOGRAPHY --- */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -33,43 +38,35 @@
     outline: none;
 }
 
-/* Using dvh/vh for full viewport height consistency, especially on mobile browsers */
 html, body {
     height: 100%;
+    height: 100dvh; /* Modern viewport unit */
     font-family: 'Inter', 'Cairo', sans-serif;
     background-color: var(--bg-app);
     color: var(--text-main);
-    overflow: hidden; /* Prevent full-page scrolling */
-    font-size: 14px; /* Base font size */
+    overflow: hidden;
+    font-size: 14px;
 }
 
-/* Scrollbar styling (WebKit) */
+/* WebKit Scrollbar Styling */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-app); }
 ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-/* ------------------------------------------------------------
-    2. Main Layout Structure
-    ------------------------------------------------------------ */
+/* --- 3. MAIN LAYOUT STRUCTURE --- */
+
 .app-layout {
     display: flex;
-    /* 1. Fallback (Required for older browsers) */
-    height: 100vh;
-    /* 2. Preferred/Modern value (Overrides Fallback if supported) */
     height: 100dvh;
     width: 100vw;
 }
 
-/* -------------------------
-    LEFT SIDEBAR (Settings)
-    ------------------------- */
+/* 3.1. LEFT SIDEBAR (Settings) */
 .sidebar {
-    /* Flexible width clamped between min/max sizes */
     width: 20vw;
     min-width: 250px;
     max-width: 350px;
-    
     background: var(--bg-panel);
     border-right: 1px solid var(--border);
     display: flex;
@@ -83,35 +80,15 @@ html, body {
     display: flex;
     align-items: center;
     gap: 10px;
-    color: var(--primary);
 }
-.logo-area i { font-size: 1.5em; }
-.logo-area h1 {
-    font-size: 1.2em;
-    color: #fff;
-    margin: 0;
-    font-weight: 700;
-    line-height: 1;
-}
-.logo-area .subtitle {
-    font-size: 0.75em;
-    color: var(--text-muted);
-    font-weight: 400;
-}
+.logo-area i { font-size: 1.5em; color: var(--primary); }
+.logo-area h1 { font-size: 1.2em; color: #fff; font-weight: 700; line-height: 1; }
+.logo-area .subtitle { font-size: 0.75em; color: var(--text-muted); }
 
-.scrollable-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 15px;
-}
+.scrollable-content { flex: 1; overflow-y: auto; padding: 15px; }
 
-.panel-group {
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-}
+.panel-group { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .panel-group:last-child { border-bottom: none; }
-
 .panel-group h3 {
     font-size: 0.9em;
     text-transform: uppercase;
@@ -122,26 +99,17 @@ html, body {
     align-items: center;
     gap: 8px;
 }
+.sidebar-footer { padding: 15px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.2); }
 
-/* Sidebar footer */
-.sidebar-footer {
-    padding: 15px;
-    border-top: 1px solid var(--border);
-    background: rgba(0,0,0,0.2);
-}
-
-/* -------------------------
-    CENTER WORKSPACE (Grid & Tools)
-    ------------------------- */
+/* 3.2. CENTER WORKSPACE (Grid & Tools) */
 .workspace {
-    flex: 1; /* Takes up remaining space */
+    flex: 1;
     display: flex;
     flex-direction: column;
     background: var(--bg-app);
     position: relative;
 }
 
-/* Floating toolbar */
 .toolbar-dock {
     padding: 10px 20px;
     background: var(--bg-panel);
@@ -152,14 +120,7 @@ html, body {
     gap: 15px;
 }
 .toolbar-divider { width: 1px; height: 24px; background: var(--border); }
-
-.modes {
-    display: flex;
-    gap: 5px;
-    background: var(--bg-input);
-    padding: 4px;
-    border-radius: 8px;
-}
+.modes { display: flex; gap: 5px; background: var(--bg-input); padding: 4px; border-radius: 8px; }
 
 .tool-btn {
     background: transparent;
@@ -175,42 +136,29 @@ html, body {
     transition: all 0.2s;
 }
 .tool-btn:hover { color: #fff; background: rgba(255,255,255,0.05); }
-.tool-btn.active {
-    background: var(--primary);
-    color: white;
-    box-shadow: 0 2px 5px rgba(59, 130, 246, 0.4);
-}
-/* Mode-specific active colors */
+.tool-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 5px rgba(59, 130, 246, 0.4); }
 .tool-btn.switchMode.active { background: var(--accent-purple); box-shadow: 0 2px 5px rgba(168,85,247,0.4); }
 .tool-btn.mustBombMode.active { background: var(--accent-gold); color: #000; box-shadow: 0 2px 5px rgba(251,191,36,0.4); }
 .tool-btn.eraseMode.active { background: var(--accent-danger); box-shadow: 0 2px 5px rgba(239,68,68,0.4); }
 
-/* -------------------------
-    GRID CANVAS AREA
-    ------------------------- */
 .grid-canvas {
     flex: 1;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     position: relative;
-    /* Grid background pattern */
     background-image: radial-gradient(#1e293b 1px, transparent 1px);
     background-size: 20px 20px;
 }
-
 .grid-container-scroll {
     padding: 40px;
-    overflow: auto; /* Allows scrolling if grid exceeds container size */
+    overflow: auto;
     max-width: 100%;
     max-height: 100%;
     display: flex;
     justify-content: center;
 }
-
-/* The grid element */
 #grid {
     display: grid;
     gap: 8px;
@@ -221,16 +169,8 @@ html, body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
-/* -------------------------
-    Grid Stats Overlay
-    ------------------------- */
-.grid-stats {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    display: flex;
-    gap: 8px;
-}
+/* Grid Stats Overlay */
+.grid-stats { position: absolute; bottom: 20px; left: 20px; display: flex; gap: 8px; }
 .stat-pill {
     background: rgba(0,0,0,0.6);
     backdrop-filter: blur(4px);
@@ -242,9 +182,7 @@ html, body {
 }
 .stat-pill i { margin-right: 4px; color: var(--primary); }
 
-/* -------------------------
-    Bottom Action Bar (Solver Controls)
-    ------------------------- */
+/* Bottom Action Bar (Solver Controls) */
 .action-bar {
     height: 70px;
     background: var(--bg-panel);
@@ -254,47 +192,24 @@ html, body {
     align-items: center;
     justify-content: space-between;
 }
-
-.progress-section {
-    flex: 1;
-    max-width: 400px;
-    margin-right: 20px;
-}
-.progress-info {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85em;
-    margin-bottom: 5px;
-    color: var(--text-muted);
-}
-.progress {
-    height: 6px;
-    background: var(--bg-input);
-    border-radius: 3px;
-    overflow: hidden;
-}
-.progressBar {
-    height: 100%;
-    width: 0%; /* Dynamic width controlled by JS */
-    background: linear-gradient(90deg, var(--primary), #60a5fa);
-    transition: width 0.3s ease;
-}
-
+.progress-section { flex: 1; max-width: 400px; margin-right: 20px; }
+.progress-info { display: flex; justify-content: space-between; font-size: 0.85em; margin-bottom: 5px; color: var(--text-muted); }
+.progress { height: 6px; background: var(--bg-input); border-radius: 3px; overflow: hidden; }
+.progressBar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), #60a5fa); transition: width 0.3s ease; }
 .main-actions { display: flex; gap: 10px; }
 
 .btn-solve {
     background: var(--primary);
     color: white;
-    border: none;
     padding: 10px 24px;
     border-radius: 6px;
     font-weight: 700;
     letter-spacing: 0.5px;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    border: none;
 }
 .btn-solve:hover { background: var(--primary-hover); transform: translateY(-1px); }
-
 .btn-cancel {
     background: var(--bg-input);
     color: var(--accent-danger);
@@ -305,15 +220,11 @@ html, body {
 }
 .btn-cancel:disabled { opacity: 0.3; cursor: not-allowed; color: var(--text-muted); }
 
-/* -------------------------
-    RIGHT PANEL (Results)
-    ------------------------- */
+/* 3.3. RIGHT PANEL (Results) */
 .results-panel {
-    /* Flexible width clamped between min/max sizes */
     width: 20vw;
     min-width: 280px;
     max-width: 350px;
-    
     background: var(--bg-panel);
     border-left: 1px solid var(--border);
     display: flex;
@@ -321,29 +232,13 @@ html, body {
     overflow-y: auto;
 }
 
-.panel-header {
-    padding: 15px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+.panel-header { padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
 .panel-header h2 { font-size: 1em; margin: 0; }
-.badge-count {
-    background: var(--primary);
-    color: white;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 0.8em;
-    font-weight: bold;
-}
+.badge-count { background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8em; font-weight: bold; }
 
 .difficulty-card {
     background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-    margin: 15px;
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.05);
+    margin: 15px; padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);
 }
 .diff-header { display: flex; justify-content: space-between; font-size: 0.85em; margin-bottom: 8px; }
 .difficulty-meter { height: 8px; background: rgba(0,0,0,0.3); border-radius: 4px; overflow: hidden; margin-bottom: 8px; }
@@ -352,51 +247,25 @@ html, body {
 .difficulty-fill.difficulty-hard { background: var(--accent-danger); }
 
 .filters-area {
-    padding: 0 15px 15px;
-    border-bottom: 1px solid var(--border);
-    max-height: 30vh;
-    overflow-y: auto;
-    flex-shrink: 0;
-    scrollbar-width: thin;
-    scrollbar-color: #334155 var(--bg-app);
+    padding: 0 15px 15px; border-bottom: 1px solid var(--border); max-height: 30vh; overflow-y: auto; flex-shrink: 0;
+    scrollbar-width: thin; scrollbar-color: #334155 var(--bg-app);
 }
-/* WebKit scrollbar inside filters */
-.filters-area::-webkit-scrollbar { width: 6px; }
-.filters-area::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-.filters-area::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
 
 .tags-cloud { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; margin-bottom: 10px; }
-.tags-cloud div {
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 0.8em;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
+.tags-cloud div { background: var(--bg-input); border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; font-size: 0.8em; display: flex; align-items: center; gap: 5px; }
 
 .cond-filters { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px; }
 .cond-filters .toggle-row { display: flex; align-items: center; gap: 8px; font-size: 0.9em; margin-bottom: 4px; }
 
 .solutions-list-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-.list-controls {
-    padding: 10px 15px;
-    display: flex;
-    gap: 8px;
-    background: var(--bg-panel);
-    border-bottom: 1px solid var(--border);
-    min-height: 0;
-}
+.list-controls { padding: 10px 15px; display: flex; gap: 8px; background: var(--bg-panel); border-bottom: 1px solid var(--border); min-height: 0; }
 
 .solutions-container {
     flex: 1;
     overflow-y: auto;
     padding: 10px;
     min-block-size: 0;
-    scrollbar-width: thin;
-    scrollbar-color: #334155 var(--bg-app);
+    scrollbar-width: thin; scrollbar-color: #334155 var(--bg-app);
 }
 .solRow {
     background: var(--bg-input);
@@ -411,9 +280,7 @@ html, body {
 }
 .solRow:hover { border-color: var(--primary); background: rgba(59,130,246,0.1); }
 
-/* ------------------------------------------------------------
-    3. Form Controls & Buttons
-    ------------------------------------------------------------ */
+/* --- 4. FORM CONTROLS & UTILITY BUTTONS --- */
 input[type="number"], input[type="text"], select, textarea {
     width: 100%;
     background: var(--bg-input);
@@ -433,24 +300,18 @@ input:focus, select:focus { border-color: var(--primary); }
 .setting-item input { width: 70px; text-align: center; }
 .full-width { width: 100%; }
 
-.btn-primary {
-    background: #2563eb;
-    color: white;
-    border: none;
-    padding: 8px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-}
+.input-group { display: flex; flex-direction: column; gap: 5px; }
+.input-group label { font-size: 0.8em; color: var(--text-muted); }
+.input-group input[type="number"] { padding: 6px 10px; border-radius: 4px; }
+
+.btn-primary { background: #2563eb; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: 600; }
 .btn-primary:hover { background: #1d4ed8; }
 .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-muted); width: 100%; padding: 8px; border-radius: 6px; cursor: pointer; }
 .btn-secondary:hover { color: #fff; border-color: #fff; }
 .btn-xs { padding: 4px 8px; font-size: 0.8em; background: var(--bg-input); border: 1px solid var(--border); color: #fff; border-radius: 4px; cursor: pointer; }
 .btn-xs:hover { background: #334155; }
 
-/* ------------------------------------------------------------
-    4. Grid Cells (GAME STYLES)
-    ------------------------------------------------------------ */
+/* --- 5. GRID CELLS (GAME STYLES) --- */
 .cell {
     width: var(--cell-size);
     height: var(--cell-size);
@@ -469,28 +330,30 @@ input:focus, select:focus { border-color: var(--primary); }
     user-select: none;
 }
 .cell:hover { transform: scale(1.05); border-color: var(--primary); z-index: 2; }
+.cell .number { color: #fff; font-size: 1em; z-index: 2; }
 
 /* Blocked Cells (X) */
-.cell.block {
-    background: #222233;
-    color: transparent;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-}
-.cell.block::after {
-    content: '';
-    width: 6px;
-    height: 6px;
-    background: #333344;
-    border-radius: 50%;
-}
+.cell.block { background: #222233; color: transparent; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+.cell.block::after { content: ''; width: 6px; height: 6px; background: #333344; border-radius: 50%; }
 
-/* -------------------------
-    5. Switch States
-    ------------------------- */
+/* Cell Index (Coordinates/ID) */
+.cell-index {
+    position: absolute;
+    bottom: 1px;
+    right: 3px;
+    font-size: 0.6rem;
+    font-family: monospace;
+    color: rgba(255,255,255,0.5);
+    z-index: 20;
+    pointer-events: none;
+    line-height: 1;
+}
+.cell.must-bomb .cell-index { color: rgba(255,255,255,0.8); }
 
-/* Switch OFF (Design/Blocked State) */
-.cell.switch-blocked,
-.cell.switch-off {
+/* --- 6. SWITCH STATES --- */
+
+/* Design/Blocked State */
+.cell.switch-blocked, .cell.switch-off {
     background: var(--accent-purple);
     border: none;
     color: white;
@@ -499,37 +362,21 @@ input:focus, select:focus { border-color: var(--primary); }
     box-shadow: 0 0 8px var(--accent-purple);
 }
 
-/* Switch OPEN state (used in solution display mode) */
+/* Open State (Solution View) */
 .cell.switch-open {
     border: 3px solid var(--accent-purple);
     box-shadow: 0 0 10px rgba(168,85,247,0.9);
 }
 
-/* Visual treatment for bombs inside a switch */
-.cell.bomb.is-switch-bomb,
-.cell.bomb2.is-switch-bomb,
-.cell.bomb-neg.is-switch-bomb {
+/* Bomb in Switch */
+.cell.bomb.is-switch-bomb, .cell.bomb2.is-switch-bomb, .cell.bomb-neg.is-switch-bomb {
     border: 2px solid var(--accent-purple);
     box-shadow: 0 0 8px var(--accent-purple);
 }
 
-/* Overlay badge for switches (Cell ID) */
-.overlay-switch {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    font-size: 0.75em;
-    font-weight: bold;
-    color: var(--accent-purple);
-    line-height: 1;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
-}
+/* --- 7. BOMB STYLES --- */
 
-/* ------------------------------------------------------------
-    6. Must-Bomb (Forced Bomb Placement)
-    ------------------------------------------------------------ */
-
-/* 1. Design Mode */
+/* Must-Bomb (Design Mode) */
 .cell.must-bomb {
     background: rgba(239,68,68,0.2);
     border: 2px solid #ef4444;
@@ -537,7 +384,7 @@ input:focus, select:focus { border-color: var(--primary); }
     box-shadow: 0 0 5px rgba(239,68,68,0.5);
 }
 
-/* 2. Solution Mode (Must Bomb is present in solution) - High specificity via ID */
+/* Must Bomb in Solution */
 #grid .cell.bomb.is-must-bomb {
     background-color: #ef4444;
     border-color: #b91c1c;
@@ -545,21 +392,12 @@ input:focus, select:focus { border-color: var(--primary); }
     box-shadow: 0 0 10px #ef4444;
 }
 
-/* Standard solution bomb styles */
-.cell.bomb {
-    background: var(--primary);
-    color: #fff;
-    box-shadow: 0 0 10px var(--primary);
-    border: none;
-}
-.cell.bomb2 { background: #ec4899; color: #fff; } /* Power bomb (2) */
+/* Standard Solution Bombs */
+.cell.bomb { background: var(--primary); color: #fff; box-shadow: 0 0 10px var(--primary); border: none; }
+.cell.bomb2 { background: #ec4899; color: #fff; } /* Power bomb (+2) */
 .cell.bomb-neg { background: #64748b; color: #000; } /* Negative bomb (-1) */
 
-.cell .number { color: #fff; font-size: 1em; z-index: 2; }
-
-/* ------------------------------------------------------------
-    7. Star Conditions UI
-    ------------------------------------------------------------ */
+/* --- 8. STAR CONDITIONS UI --- */
 .star-editor-group {
     background: rgba(0,0,0,0.2);
     padding: 10px;
@@ -571,9 +409,7 @@ input:focus, select:focus { border-color: var(--primary); }
 .condition-row { display: flex; flex-direction: column; gap: 5px; }
 .condition-type-select { font-size: 0.85em; padding: 4px; }
 
-/* ------------------------------------------------------------
-    8. Utilities, Status Messages & Heatmap
-    ------------------------------------------------------------ */
+/* --- 9. STATUS MESSAGES & WARNINGS --- */
 .status-message {
     position: absolute;
     top: 20px;
@@ -586,6 +422,7 @@ input:focus, select:focus { border-color: var(--primary); }
     backdrop-filter: blur(5px);
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     animation: slideDown 0.3s ease;
+    display: none; /* Initially hidden */
 }
 .status-success { background: rgba(16,185,129,0.2); border: 1px solid var(--accent-success); color: var(--accent-success); }
 .status-error { background: rgba(239,68,68,0.2); border: 1px solid var(--accent-danger); color: var(--accent-danger); }
@@ -593,228 +430,29 @@ input:focus, select:focus { border-color: var(--primary); }
 @keyframes slideDown { from { top: -20px; opacity: 0; } to { top: 20px; opacity: 1; } }
 
 .warnings-section {
-    width: 100%;
-    max-width: 600px;
-    margin-top: 10px;
-    padding: 10px;
-    background: rgba(251,146,60,0.1);
-    border-left: 4px solid #fb923c;
-    color: #fdba74;
-    font-size: 0.9em;
+    width: 100%; max-width: 600px; margin-top: 10px; padding: 10px;
+    background: rgba(251,146,60,0.1); border-left: 4px solid #fb923c;
+    color: #fdba74; font-size: 0.9em;
 }
 
-/* Heatmap base overlay (currently unused, visual effect via JS) */
+/* --- 10. HEATMAP STYLES --- */
+
+/* Heatmap base overlay */
 .heatmap-overlay {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    border-radius: var(--radius);
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    border-radius: var(--radius); z-index: 1;
+    display: flex; align-items: center; justify-content: center;
 }
+
+/* Label for heatmap count */
 .heatmap-label { font-size: 0.5em; color: #fff; font-weight: bold; text-shadow: 0 1px 2px #000; }
 
-/* Heatmap specific styles */
-.cell.heatmap-on {
-    /* Transparent background to allow numbers to be visible over gradient */
-    background-color: transparent !important;
-    z-index: 2;
-}
-
-/* Style for percentage overlay */
+/* Percentage overlay (Top-Left) */
 .heatmap-percent {
     position: absolute;
     top: 2px;
     left: 2px;
     font-size: 10px;
-    font-weight: 700;
-    color: var(--text-main);
-    z-index: 5;
-    background: rgba(0, 0, 0, 0.4);
-    padding: 1px 3px;
-    border-radius: 3px;
-    line-height: 1;
-    min-width: 20px;
-    text-align: center;
-}
-
-/* State when No Solutions are found (Red/Danger Heatmap) */
-.cell.heatmap-no-solutions {
-    /* Background color will be set dynamically via JS/CSS variables for opacity */
-    background-color: var(--accent-danger) !important;
-}
-
-.cell.heatmap-no-solutions .heatmap-percent {
-    color: var(--accent-danger);
-    background: rgba(0, 0, 0, 0.6);
-}
-
-/* Heatmap radio button styling */
-.radio-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-.radio-label {
-    background: var(--bg-input);
-    color: var(--text-muted);
-    padding: 4px 8px;
-    border-radius: var(--radius);
-    font-size: 0.8em;
-    cursor: pointer;
-    transition: background-color 0.15s;
-    display: flex;
-    align-items: center;
-}
-.radio-label input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-.radio-label input[type="radio"]:checked + span {
-    color: var(--text-main);
-    font-weight: 600;
-    background: var(--primary);
-    padding: 2px 4px;
-    border-radius: 4px;
-    margin-right: -4px;
-}
-.radio-label:hover {
-    background: var(--border);
-}
-
-/* ------------------------------------------------------------
-    9. Fixed Cell Index (Coordinates/ID)
-    ------------------------------------------------------------ */
-.cell { position: relative; }
-
-.cell-index {
-    position: absolute;
-    bottom: 1px;
-    right: 3px;
-    font-size: 0.6rem;
-    font-family: monospace;
-    color: rgba(255,255,255,0.5);
-    z-index: 20;
-    pointer-events: none;
-    user-select: none;
-    line-height: 1;
-}
-
-/* Adjust index color on brighter states for visibility */
-.cell.must-bomb .cell-index {
-    color: rgba(255,255,255,0.8);
-}
-
-
-/* ============================================================
-    NEW: RESPONSIVENESS (Media Queries)
-    ============================================================ */
-
-/* -------------------------
-    10. Desktop/Tablet Adjustments (Screens <= 1200px)
-    ------------------------- */
-@media (max-width: 1200px) {
-    /* Slightly reduce max width of side panels */
-    .sidebar {
-        width: 25vw;
-        min-width: 200px;
-        max-width: 280px;
-    }
-    
-    .results-panel {
-        width: 22vw;
-        min-width: 220px;
-        max-width: 250px;
-    }
-    
-    .toolbar-dock {
-        gap: 10px;
-        padding: 10px;
-    }
-}
-
-/* -------------------------
-    11. Mobile / Very Small Screens (Screens <= 768px)
-    Horizontal layout is preserved by scaling down elements.
-    ------------------------- */
-@media (max-width: 768px) {
-    
-    /* 1. Base Font Reduction */
-    html, body {
-        font-size: 10px;
-    }
-
-    /* 2. Cell Size Reduction (Crucial for grid fitting) */
-    :root {
-        --cell-size: 30px;
-    }
-
-    /* 3. Compress Sidebars */
-    .sidebar,
-    .results-panel {
-        width: 15vw; /* 15% width for each sidebar */
-        min-width: 90px;
-        max-width: 150px;
-        flex-shrink: 0;
-    }
-    
-    /* 4. Hide/Compress Non-essential Sidebar Elements */
-    .logo-area {
-        padding: 10px 5px;
-        gap: 5px;
-    }
-    .logo-area h1 { font-size: 1em; }
-    .logo-area .subtitle {
-        display: none; /* Hide subtitle to save space */
-    }
-    
-    /* 5. Central Toolbar Adjustments */
-    .toolbar-dock {
-        padding: 5px;
-        gap: 5px;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    .toolbar-divider { display: none; }
-
-    .tool-btn {
-        padding: 6px 8px;
-        font-size: 0.75em;
-        gap: 3px;
-    }
-    
-    /* 6. Action Bar Adjustments */
-    .action-bar {
-        height: 50px;
-        padding: 0 10px;
-    }
-    
-    /* 7. Reposition Grid Stats */
-    .grid-stats {
-        bottom: 60px; /* Lift above action bar */
-        left: 50%;
-        transform: translateX(-50%);
-        gap: 4px;
-        font-size: 0.9em;
-    }
-    .stat-pill { padding: 3px 6px; }
-
-    /* 8. Reduce Grid Padding */
-    .grid-container-scroll {
-        padding: 10px;
-    }
-}
-/* style.css - أضف هذا في النهاية */
-
-/* 1. تنسيق الرقم في الزاوية اليسرى العليا */
-.heatmap-percent {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    font-size: 9px;
     font-weight: 700;
     color: rgba(255, 255, 255, 0.9);
     background: rgba(0, 0, 0, 0.6);
@@ -823,40 +461,68 @@ input:focus, select:focus { border-color: var(--primary); }
     line-height: 1;
     z-index: 5;
     pointer-events: none;
+    min-width: 20px;
+    text-align: center;
 }
 
-/* 2. تنسيق خيارات الراديو لتظهر كأزرار */
-.radio-options {
-    display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
-}
-
-.radio-label {
-    position: relative;
-    cursor: pointer;
-}
-
-.radio-label input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-}
-
+/* Heatmap Radio Button Styling (acting as segmented buttons) */
+.radio-options { display: flex; gap: 8px; flex-wrap: wrap; }
+.radio-label { position: relative; cursor: pointer; display: flex; align-items: center; }
+.radio-label input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
 .radio-label span {
-    display: block;
-    padding: 4px 8px;
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    font-size: 0.8em;
-    color: var(--text-muted);
-    transition: all 0.2s;
+    display: block; padding: 4px 8px; background: var(--bg-input); border: 1px solid var(--border);
+    border-radius: 4px; font-size: 0.8em; color: var(--text-muted); transition: all 0.2s;
+}
+.radio-label input:checked + span {
+    background: var(--primary); color: white; border-color: var(--primary);
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.4);
+}
+.radio-label:hover span { background: var(--border); }
+
+
+/* --- 11. RESPONSIVENESS (Media Queries) --- */
+
+@media (max-width: 1200px) {
+    /* Tablet/Desktop Adjustments */
+    .sidebar { width: 25vw; min-width: 200px; max-width: 280px; }
+    .results-panel { width: 22vw; min-width: 220px; max-width: 250px; }
+    .toolbar-dock { gap: 10px; padding: 10px; }
 }
 
-.radio-label input:checked + span {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-    box-shadow: 0 0 5px rgba(59, 130, 246, 0.4);
+@media (max-width: 768px) {
+    /* Mobile Adjustments */
+    html, body { font-size: 10px; }
+    :root { --cell-size: 30px; }
+
+    /* Compress Sidebars */
+    .sidebar, .results-panel {
+        width: 15vw;
+        min-width: 90px;
+        max-width: 150px;
+        flex-shrink: 0;
+    }
+    .logo-area { padding: 10px 5px; gap: 5px; }
+    .logo-area h1 { font-size: 1em; }
+    .logo-area .subtitle { display: none; }
+    
+    /* Central Toolbar Adjustments */
+    .toolbar-dock { padding: 5px; gap: 5px; flex-wrap: wrap; justify-content: center; }
+    .toolbar-divider { display: none; }
+    .tool-btn { padding: 6px 8px; font-size: 0.75em; gap: 3px; }
+    
+    /* Action Bar Adjustments */
+    .action-bar { height: 50px; padding: 0 10px; }
+    
+    /* Reposition Grid Stats */
+    .grid-stats {
+        bottom: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        gap: 4px;
+        font-size: 0.9em;
+    }
+    .stat-pill { padding: 3px 6px; }
+
+    /* Reduce Grid Padding */
+    .grid-container-scroll { padding: 10px; }
 }

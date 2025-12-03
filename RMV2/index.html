@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Minesetter Level designer tool - Orpita Game Studio</title>
+
     <meta name="description" content="Welcome to Orpita Studio, an independent game development studio creating narrative-driven interactive experiences. Discover our games and join our journey.">
     <meta name="keywords" content="Orpita Studio, Minesetter, Level Design, Reversed Minesweeper">
     <meta name="author" content="Orpita Studio">
-
     <link rel="icon" href="./assets/imgs/SLogoBlack.png" type="image/png">
-    <script src="https://cdn.tailwindcss.com"></script>
     
     <meta property="og:title" content="Orpita Game Studio">
     <meta property="og:description" content="Independent game development studio creating narrative-driven interactive experiences.">
@@ -19,10 +18,10 @@
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
 
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -56,17 +55,14 @@
 
                 <div class="panel-group">
                     <h3><i class="fas fa-crosshairs"></i> Bomb Rules</h3>
-
                     <div class="setting-item">
                         <label>Normal (1)</label>
                         <input id="bombs1" type="number" min="0" value="2" />
                     </div>
-
                     <div class="setting-item">
                         <label>Power (2)</label>
                         <input id="bombs2" type="number" min="0" value="2" />
                     </div>
-
                     <div class="setting-item">
                         <label>Negative (-1)</label>
                         <input id="bombsNeg" type="number" min="0" value="2" />
@@ -134,8 +130,19 @@
                     </label>
                     <div id="countSymStatus" class="status-text small"></div>
 
-                    <label style="margin-top:10px; display:block">Max Solutions</label>
-                    <input id="maxSolutions" type="number" value="5000" />
+                    <div class="control-group" style="padding: 10px 15px; border-bottom: 1px solid var(--border);">
+                        <label style="font-weight:600; display:block; margin-bottom:5px;">Solver Limits</label>
+                        
+                        <div class="input-group">
+                            <label for="maxAnalysisLimit">Analysis limit:</label>
+                            <input id="maxAnalysisLimit" type="number" value="1000000" title="Max Solutions to save for Heatmap/Analysis" />
+                        </div>
+                        
+                        <div class="input-group" style="margin-top:10px;">
+                            <label for="maxSolutionsLimit">Display Solutions limit:</label>
+                            <input id="maxSolutionsLimit" type="number" value="1000" title="The maximum total solutions to find before stopping the solver worker." />
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -149,6 +156,7 @@
         </aside>
 
         <main class="workspace">
+            
             <div class="toolbar-dock">
                 <div class="modes" role="tablist">
                     <button id="modeBlock" class="tool-btn active" title="Block (X)"><i class="fas fa-square"></i> Block</button>
@@ -156,7 +164,6 @@
                     <button id="modeMustBomb" class="tool-btn mustBombMode" title="Must Bomb"><i class="fas fa-bomb"></i> Must</button>
                     <button id="modeErase" class="tool-btn eraseMode" title="Erase"><i class="fas fa-eraser"></i> Erase</button>
                 </div>
-
                 <div class="toolbar-divider"></div>
                 <button id="clear" class="tool-btn ghost" title="Clear Map"><i class="fas fa-trash"></i> Clear</button>
             </div>
@@ -196,6 +203,7 @@
         </main>
 
         <aside class="results-panel">
+            
             <div class="panel-header">
                 <h2>Analysis & Solutions</h2>
                 <div style="display:flex; gap:5px">
@@ -222,22 +230,10 @@
                     <div id="heatmapOptions" style="display: none; margin-top: 10px;">
                         <label style="font-size:0.8em; color:var(--text-muted); display:block; margin-bottom:5px;">Bomb Type:</label>
                         <div class="radio-options">
-                            <label class="radio-label">
-                                <input type="radio" name="heatmapType" value="all" checked onchange="setHeatmapType(this.value)">
-                                <span>All</span>
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="heatmapType" value="normal" onchange="setHeatmapType(this.value)">
-                                <span>Normal (+)</span>
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="heatmapType" value="power" onchange="setHeatmapType(this.value)">
-                                <span>Power (++)</span>
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="heatmapType" value="negative" onchange="setHeatmapType(this.value)">
-                                <span>Neg (-)</span>
-                            </label>
+                            <label class="radio-label"><input type="radio" name="heatmapType" value="all" checked onchange="setHeatmapType(this.value)"><span>All</span></label>
+                            <label class="radio-label"><input type="radio" name="heatmapType" value="normal" onchange="setHeatmapType(this.value)"><span>Normal (+)</span></label>
+                            <label class="radio-label"><input type="radio" name="heatmapType" value="power" onchange="setHeatmapType(this.value)"><span>Power (++)</span></label>
+                            <label class="radio-label"><input type="radio" name="heatmapType" value="negative" onchange="setHeatmapType(this.value)"><span>Neg (-)</span></label>
                         </div>
                     </div>
                 </div>
@@ -257,15 +253,15 @@
                         <button id="resetFiltersBtn" class="btn-xs">Reset</button>
                     </div>
                 </div>
-
+                
                 <div id="analysisConditions" class="analysis-box"></div>
             </div>
 
             <div class="solutions-list-wrapper">
                 <div class="list-controls">
-                    <input id="maxShow" type="number" value="1000" title="Limit" />
-                    <button id="sortStars" class="btn-xs" title="Sort by Stars"><i class="fas fa-star"></i></button>
-                    <button id="filterTopStars" class="btn-xs" title="Best Only"><i class="fas fa-trophy"></i></button>
+                    <input id="maxShow" type="number" value="200" title="Limit" />
+                    <button id="sortStars" class="btn-xs" title="Sort by Conditions Met"><i class="fas fa-star"></i></button>
+                    <button id="filterTopStars" class="btn-xs" title="Solutions meeting all conditions"><i class="fas fa-trophy"></i></button>
                 </div>
 
                 <div id="solutionsList" class="solutions-container">
