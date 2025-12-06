@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Orpita Game Studio</title>
-    <meta name="description" content="Welcome to Orpita Studio, an independent game development studio creating narrative-driven interactive experiences. Discover our games and join our journey.">
-    <meta name="keywords" content="Orpita Studio, Orpita game studio, game development, indie games, narrative games, interactive experiences, game studio">
-    <meta name="author" content="Orpita Studio">
+    <title>Minesetter Level designer tool - Orpita Game Studio</title>
 
-    <link rel="icon" href="./assets/imgs/SLogoBlack.png" type="image/png"> <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="description" content="Welcome to Orpita Studio, an independent game development studio creating narrative-driven interactive experiences. Discover our games and join our journey.">
+    <meta name="keywords" content="Orpita Studio, Minesetter, Level Design, Reversed Minesweeper">
+    <meta name="author" content="Orpita Studio">
+    <link rel="icon" href="./assets/imgs/SLogoBlack.png" type="image/png">
     
     <meta property="og:title" content="Orpita Game Studio">
     <meta property="og:description" content="Independent game development studio creating narrative-driven interactive experiences.">
@@ -18,79 +18,269 @@
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
 
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Orpita Studio",
-      "url": "https://orpita-studio.web.app/",      
-      "logo": "https://orpita-studio.web.app/images/NevLogo.png",
-      "email": "OrpitaStudios@Gmail.com", //
-      "description": "Orpita is an indie game studio based in Egypt, creating narrative-driven interactive experiences.", //
-
-      "sameAs": [
-        "https://www.linkedin.com/company/orpita-game-studio/", //
-        "https://www.youtube.com/@OrpitaStudio", //
-        "https://www.facebook.com/OrpitaStudio", //
-        "https://www.instagram.com/orpitastudio", //
-      ]
-    }
-    </script>
-
-    <!-- External Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
-
-    <!-- Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Momo+Signature&family=Inter&display=swap" rel="stylesheet">
-    
-    <!-- Custom Styles -->
-
- <link rel="stylesheet" href="assets/css/style.css">
-         
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
+<body>
+    <div class="app-layout">
 
-<body class="bg-slate-950 text-gray-200 flex flex-col min-h-screen">
-    
-    <main class="flex-1 flex items-center justify-center text-center">
-        <section class="container mx-auto max-w-4xl px-4 py-32">
-            
-            <div class="SectionGlow p-8 md:p-16 rounded-3xl border border-slate-800">
-                
-                <h1 class="text-4xl md:text-6xl lg:text-7xl font-black leading-tight mb-6">
-                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-purple-500">
-                        SITE UNDER MAINTENANCE
-                    </span>
-                </h1>
+        <aside class="sidebar">
+            <div class="logo-area">
+                <i class="fas fa-bomb"></i>
+                <div>
+                    <h1>Minesetter</h1>
+                    <span class="subtitle">Level Designer V2.2.1</span>
+                </div>
+            </div>
 
-                <p class="text-lg md:text-xl text-gray-400 mt-6 max-w-2xl mx-auto">
-                    We are currently making crucial updates to enhance your experience. 
-                    <br>
-                    We apologize for the inconvenience. Please check back later!
-                </p>
+            <div class="scrollable-content">
 
-                <div class="mt-10">
-                    <p class="text-base text-violet-400 font-medium">
-                        Expected downtime: A few days.
-                    </p>
+                <div class="panel-group">
+                    <h3><i class="fas fa-ruler-combined"></i>Grid Size</h3>
+                    <div class="input-row">
+                        <div class="input-wrapper">
+                            <label>Columns</label>
+                            <input id="gridCols" type="number" min="0" max="12" value="4" />
+                        </div>
+                        <div class="input-wrapper">
+                            <label>Rows</label>
+                            <input id="gridRows" type="number" min="0" max="12" value="4" />
+                        </div>
+                    </div>
+                    <button id="build" class="btn-primary full-width">Update Grid</button>
                 </div>
 
-                
+                <div class="panel-group">
+                    <h3><i class="fas fa-crosshairs"></i> Bomb Rules</h3>
+                    <div class="setting-item">
+                        <label>Normal (1)</label>
+                        <input id="bombs1" type="number" min="0" value="2" />
+                    </div>
+                    <div class="setting-item">
+                        <label>Power (2)</label>
+                        <input id="bombs2" type="number" min="0" value="2" />
+                    </div>
+                    <div class="setting-item">
+                        <label>Negative (-1)</label>
+                        <input id="bombsNeg" type="number" min="0" value="2" />
+                    </div>
+                </div>
+
+                <div class="panel-group">
+                    <h3><i class="fas fa-trophy"></i> Target Score</h3>
+                    <div class="input-row">
+                        <input id="targetMin" type="number" placeholder="Min" value="-20" />
+                        <span class="sep">-</span>
+                        <input id="targetMax" type="number" placeholder="Max" value="30" />
+                    </div>
+                    <select id="modeTarget" style="margin-top:8px;">
+                        <option value="range" selected>Range Mode</option>
+                        <option value="exact">Exact Value</option>
+                    </select>
+                </div>
+
+                <div class="panel-group">
+                    <h3><i class="fas fa-star"></i> Star condition</h3>
+
+                    <div class="star-editor-group" id="star1Group">
+                        <h4>★ Star 1</h4>
+                        <div class="single-condition-container" data-star-id="1"></div>
+                    </div>
+
+                    <div class="star-editor-group" id="star2Group">
+                        <h4>★ Star 2</h4>
+                        <div class="single-condition-container" data-star-id="2"></div>
+                    </div>
+
+                    <div class="star-editor-group" id="star3Group">
+                        <h4>★ Star 3</h4>
+                        <div class="single-condition-container" data-star-id="3"></div>
+                    </div>
+
+                    <template id="conditionRowTemplate">
+                        <div class="condition-row">
+                            <select class="condition-type-select" style="width: 100%; margin-bottom: 5px;">
+                                <option value="" disabled selected>Select Condition Type</option>
+                                <option value="getScore">Exact Target Value (Sum)</option>
+                                <option value="placeBombAt">Bomb In Specific Cell ID(s)</option>
+                                <option value="anyCellValue">Specific Value In Any Cell</option>
+                                <option value="cellValues">Specific Value In Specific Cell(s)</option>
+                                <option value="emptyCellsCount">Zero-Value Cells Count</option>
+                                <option value="setSwitches">Switch State Requirement</option>
+                            </select>
+
+                            <div class="condition-value-area" style="flex-grow: 1; display: flex; align-items: center; gap: 5px;">
+                                <span class="small" style="color:var(--text-muted)">Select a type to configure.</span>
+                            </div>
+
+                            <button class="btn-xs remove-condition-btn" style="display: none;">&times;</button>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="panel-group collapsed-settings">
+                    <h3><i class="fas fa-cogs"></i> Advanced</h3>
+
+                    <label class="checkbox-row">
+                        <input id="countSym" type="checkbox" checked />
+                        Check Symmetry
+                    </label>
+                    <div id="countSymStatus" class="status-text small"></div>
+
+                    <div class="control-group" style="padding: 10px 15px; border-bottom: 1px solid var(--border);">
+                        <label style="font-weight:600; display:block; margin-bottom:5px;">Solver Limits</label>
+                        
+                        <div class="input-group">
+                            <label for="maxAnalysisLimit">Analysis limit:</label>
+                            <input id="maxAnalysisLimit" type="number" value="1000000" title="Max Solutions to save for Heatmap/Analysis" />
+                        </div>
+                        
+                        <div class="input-group" style="margin-top:10px;">
+                            <label for="maxSolutionsLimit">Display Solutions limit:</label>
+                            <input id="maxSolutionsLimit" type="number" value="1000" title="The maximum total solutions to find before stopping the solver worker." />
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="mt-16 opacity-70">
-                <img src="./assets/imgs/SLogo.png" alt="Orpita Studio Logo" class="h-10 w-auto mx-auto" onerror="this.src='https://placehold.co/120x40/1e1b4b/9333ea?text=LOGO'">
-            </div>
-
-        </section>
-    </main>
-
-    <footer class="w-full py-8 border-t border-slate-800">
-        <div class="container mx-auto px-4 text-center">
-            <p class="text-sm text-gray-500">© 2025 Orpita Studio. All Rights Reserved.</p>
+            <div class="sidebar-footer">
+    <div style="margin-bottom: 8px;">
+        <input type="text" id="exportFileName" placeholder="File Name (e.g. level_01)" value="level_custom" style="margin-bottom:5px;" />
+        
+        <div style="display:flex; gap: 5px; margin-bottom: 5px;">
+            <button id="exportBtn" class="btn-primary" style="flex-grow: 1;"><i class="fas fa-download"></i> Download JSON</button>
+            <button id="copyJsonBtn" class="btn-secondary btn-xs" title="Copy JSON to Clipboard" style="flex-basis: 35px; flex-grow: 0;"><i class="fas fa-copy"></i></button>
         </div>
-    </footer>
-    </body>
+
+        <button id="importBtn" class="btn-secondary full-width"><i class="fas fa-upload"></i> Import JSON</button>
+    </div>
+    <textarea id="exportData" readonly style="display:none"></textarea>
+</div>
+        </aside>
+
+        <main class="workspace">
+            
+            <div class="toolbar-dock">
+                <div class="modes" role="tablist">
+                    <button id="modeBlock" class="tool-btn active" title="Block (X)"><i class="fas fa-square"></i> Block</button>
+                    <button id="modeSwitch" class="tool-btn switchMode" title="Switch"><i class="fas fa-toggle-on"></i> Switch</button>
+                    <button id="modeMustBomb" class="tool-btn mustBombMode" title="Must Bomb"><i class="fas fa-bomb"></i> Must</button>
+                    <button id="modeErase" class="tool-btn eraseMode" title="Erase"><i class="fas fa-eraser"></i> Erase</button>
+                </div>
+                <div class="toolbar-divider"></div>
+                <button id="clear" class="tool-btn ghost" title="Clear Map"><i class="fas fa-trash"></i> Clear</button>
+            </div>
+
+            <div class="grid-canvas">
+                <div class="grid-container-scroll">
+                    <div id="grid" role="grid"></div>
+                </div>
+
+                <div class="grid-stats">
+                    <div class="stat-pill"><i class="fas fa-th"></i> <span id="cellCount">0</span> Cells</div>
+                    <div class="stat-pill"><i class="fas fa-square"></i> <span id="blocksCount">0</span> Blocks</div>
+                    <div class="stat-pill"><i class="fas fa-toggle-on"></i> <span id="switchesCount">0</span> Switches</div>
+                    <div class="stat-pill"><i class="fas fa-bomb"></i> <span id="mustBombsCount">0</span> Must</div>
+                </div>
+
+                <div id="statusMessage" class="status-message" style="display:none"></div>
+                <div id="warningsContainer" class="warnings-section"></div>
+            </div>
+
+            <div class="action-bar">
+                <div class="progress-section">
+                    <div class="progress-info">
+                        <span id="timeInfo">Ready</span>
+                        <span style="margin-left: 10px; color: var(--accent-gold);"> Est: <span id="combCount">—</span></span>
+                        <span id="progressPct" style="margin-left: auto;">0%</span>
+                    </div>
+                    <div class="progress"><div id="progressBar" class="progressBar"></div></div>
+                </div>
+
+                <div class="main-actions">
+                    <button id="estimateBtn" class="btn-ghost">Estimate</button>
+                    <button id="solve" class="btn-solve"><i class="fas fa-play"></i> SOLVE</button>
+                    <button id="cancel" class="btn-cancel" disabled><i class="fas fa-stop"></i></button>
+                </div>
+            </div>
+        </main>
+
+        <aside class="results-panel">
+            
+            <div class="panel-header">
+                <h2>Analysis & Solutions</h2>
+                <div style="display:flex; gap:5px">
+                    <span id="maxStarSeen" style="display:none">0</span>
+                    <span id="solutionsCount" class="badge-count">0</span>
+                </div>
+            </div>
+
+            <div class="difficulty-card">
+                <div class="diff-header">
+                    <span>Difficulty</span>
+                    <span id="difficultyLabel">—</span>
+                </div>
+                <div class="difficulty-meter"><div id="difficultyFill" class="difficulty-fill"></div></div>
+                <div id="difficultyScore" class="small-text"></div>
+                <div id="difficultyDetails" class="small-text"></div>
+                
+                <div class="control-group" style="padding: 10px 15px; border-bottom: 1px solid var(--border);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <label for="toggleHeatmap" style="font-weight:600; cursor:pointer;">Show Heatmap</label>
+                        <input type="checkbox" id="toggleHeatmap" style="width:auto;"> 
+                    </div>
+                
+                    <div id="heatmapOptions" style="display: none; margin-top: 10px;">
+                        <label style="font-size:0.8em; color:var(--text-muted); display:block; margin-bottom:5px;">Bomb Type:</label>
+                        <div class="radio-options">
+                            <label class="radio-label"><input type="radio" name="heatmapType" value="all" checked onchange="setHeatmapType(this.value)"><span>All</span></label>
+                            <label class="radio-label"><input type="radio" name="heatmapType" value="normal" onchange="setHeatmapType(this.value)"><span>Normal (+)</span></label>
+                            <label class="radio-label"><input type="radio" name="heatmapType" value="power" onchange="setHeatmapType(this.value)"><span>Power (++)</span></label>
+                            <label class="radio-label"><input type="radio" name="heatmapType" value="negative" onchange="setHeatmapType(this.value)"><span>Neg (-)</span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filters-area">
+                <h4>Filters</h4>
+                <div id="analysisTargets" class="tags-cloud"></div>
+                <div id="analysisStars" class="tags-cloud"></div>
+
+                <div id="conditionFiltersContainer" class="cond-filters">
+                    <div class="toggle-row"><input type="checkbox" id="filterC1" checked> <label>Cond 1</label></div>
+                    <div class="toggle-row"><input type="checkbox" id="filterC2" checked> <label>Cond 2</label></div>
+                    <div class="toggle-row"><input type="checkbox" id="filterC3" checked> <label>Cond 3</label></div>
+                    <div class="btn-row">
+                        <button id="applyFiltersBtn" class="btn-xs">Apply</button>
+                        <button id="resetFiltersBtn" class="btn-xs">Reset</button>
+                    </div>
+                </div>
+                
+                <div id="analysisConditions" class="analysis-box"></div>
+            </div>
+
+            <div class="solutions-list-wrapper">
+                <div class="list-controls">
+                    <input id="maxShow" type="number" value="200" title="Limit" />
+                    <button id="sortStars" class="btn-xs" title="Sort by Conditions Met"><i class="fas fa-star"></i></button>
+                    <button id="filterTopStars" class="btn-xs" title="Solutions meeting all conditions"><i class="fas fa-trophy"></i></button>
+                </div>
+
+                <div id="solutionsList" class="solutions-container">
+                    <div class="empty-state">Hit Solve to see results</div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="utils.js"></script>
+    <script src="state.js"></script>
+    <script src="solver.js"></script>
+    <script src="analysis-viewer.js"></script>
+    <script src="ui-core.js"></script>
+</body>
 </html>
