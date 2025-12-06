@@ -173,11 +173,12 @@ function updateDifficultyAnalysis() {
     const probabilityPct = Number(probabilityE4) / 100; // Win Chance Percentage
     let difficultyScore = Math.max(0, 100 - probabilityPct);
     
-    let diffText = 'Easy';
+    let diffText = 'Not even a puzzle';
     let diffClass = 'difficulty-easy';
     if(probabilityPct < 0.1) { diffText = 'Extreme'; diffClass = 'difficulty-hard'; }
-    else if(probabilityPct < 10) { diffText = 'Hard'; diffClass = 'difficulty-hard'; }
-    else if(probabilityPct < 30) { diffText = 'Medium'; diffClass = 'difficulty-medium'; }
+    else if(probabilityPct < 0.5) { diffText = 'Hard'; diffClass = 'difficulty-hard'; }
+    else if(probabilityPct < 2) { diffText = 'Medium'; diffClass = 'difficulty-medium'; }
+    else if(probabilityPct < 5) { diffText = 'Easy'; diffClass = 'difficulty-medium'; }
     
     difficultyFill.style.width = `${difficultyScore}%`;
     difficultyFill.className = `difficulty-fill ${diffClass}`;
@@ -378,10 +379,10 @@ function renderFilteredList(list){
         
         const condStatus = sol.conditionStatus || [false, false, false];
         const statusHtml = `
-            <span style="font-size: 0.8em; margin-left: 10px;">
-                C1:<b style="color:${condStatus[0]?'var(--accent-success)':'var(--accent-danger)'}">•</b> 
-                C2:<b style="color:${condStatus[1]?'var(--accent-success)':'var(--accent-danger)'}">•</b> 
-                C3:<b style="color:${condStatus[2]?'var(--accent-success)':'var(--accent-danger)'}">•</b>
+            <span style="font-size: em; margin-left: 10px;">
+                C1:<b style="color:${condStatus[0]?'var(--accent-success)':'var(--accent-danger)'}">✓</b> 
+                C2:<b style="color:${condStatus[1]?'var(--accent-success)':'var(--accent-danger)'}">✓</b> 
+                C3:<b style="color:${condStatus[2]?'var(--accent-success)':'var(--accent-danger)'}">✓</b>
             </span>`;
         
         row.innerHTML = `
@@ -499,30 +500,133 @@ function handlePostSolveAnalysis(startTime) {
     // 6. Render Conditional Analysis
     renderAggregatedConditionAnalysis(conditionStats, totalFound);
     
-    // 7. Render Warnings
+// 7. Render Warnings (Custom Rule Set)
     warningsContainer.innerHTML = '';
-    let warningsFound = false;
-    const lastTotalCombinations = GameState.results.lastTotalCombinations;
-    const totalFoundBig = BigInt(totalFound);
+    let warningsList = [];
+
+    // --- Data Preparation ---
+    const { rows, cols } = GameState.config;
+    const totalCells = rows * cols;
+    const blocksCount = GameState.grid.blocks.size;
+    const mustBombsCount = GameState.grid.mustBombs.size;
+    const switchesCount = GameState.grid.switches.size;
     
-    // Check if the puzzle is too easy (>90% of combinations are valid)
-    if (lastTotalCombinations > 0n && (totalFoundBig * 100n) / lastTotalCombinations >= 90n) {
-        warningsContainer.innerHTML += `<div>Warning: Puzzle is too easy. >90% of combinations are valid.</div>`;
-        warningsFound = true;
+    // Bomb Counts
+    const b1 = parseInt(document.getElementById('bombs1').value) || 0;
+    const b2 = parseInt(document.getElementById('bombs2').value) || 0;
+    const bn = parseInt(document.getElementById('bombsNeg').value) || 0;
+    const playerBombsCount = b1 + b2 + bn; // Bombs in player inventory
+    const totalEffectiveBombs = playerBombsCount + mustBombsCount; // All bombs on board
+
+    // Cells available for player to place bombs
+    const availableCells = totalCells - blocksCount - mustBombsCount;
+    
+    // Limits
+    const maxAnalysisVal = parseInt(document.getElementById('maxAnalysisLimit')?.value) || 1000000;
+    const maxShowVal = parseInt(document.getElementById('maxShow')?.value) || 200;
+    const lastTotalCombos = GameState.results.lastTotalCombinations;
+    const winChance = GameState.results.chanceWinPercentage || 0;
+
+    // --- Rule 1: Too Easy (Random Chance > 5%) ---
+    if (totalFound > 0 && winChance > 5.0) {
+        warningsList.push({
+            type: 'warning',
+            text: `Too Easy: Random guessing success rate is very high (${winChance.toFixed(2)}% > 5%).`
+        });
     }
-    
-    // Check if too constrained (Must-Bombs vs. total bombs)
-    const totalBombs = (parseInt(document.getElementById('bombs1').value) || 0) + 
-                       (parseInt(document.getElementById('bombs2').value) || 0) + 
-                       (parseInt(document.getElementById('bombsNeg').value) || 0);
-    const totalConstraints = GameState.grid.mustBombs.size;
-    
-    if (totalBombs > 0 && totalConstraints / totalBombs >= 0.5) {
-        warningsContainer.innerHTML += `<div>Warning: Too constrained. Must-Bombs cover ≥50% of total bombs.</div>`;
-        warningsFound = true;
+
+    // --- Rule 2: Wide Areas (Available Cells > 3x Player Bombs) ---
+    if (playerBombsCount > 0 && availableCells > (playerBombsCount * 3)) {
+        warningsList.push({
+            type: 'info',
+            text: `Wide Area: Available cells (${availableCells}) are more than three times the player bombs (${playerBombsCount}). Consider reducing map size.`
+        });
     }
+
+    // --- Rule 3: Useless Borders (Full wall on edge) ---
+    let borderWallFound = false;
+    // Check Top Row (0)
+    let topBlocked = true;
+    for(let c=0; c<cols; c++) if(!GameState.grid.blocks.has(c)) { topBlocked = false; break; }
     
-    warningsContainer.style.display = warningsFound ? 'block' : 'none';
+    // Check Bottom Row (rows-1)
+    let botBlocked = true;
+    for(let c=0; c<cols; c++) if(!GameState.grid.blocks.has((rows-1)*cols + c)) { botBlocked = false; break; }
+
+    // Check Left Col (0)
+    let leftBlocked = true;
+    for(let r=0; r<rows; r++) if(!GameState.grid.blocks.has(r*cols)) { leftBlocked = false; break; }
+
+    // Check Right Col (cols-1)
+    let rightBlocked = true;
+    for(let r=0; r<rows; r++) if(!GameState.grid.blocks.has(r*cols + (cols-1))) { rightBlocked = false; break; }
+
+    if (topBlocked || botBlocked || leftBlocked || rightBlocked) {
+        warningsList.push({
+            type: 'warning',
+            text: `Redundant Border: A full row/column of blocks exists at the edge. Best practice is to resize the grid dimensions.`
+        });
+    }
+
+    // --- Rule 4: Analysis Accuracy (Analysis Limit < Total Permutations) ---
+    // Note: lastTotalCombos is BigInt, maxAnalysisVal is Number
+    if (lastTotalCombos > BigInt(maxAnalysisVal)) {
+        warningsList.push({
+            type: 'info',
+            text: `Partial Analysis: Total permutations exceed the analysis limit. Heatmap and stats are not 100% accurate.`
+        });
+    }
+
+    // --- Rule 5: Too Many Blocks (> 40% of grid) ---
+    if (totalCells > 0 && (blocksCount / totalCells) > 0.40) {
+        warningsList.push({
+            type: 'warning',
+            text: `Crowded Grid: Blocks cover >40% of the map size.`
+        });
+    }
+
+    // --- Rule 6: Over-constrained (MustBombs > 50% of Total Bombs) ---
+    if (totalEffectiveBombs > 0 && (mustBombsCount / playerBombsCount) > 0.50) {
+        warningsList.push({
+            type: 'warning',
+            text: `Hand-Holding: Must-Bombs represent >50% of total bombs. Try to rely more on player deduction.`
+        });
+    }
+
+    // --- Rule 7: High Complexity (Switches > 5) ---
+    if (switchesCount > 5) {
+        warningsList.push({
+            type: 'warning',
+            text: `High Complexity: Using >5 switches creates a massive probability web.`
+        });
+    }
+
+    // --- Rule 8: Limited Visibility (Display Limit < 10% of Found) ---
+    if (totalFound > 0 && maxShowVal < (totalFound * 0.10)) {
+        warningsList.push({
+            type: 'info',
+            text: `Limited Visibility: Display limit is showing less than 10% of valid solutions found.`
+        });
+    }
+
+    // --- Render Warnings ---
+    if (warningsList.length > 0) {
+        warningsContainer.style.display = 'block';
+        warningsList.forEach(w => {
+            // Colors: warning = Orange/Amber, info = Blue/Light
+            const color = w.type === 'warning' ? '#f59e0b' : '#60a5fa'; 
+            const icon = w.type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+            
+            warningsContainer.innerHTML += `
+                <div style="margin-bottom: 6px; color: ${color}; display: flex; align-items: flex-start; gap: 8px; font-size: 0.9em; line-height: 1.4;">
+                    <i class="fas ${icon}" style="margin-top: 3px;"></i>
+                    <span>${w.text}</span>
+                </div>
+            `;
+        });
+    } else {
+        warningsContainer.style.display = 'none';
+    }
     
     // 8. Final Updates
     updateDifficultyAnalysis();
