@@ -275,8 +275,9 @@ function runSolver(config) {
                             else if (cStatus[1]) conditionStats['C2_Only']++;
                             else if (cStatus[2]) conditionStats['C3_Only']++;
 
+const isPerfect = cStatus[0] && cStatus[1] && cStatus[2];
                             // Save Solution for Display (Limited by maxSolutions)
-                            if (solutions.length < maxSolutions) {
+                            if (solutions.length < maxSolutions|| isPerfect) {
                                 solutions.push({
                                     normalBombs: normalCombo,
                                     powerBombs: powerCombo,

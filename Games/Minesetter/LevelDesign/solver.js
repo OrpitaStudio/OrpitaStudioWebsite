@@ -35,9 +35,17 @@ async function solveHandler() {
   
   // Target Score Configuration
   const targetMode = document.getElementById('modeTarget')?.value || 'range';
-  let tminVal = parseInt(document.getElementById('targetMin').value.trim()) || -Infinity;
-  let tmaxVal = parseInt(document.getElementById('targetMax').value.trim()) || Infinity;
-  
+  // Target Score Configuration
+
+// نقوم بقراءة القيم أولاً
+let parsedTMin = parseInt(document.getElementById('targetMin').value.trim());
+let parsedTMax = parseInt(document.getElementById('targetMax').value.trim());
+
+// نستخدم Number.isFinite لتحديد ما إذا كانت القيمة صالحة (بما في ذلك الصفر).
+// إذا كانت القيمة غير صالحة (NaN)، نعطيها القيمة الافتراضية (-Infinity أو Infinity)
+let tminVal = Number.isFinite(parsedTMin) ? parsedTMin : -Infinity;
+let tmaxVal = Number.isFinite(parsedTMax) ? parsedTMax : Infinity;
+
   if (targetMode === 'exact') tmaxVal = tminVal !== -Infinity ? tminVal : tmaxVal;
   
   // Solver Limits

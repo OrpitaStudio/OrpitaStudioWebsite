@@ -704,7 +704,7 @@ copyJsonBtn.addEventListener('click', async () => {
 importBtn.addEventListener('click', () => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'application/json';
+    input.accept = '.json,application/json';
     input.onchange = (event) => {
         const file = event.target.files[0];
         if (!file) return;
@@ -727,6 +727,75 @@ importBtn.addEventListener('click', () => {
     input.click();
 });
 
+// 4. استيراد JSON كنص (Import Text) - الميزة الجديدة
+const importTextBtn = document.getElementById('importTextBtn');
+if (importTextBtn) {
+    importTextBtn.addEventListener('click', async () => {
+        // نطلب من المستخدم لصق الكود
+        // ملاحظة: الـ prompt قد يكون محدوداً في عدد الحروف في بعض المتصفحات
+        // لكنه أسرع حل حالياً للكود القصير والمتوسط.
+        const jsonText = prompt("Please paste the Level JSON data here:");
+        
+        if (!jsonText) return; // المستخدم ضغط Cancel أو لم يكتب شيئاً
+
+        try {
+            const levelData = JSON.parse(jsonText);
+            setUIFromLevelData(levelData); // استخدام نفس الدالة الموجودة سابقاً
+            if (typeof showStatus === 'function') showStatus('Level loaded from text successfully!');
+        } catch (err) {
+            console.error('Error parsing JSON text:', err);
+            if (typeof showStatus === 'function') showStatus('Error: Invalid JSON text format.', true);
+        }
+    });
+}
+// --- 7. TERMS & CONDITIONS MODAL LOGIC ---
+
+function initTermsModal() {
+    const overlay = document.getElementById('termsOverlay');
+    const checkbox = document.getElementById('termsCheckbox');
+    const btnAccept = document.getElementById('btnAcceptTerms');
+    const btnDecline = document.getElementById('btnDeclineTerms');
+
+    // 1. التحكم في زر الاستمرار بناءً على الـ Checkbox
+    checkbox.addEventListener('change', () => {
+        btnAccept.disabled = !checkbox.checked;
+    });
+
+    // 2. عند الموافقة (إخفاء الصندوق وإزالة البلور)
+    btnAccept.addEventListener('click', () => {
+        overlay.classList.add('hidden');
+        // يمكن تخزين الموافقة في localStorage لو عاوز المستخدم ميشوفش الرسالة دي تاني
+        // localStorage.setItem('termsAccepted', 'true'); 
+    });
+
+    // 3. عند الرفض (إغلاق الموقع أو الرجوع للخلف)
+    btnDecline.addEventListener('click', () => {
+        if (confirm("Are you sure you want to decline? You will be redirected.")) {
+            // محاولة الرجوع للصفحة السابقة
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                // إذا لم يكن هناك تاريخ تصفح، نذهب لصفحة فارغة أو جوجل
+                window.location.href = "https://www.google.com";
+            }
+            // محاولة إغلاق النافذة (قد لا تعمل في بعض المتصفحات لأسباب أمنية)
+            window.close();
+        }
+    });
+    
+    // (اختياري) لو عاوز تفحص لو المستخدم وافق قبل كده
+    // if (localStorage.getItem('termsAccepted') === 'true') {
+    //     overlay.classList.add('hidden'); // إخفاء مباشر
+    //     overlay.style.display = 'none'; // لضمان عدم ظهوره لحظياً
+    // }
+}
+/* --- ADD THIS TO THE END OF ui-core.js --- */
+
+
+
+initTermsModal();
+// Call initTheme inside the initialization block or at the end of file
+// استدعاء الدالة عند بدء التشغيل
 
 // Initial boot sequence
 buildGrid();

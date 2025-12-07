@@ -32,7 +32,7 @@
                 <i class="fas fa-bomb"></i>
                 <div>
                     <h1>Minesetter</h1>
-                    <span class="subtitle">Level Designer V2.2.1</span>
+                    <span class="subtitle">Level Designer V2.3</span>
                 </div>
             </div>
 
@@ -154,8 +154,14 @@
             <button id="exportBtn" class="btn-primary" style="flex-grow: 1;"><i class="fas fa-download"></i> Download JSON</button>
             <button id="copyJsonBtn" class="btn-secondary btn-xs" title="Copy JSON to Clipboard" style="flex-basis: 35px; flex-grow: 0;"><i class="fas fa-copy"></i></button>
         </div>
-
-        <button id="importBtn" class="btn-secondary full-width"><i class="fas fa-upload"></i> Import JSON</button>
+<div style="display:flex; gap: 5px;">
+    <button id="importBtn" class="btn-secondary" style="flex-grow: 1;" title="Upload JSON File">
+        <i class="fas fa-upload"></i> File
+    </button>
+    <button id="importTextBtn" class="btn-secondary" style="flex-grow: 1;" title="Paste JSON Text">
+        <i class="fas fa-paste"></i> Text
+    </button>
+</div>
     </div>
     <textarea id="exportData" readonly style="display:none"></textarea>
 </div>
@@ -277,10 +283,66 @@
         </aside>
     </div>
 
+<div id="termsOverlay" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <i class="fas fa-file-contract"></i>
+            <h2>Terms of Service</h2>
+        </div>
+        
+<div class="modal-body">
+    <div class="terms-scroll-area">
+        <p>Welcome to the <strong>Minesetter Level Designer Tool</strong>. This tool is the exclusive property of **Orpita Studio**. By continuing, you agree to the following strict Terms of Service and Intellectual Property guidelines:</p>
+        
+        <h3>1. Intellectual Property Ownership</h3>
+        <p>This tool, its internal logic, all underlying code, and the fundamental concept/logic of the Minesetter game are the exclusive intellectual property of Orpita Studio.</p>
+        
+        <h3>2. Prohibited Use and Scope</h3>
+        <p>Use of this tool is restricted exclusively to designing levels for the <strong>Minesetter game only</strong>. Furthermore, the following actions are strictly forbidden:</p>
+        <ul class="sub-terms-list">
+            <li>Attempting to extract, use, or reverse engineer any part of the tool's logic, source code, or the Minesetter game logic.</li>
+            <li>Using the tool or any resulting output (excluding final Minesetter level designs) for any **commercial purpose** or monetary gain without a formal, explicit, and written authorization from Orpita Studio.</li>
+            <li>Using the tool for any purpose other than designing Minesetter levels.</li>
+        </ul>
+        
+        <h3>3. Disclaimers and Liability</h3>
+        <p>To the maximum extent permitted by law, Orpita Studio provides the following disclaimers:</p>
+        <ul class="sub-terms-list">
+            <li>
+                <strong>Disclaimer of Warranty ("As Is"):</strong> The tool is provided "AS IS" without any warranties, express or implied, regarding accuracy, performance, or fitness for a particular purpose.
+            </li>
+            <li>
+                <strong>Limitation of Liability:</strong> In no event shall Orpita Studio be liable for any direct, indirect, incidental, or consequential damages arising from the use or inability to use the tool.
+            </li>
+        </ul>
+        
+        <p class="small-note" style="color: var(--accent-danger); margin-top: 15px;">
+            Formal, explicit, and written permission from Orpita Studio is required for any use that exceeds these defined boundaries.
+        </p>
+    </div>
+</div>
+
+        <div class="modal-footer">
+            <label class="checkbox-wrapper">
+                <input type="checkbox" id="termsCheckbox">
+                <span>I have read and agree to the Terms of Service.</span>
+            </label>
+            
+            <div class="modal-buttons">
+                <button id="btnDeclineTerms" class="btn-secondary btn-danger-hover">Disagree & Exit</button>
+                <button id="btnAcceptTerms" class="btn-primary" disabled>Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="utils.js"></script>
+
     <script src="utils.js"></script>
     <script src="state.js"></script>
     <script src="solver.js"></script>
     <script src="analysis-viewer.js"></script>
     <script src="ui-core.js"></script>
+    
 </body>
 </html>

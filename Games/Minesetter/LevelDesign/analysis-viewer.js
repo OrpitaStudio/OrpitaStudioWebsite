@@ -44,7 +44,7 @@ function getInitialCells() {
  * Reads C1, C2, C3 conditions from the UI, flattens them, and filters out invalid ones.
  * @returns {Array<Object>} Flat array of valid star (condition) objects.
  */
-function getStarConditionsFromUI() {
+/*function getStarConditionsFromUI() {
     const allStarConditions = [];
     for (let starId = 1; starId <= 3; starId++) {
         const containerEl = document.querySelector(`.single-condition-container[data-star-id="${starId}"]`);
@@ -81,11 +81,41 @@ function getStarConditionsFromUI() {
 /**
  * Updates the export text area with the current level configuration and best solution.
  */
+/**
+ * Updates the export text area with the current level configuration and best solution.
+ */
 function updateExportData() {
-    const starConditionsArray = getStarConditionsFromUI();
+    // 1. معالجة الشروط (كما أصلحناها سابقاً)
+    const rawConditions = typeof getStarConditionsFromUI === 'function' ? getStarConditionsFromUI() : [];
+    const starConditionsArray = rawConditions.flat().filter(c => c && c.type);
+
     const remoteId = document.getElementById('exportFileName').value.trim() || "level_custom";
     const bestSolution = GameState.results.solutions[0] || null;
     
+    // --- بداية الإصلاح الجديد ---
+    
+    // قراءة القيم الخام
+    const rawMin = document.getElementById('targetMin').value;
+    const rawMax = document.getElementById('targetMax').value;
+    const targetMode = document.getElementById('modeTarget')?.value || 'range';
+
+    // دالة مساعدة لضمان قبول الصفر وعدم تحويله لـ -1
+    const parseTargetInput = (val) => {
+        const parsed = parseInt(val);
+        // إذا كان الرقم غير موجود (NaN) نرجع -1، غير ذلك نرجع الرقم حتى لو كان صفراً
+        return isNaN(parsed) ? -1 : parsed;
+    };
+
+    let finalMin = parseTargetInput(rawMin);
+    let finalMax = parseTargetInput(rawMax);
+
+    // منطق Exact Mode: إذا كان الوضع دقيقاً، نجعل الحد الأقصى مساوياً للأدنى
+    if (targetMode === 'exact') {
+        finalMax = finalMin;
+    }
+    
+    // --- نهاية الإصلاح الجديد ---
+
     let solutionPlacementIds = null;
     if (bestSolution) {
         const allBombs = [
@@ -96,7 +126,6 @@ function updateExportData() {
         solutionPlacementIds = Array.from(new Set(allBombs));
     }
 
-    // Convert conditions into final flat object structure (StarConditions)
     const starConditionsObject = starConditionsArray.reduce((acc, cond) => {
         switch (cond.type) {
             case 'getScore': acc.getScore = cond.value; break;
@@ -116,8 +145,11 @@ function updateExportData() {
         bombsCount: parseInt(document.getElementById('bombs1').value) || 0,
         bombsPlusCount: parseInt(document.getElementById('bombs2').value) || 0,
         bombsNegCount: parseInt(document.getElementById('bombsNeg').value) || 0,
-        targetMin: parseInt(document.getElementById('targetMin').value) || -1,
-        targetMax: parseInt(document.getElementById('targetMax').value) || -1,
+        
+        // استخدام القيم الجديدة
+        targetMin: finalMin, 
+        targetMax: finalMax,
+        
         initialCells: getInitialCells(),
         starConditions: starConditionsObject,
         solution: bestSolution ? { placementIds: solutionPlacementIds } : null
@@ -125,7 +157,6 @@ function updateExportData() {
     
     exportDataEl.value = JSON.stringify(data);
 }
-
 // --- III. UI UPDATES AND ANALYSIS CALCULATION ---
 
 /**
@@ -500,7 +531,7 @@ function handlePostSolveAnalysis(startTime) {
     // 6. Render Conditional Analysis
     renderAggregatedConditionAnalysis(conditionStats, totalFound);
     
-// 7. Render Warnings (Custom Rule Set)
+    // 7. Render Warnings (Custom Rule Set)
     warningsContainer.innerHTML = '';
     let warningsList = [];
 
@@ -523,11 +554,87 @@ function handlePostSolveAnalysis(startTime) {
     
     // Limits
     const maxAnalysisVal = parseInt(document.getElementById('maxAnalysisLimit')?.value) || 1000000;
-    const maxShowVal = parseInt(document.getElementById('maxShow')?.value) || 200;
+    const maxSolutionsLimit = parseInt(document.getElementById('maxSolutionsLimit')?.value) || 1000; // Limit for saving solutions
     const lastTotalCombos = GameState.results.lastTotalCombinations;
     const winChance = GameState.results.chanceWinPercentage || 0;
 
-    // --- Rule 1: Too Easy (Random Chance > 5%) ---
+
+    // --- New Rule: Limited Visibility (Based on Storage Limit) ---
+    // التحذير يظهر لو ليميت الحفظ أقل من 10% من الحلول المكتشفة
+    if (totalFound > 0 && maxSolutionsLimit < (totalFound * 0.10)) {
+        warningsList.push({
+            type: 'info',
+            text: `Limited Visibility: The 'Display Solutions limit' (${maxSolutionsLimit}) captures less than 10% of valid solutions. Consider increasing it in Advanced Settings.`
+        });
+    }
+
+    // --- New Rule: Missing Stars Check ---
+    // --- New Rule: Missing Stars Check (CORRECTED) ---
+let definedStarsCount = 0;
+
+// نستدعي الدالة التي تجلب البيانات من الواجهة مباشرة بدلاً من الاعتماد على متغير غير موجود في الـ State
+const currentConditions = typeof getStarConditionsFromUI === 'function' ? getStarConditionsFromUI() : [];
+
+// المصفوفة currentConditions تحتوي على 3 عناصر (مصفوفات فرعية)، واحدة لكل نجمة
+// [ [Star1_Conds], [Star2_Conds], [Star3_Conds] ]
+
+// التحقق من النجمة 1 (Index 0)
+if (currentConditions[0] && currentConditions[0].length > 0) definedStarsCount++;
+
+// التحقق من النجمة 2 (Index 1)
+if (currentConditions[1] && currentConditions[1].length > 0) definedStarsCount++;
+
+// التحقق من النجمة 3 (Index 2)
+if (currentConditions[2] && currentConditions[2].length > 0) definedStarsCount++;
+
+if (definedStarsCount < 3) {
+    warningsList.push({
+        type: 'warning',
+        text: `Incomplete Design: Only ${definedStarsCount} of 3 Star Conditions are set. A complete level requires all 3 stars.`
+    });
+}
+
+   
+
+    // --- New Rules: Star Balance Analysis (Only if 3 stars exist) ---
+    if (definedStarsCount === 3 && totalFound > 0) {
+        const s = conditionStats;
+        const pct = (val) => (val / totalFound) * 100;
+
+        // A. Zero Counts Warning (Empty Buckets)
+        if (s['C1_Only'] === 0) warningsList.push({ type: 'warning', text: `Star Balance: No solutions found for 'Star 1 Only'.` });
+        if (s['C2_Only'] === 0) warningsList.push({ type: 'warning', text: `Star Balance: No solutions found for 'Star 2 Only'.` });
+        if (s['C3_Only'] === 0) warningsList.push({ type: 'warning', text: `Star Balance: No solutions found for 'Star 3 Only'.` });
+        
+        if (s['C1_C2'] === 0) warningsList.push({ type: 'warning', text: `Star Balance: No solutions found for exclusively 'Star 1 & 2'.` });
+        if (s['C1_C3'] === 0) warningsList.push({ type: 'warning', text: `Star Balance: No solutions found for exclusively 'Star 1 & 3'.` });
+        if (s['C2_C3'] === 0) warningsList.push({ type: 'warning', text: `Star Balance: No solutions found for exclusively 'Star 2 & 3'.` });
+        
+        if (s['C1_C2_C3'] === 0) warningsList.push({ type: 'warning', text: `Impossible Perfection: No solutions found that satisfy all 3 Stars!` });
+
+        // B. High Percentages Warning (Too Easy)
+        // Calculate Totals (Inclusive)
+        const totalC1 = s['C1_Only'] + s['C1_C2'] + s['C1_C3'] + s['C1_C2_C3'];
+        const totalC2 = s['C2_Only'] + s['C1_C2'] + s['C2_C3'] + s['C1_C2_C3'];
+        const totalC3 = s['C3_Only'] + s['C1_C3'] + s['C2_C3'] + s['C1_C2_C3'];
+
+        // > 50% for any single star total
+        if (pct(totalC1) > 50) warningsList.push({ type: 'warning', text: `Too Easy: Star 1 is met by >50% of solutions.` });
+        if (pct(totalC2) > 50) warningsList.push({ type: 'warning', text: `Too Easy: Star 2 is met by >50% of solutions.` });
+        if (pct(totalC3) > 50) warningsList.push({ type: 'warning', text: `Too Easy: Star 3 is met by >50% of solutions.` });
+
+        // > 25% for double intersections (Strict bucket)
+        if (pct(s['C1_C2']) > 25) warningsList.push({ type: 'warning', text: `Low Difficulty: 'Star 1 & 2' overlap appears in >25% of solutions.` });
+        if (pct(s['C1_C3']) > 25) warningsList.push({ type: 'warning', text: `Low Difficulty: 'Star 1 & 3' overlap appears in >25% of solutions.` });
+        if (pct(s['C2_C3']) > 25) warningsList.push({ type: 'warning', text: `Low Difficulty: 'Star 2 & 3' overlap appears in >25% of solutions.` });
+
+        // > 12.5% for triple intersection
+        if (pct(s['C1_C2_C3']) > 12.5) warningsList.push({ type: 'warning', text: `Too Easy to Perfect: All 3 stars are met in >12.5% of solutions.` });
+    }
+
+    // --- Existing General Rules ---
+
+    // Rule 1: Too Easy (Random Chance > 5%)
     if (totalFound > 0 && winChance > 5.0) {
         warningsList.push({
             type: 'warning',
@@ -535,7 +642,7 @@ function handlePostSolveAnalysis(startTime) {
         });
     }
 
-    // --- Rule 2: Wide Areas (Available Cells > 3x Player Bombs) ---
+    // Rule 2: Wide Areas (Available Cells > 3x Player Bombs)
     if (playerBombsCount > 0 && availableCells > (playerBombsCount * 3)) {
         warningsList.push({
             type: 'info',
@@ -543,23 +650,12 @@ function handlePostSolveAnalysis(startTime) {
         });
     }
 
-    // --- Rule 3: Useless Borders (Full wall on edge) ---
+    // Rule 3: Useless Borders (Full wall on edge)
     let borderWallFound = false;
-    // Check Top Row (0)
-    let topBlocked = true;
-    for(let c=0; c<cols; c++) if(!GameState.grid.blocks.has(c)) { topBlocked = false; break; }
-    
-    // Check Bottom Row (rows-1)
-    let botBlocked = true;
-    for(let c=0; c<cols; c++) if(!GameState.grid.blocks.has((rows-1)*cols + c)) { botBlocked = false; break; }
-
-    // Check Left Col (0)
-    let leftBlocked = true;
-    for(let r=0; r<rows; r++) if(!GameState.grid.blocks.has(r*cols)) { leftBlocked = false; break; }
-
-    // Check Right Col (cols-1)
-    let rightBlocked = true;
-    for(let r=0; r<rows; r++) if(!GameState.grid.blocks.has(r*cols + (cols-1))) { rightBlocked = false; break; }
+    let topBlocked = true; for(let c=0; c<cols; c++) if(!GameState.grid.blocks.has(c)) { topBlocked = false; break; }
+    let botBlocked = true; for(let c=0; c<cols; c++) if(!GameState.grid.blocks.has((rows-1)*cols + c)) { botBlocked = false; break; }
+    let leftBlocked = true; for(let r=0; r<rows; r++) if(!GameState.grid.blocks.has(r*cols)) { leftBlocked = false; break; }
+    let rightBlocked = true; for(let r=0; r<rows; r++) if(!GameState.grid.blocks.has(r*cols + (cols-1))) { rightBlocked = false; break; }
 
     if (topBlocked || botBlocked || leftBlocked || rightBlocked) {
         warningsList.push({
@@ -568,8 +664,7 @@ function handlePostSolveAnalysis(startTime) {
         });
     }
 
-    // --- Rule 4: Analysis Accuracy (Analysis Limit < Total Permutations) ---
-    // Note: lastTotalCombos is BigInt, maxAnalysisVal is Number
+    // Rule 4: Analysis Accuracy (Analysis Limit < Total Permutations)
     if (lastTotalCombos > BigInt(maxAnalysisVal)) {
         warningsList.push({
             type: 'info',
@@ -577,7 +672,7 @@ function handlePostSolveAnalysis(startTime) {
         });
     }
 
-    // --- Rule 5: Too Many Blocks (> 40% of grid) ---
+    // Rule 5: Too Many Blocks (> 40% of grid)
     if (totalCells > 0 && (blocksCount / totalCells) > 0.40) {
         warningsList.push({
             type: 'warning',
@@ -585,7 +680,7 @@ function handlePostSolveAnalysis(startTime) {
         });
     }
 
-    // --- Rule 6: Over-constrained (MustBombs > 50% of Total Bombs) ---
+    // Rule 6: Over-constrained (MustBombs > 50% of Total Bombs)
     if (totalEffectiveBombs > 0 && (mustBombsCount / playerBombsCount) > 0.50) {
         warningsList.push({
             type: 'warning',
@@ -593,7 +688,7 @@ function handlePostSolveAnalysis(startTime) {
         });
     }
 
-    // --- Rule 7: High Complexity (Switches > 5) ---
+    // Rule 7: High Complexity (Switches > 5)
     if (switchesCount > 5) {
         warningsList.push({
             type: 'warning',
@@ -601,19 +696,10 @@ function handlePostSolveAnalysis(startTime) {
         });
     }
 
-    // --- Rule 8: Limited Visibility (Display Limit < 10% of Found) ---
-    if (totalFound > 0 && maxShowVal < (totalFound * 0.10)) {
-        warningsList.push({
-            type: 'info',
-            text: `Limited Visibility: Display limit is showing less than 10% of valid solutions found.`
-        });
-    }
-
     // --- Render Warnings ---
     if (warningsList.length > 0) {
         warningsContainer.style.display = 'block';
         warningsList.forEach(w => {
-            // Colors: warning = Orange/Amber, info = Blue/Light
             const color = w.type === 'warning' ? '#f59e0b' : '#60a5fa'; 
             const icon = w.type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
             
@@ -634,11 +720,9 @@ function handlePostSolveAnalysis(startTime) {
     renderSolutionsList(parseInt(document.getElementById('maxShow')?.value) || 200);
     
     // Final Status Message
-    const maxAnalysis = parseInt(document.getElementById('maxAnalysisLimit')?.value) || 10000;
-    
     if (GameState.results.abortFlag) {
         showStatus('Cancelled.');
-    } else if (totalFound >= maxAnalysis) {
+    } else if (totalFound >= maxAnalysisVal) {
         showStatus(`Analysis Cap Reached: Found ${totalFound} solutions.`);
     } else if (totalFound === 0) {
         showStatus('No solutions found.', true);

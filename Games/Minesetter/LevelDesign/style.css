@@ -534,3 +534,159 @@ input:focus, select:focus { border-color: var(--primary); }
     /* Reduce Grid Padding */
     .grid-container-scroll { padding: 10px; }
 }
+
+/* --- TERMS MODAL STYLES --- */
+
+/* الخلفية اللي بتغطي الشاشة وتعمل Blur */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(9, 11, 16, 0.6); /* لون غامق شفاف */
+    backdrop-filter: blur(8px); /* تأثير الضباب القوي */
+    -webkit-backdrop-filter: blur(8px); /* لدعم سفاري */
+    z-index: 9999; /* عشان يظهر فوق كل حاجة */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* صندوق المحتوى */
+.modal-box {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 700px;
+    padding: 0;
+    overflow: hidden;
+    transform: scale(1);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-overlay.hidden .modal-box {
+    transform: scale(0.9);
+}
+
+/* تنسيق الهيدر */
+.modal-header {
+    background: rgba(0,0,0,0.2);
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.modal-header i { color: var(--accent-gold); font-size: 1.5em; }
+.modal-header h2 { margin: 0; font-size: 1.2em; color: #fff; }
+
+/* تنسيق المحتوى */
+.modal-body {
+    padding: 20px;
+    color: var(--text-main);
+    font-size: 0.95em;
+    line-height: 1.6;
+}
+.terms-list {
+    margin: 10px 0 10px 20px;
+    color: var(--text-muted);
+}
+.terms-list li { margin-bottom: 5px; }
+.small-note { font-size: 0.85em; color: var(--text-muted); margin-top: 10px; font-style: italic; }
+
+/* الفوتر والأزرار */
+.modal-footer {
+    padding: 20px;
+    background: rgba(0,0,0,0.1);
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.9em;
+    user-select: none;
+}
+.checkbox-wrapper input { width: auto; cursor: pointer; }
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.btn-danger-hover:hover {
+    border-color: var(--accent-danger);
+    color: var(--accent-danger);
+}
+
+/* تعطيل الزر */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+
+/* --- تعديلات على تنسيق الـ MODAL --- */
+
+/* نلغي الـ Padding من الـ modal-body الأصلي ونركز التمرير داخله */
+.modal-body {
+    padding: 0; 
+    color: var(--text-main);
+    font-size: 0.95em;
+    line-height: 1.6;
+}
+
+/* المنطقة القابلة للتمرير */
+.terms-scroll-area {
+    padding: 20px;
+    max-height: 350px; /* تحديد أقصى ارتفاع للمحتوى قبل بدء التمرير */
+    overflow-y: auto; /* تفعيل التمرير العمودي */
+    color: var(--text-main);
+    line-height: 1.6;
+    border-bottom: 1px solid var(--border); /* خط فاصل */
+}
+
+/* تنسيق العناوين الجديدة (H3) */
+.terms-scroll-area h3 {
+    color: var(--accent-gold); /* نفس لون الـ Accent في التصميم */
+    font-size: 1.1em;
+    margin-top: 18px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/* تنسيق القوائم الفرعية (Sub-terms) */
+.sub-terms-list {
+    margin: 5px 0 10px 20px;
+    list-style-type: disc;
+    padding-left: 15px;
+    color: var(--text-muted);
+}
+.sub-terms-list li {
+    margin-bottom: 5px;
+}
+
+/* تنسيق رسالة الموافقة النهائية (تبقى ثابتة أسفل منطقة السكرول) */
+.modal-final-acceptance {
+    padding: 10px 20px 0;
+    font-weight: bold;
+    font-size: 0.9em;
+    color: #fff;
+}
