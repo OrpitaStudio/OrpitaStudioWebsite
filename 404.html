@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>404 - Page Not Found | Orpita Studio</title>
+    <meta name="description" content="The page you requested was not found. Please navigate back to the homepage.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Audiowide&family=Inter:wght@400;700;900&display=swap">
+    <link rel="stylesheet" href="./assets/css/style.css"> 
+    
+    <style>
+        /* تعريف الألوان (متغيرات CSS) */
+        :root {
+            --c01: #ef4444; /* Red-500 */
+            --c02: #8b5cf6; /* Violet-500 (لون Orpita الأساسي) */
+            --c03: #22c55e; /* Green-500 */
+            --main-text-color: #f3f4f6; /* Gray-100 */
+            --bg-color: #020617; /* Slate-950 */
+        }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--main-text-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Glitch Effect - أساس التأثير */
+        .glitch-text {
+            font-family: 'Audiowide', cursive;
+            font-size: 8em;
+            color: var(--c02); 
+            position: relative;
+            animation: glitch 2s steps(100) infinite; 
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: none !important; 
+        }
+
+        /* Keyframes لتأثير Text-Shadow Glitch (التي اخترتها) */
+        @keyframes glitch {
+            0%, 1%, 2%, 3%, 4%, 51%, 52%, 53%, 54%, 55%, 73%, 74%, 75%, 76% { text-shadow: 1px 0 0 var(--c01), -1px 0 0 var(--c02); }
+            10%, 5%, 56%, 57%, 58%, 59%, 6%, 60%, 67%, 68%, 69%, 7%, 70%, 77%, 78%, 79%, 8%, 80%, 9% { text-shadow: -1px 0 0 var(--c01), 1px 0 0 var(--c02); }
+            11%, 12%, 13%, 14%, 15%, 43%, 44%, 45%, 46%, 81%, 82%, 83%, 84%, 85% { text-shadow: 0.5px 0 0 var(--c01), -0.5px 0 0 var(--c03); }
+            16%, 17%, 18%, 19%, 20%, 47%, 48%, 49%, 50%, 86%, 87%, 88%, 89%, 90% { text-shadow: -1px 0 0 var(--c01), 1px 0 0 var(--c02); }
+            21%, 22%, 23%, 24%, 25%, 26%, 27%, 28%, 29%, 30%, 92%, 93%, 94%, 95% { text-shadow: .7px 0 0 var(--c02), -.7px 0 0 var(--c03); }
+            100%, 31%, 32%, 33%, 34%, 35%, 36%, 37%, 38%, 39%, 40%, 96%, 97%, 98%, 99% { text-shadow: -1px 0 0 var(--c02), 1px 0 0 var(--c03); }
+            41% { text-shadow: 50px 0 0 var(--c02), -50px 0 0 var(--c03); }
+            42% { text-shadow: 0 0 0 var(--c02), 0 0 0 var(--c03); }
+            61% { text-shadow: 30px 0 0 var(--c01), -30px 0 0 var(--c03); }
+            62% { text-shadow: 0 0 0 var(--c01), 0 0 0 var(--c03); }
+            63%, 64%, 65%, 66% { text-shadow: .5px 0 0 var(--c01), -.5px 0 0 var(--c02); }
+            71% { text-shadow: 70px 0 0 var(--c01), -70px 0 0 var(--c02); }
+            72% { text-shadow: 0 0 0 var(--c01), 0 0 0 var(--c02); }
+            91% { text-shadow: 60px 0 0 var(--c03), -60px 0 0 var(--c02); }
+        }
+
+    </style>
+</head>
+<body class="bg-slate-950 text-gray-200 flex flex-col min-h-screen">
+
+    <main class="flex-1 flex items-center justify-center p-8">
+        <div class="text-center max-w-2xl">
+            
+            <h1 
+                class="glitch-text text-8xl sm:text-9xl font-black mb-8"
+            >
+                404
+            </h1>
+            
+            <h2 class="text-3xl md:text-5xl font-extrabold text-white mb-6">
+                <span class="text-violet-400">Error:</span> Page Not Found
+            </h2>
+            
+            <p class="text-lg text-gray-400 mb-10 mx-auto max-w-xl">
+                The URL you requested could not be located on our server. The link may be broken, or the page may have been moved.
+            </p>
+
+            <div class="space-y-4 sm:space-y-0 sm:space-x-6">
+                <a href="/en/" class="bg-violet-600 text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-violet-700 transition-all duration-300 transform hover:scale-105 shadow-lg whitespace-nowrap">
+                    Go to Homepage
+                </a>
+                
+                <a 
+                    id="report-issue-btn"
+                    href="mailto:OrpitaStudios@gmail.com" 
+                    class="text-violet-400 border border-violet-400 font-bold py-3 px-8 rounded-full text-lg hover:bg-violet-900 hover:text-white transition-all duration-300 whitespace-nowrap"
+                >
+                    Report an Issue
+                </a>
+            </div>
+            
+            <p class="mt-12 text-sm text-gray-500">
+                Contact the webmaster for assistance.
+            </p>
+
+        </div>
+    </main>
+
+    <footer class="w-full py-8 border-t border-slate-800 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm text-gray-500">© 2025 Orpita Studio. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const reportButton = document.getElementById('report-issue-btn');
+            
+            if (reportButton) {
+                // 1. جمع البيانات المطلوبة
+                const currentURL = window.location.href; // رابط الصفحة الذي أدى للخطأ
+                const userAgent = navigator.userAgent; // معلومات المتصفح
+                const screenRes = `${window.screen.width}x${window.screen.height}`; // دقة الشاشة
+
+                // 2. بناء جسم رسالة البريد الإلكتروني (Body)
+                // يجب ترميز النصوص (encodeURIComponent) لتجنب كسر الرابط
+                const bodyContent = `
+Page Not Found (404) Report:
+
+---
+DETAILS:
+---
+1. Broken URL: ${currentURL}
+2. Browser/OS: ${userAgent}
+3. Screen Res: ${screenRes}
+4. Time of Error: ${new Date().toLocaleString()}
+
+---
+USER MESSAGE:
+(Please describe the issue or what you were trying to do)
+---
+
+`;
+
+                // 3. بناء رابط mailto النهائي
+                const subject = encodeURIComponent('Critical 404 Error Report');
+                const body = encodeURIComponent(bodyContent.trim());
+                const mailtoLink = `mailto:OrpitaStudios@gmail.com?subject=${subject}&body=${body}`;
+
+                // 4. تعيين الرابط للزر
+                reportButton.href = mailtoLink;
+            }
+        });
+    </script>
+</body>
+</html>
