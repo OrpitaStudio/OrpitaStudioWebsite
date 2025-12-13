@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <!-- ==================== META TAGS ==================== -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orpita Studio | Indie Games from Egypt</title>
+    <meta name="description" content="Orpita is an Egyptian indie game studio exploring new ways to create games through creative mechanics and immersive experiences.">
+    <meta name="author" content="Orpita Studio">
+    <link rel="icon" href="./assets/imgs/SLogoBlack.png" type="image/png">
+    <link rel="apple-touch-icon" href="./assets/imgs/SLogoBlack.png">
+    <link rel="canonical" href="https://orpita-studio.web.app/">
+
+    <!-- ==================== OPEN GRAPH ==================== -->
+    <meta property="og:title" content="Orpita Studio | Indie Games from Egypt">
+    <meta property="og:description" content="Orpita is an Egyptian indie game studio exploring new ways to create games through creative mechanics and immersive experiences.">
+    <meta property="og:image" content="https://orpita-studio.web.app/assets/imgs/LinkCover.png">
+    <meta property="og:url" content="https://orpita-studio.web.app/">
+    <meta property="og:type" content="website">
+
+    <!-- ==================== STRUCTURED DATA ==================== -->
+    <script type="application/ld+json">
+    {
+        "@context":"https://schema.org",
+        "@type":"Organization",
+        "name":"Orpita Studio",
+        "url":"https://orpita-studio.web.app/",
+        "logo":"https://orpita-studio.web.app/assets/imgs/SLogoBlack.png",
+        "email":"OrpitaStudios@gmail.com",
+        "description":"Orpita is an indie game studio based in Egypt, creating narrative-driven interactive experiences.",
+        "sameAs":[
+            "https://www.linkedin.com/company/orpita-game-studio/",
+            "https://www.youtube.com/@OrpitaStudio",
+            "https://www.facebook.com/OrpitaStudio",
+            "https://www.instagram.com/orpitastudio"
+        ]
+    }
+    </script>
+
+    <!-- ==================== STYLES & FONTS ==================== -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/style.css">
+
+    <!-- ==================== INLINE CSS ==================== -->
+    <style>
+        body{font-family:'Inter',sans-serif;background:#020617;color:#e5e7eb}
+        .loading-container{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center}
+        .fallback a{color:#a78bfa;font-weight:bold;text-decoration:none;transition:color .3s}
+        .fallback a:hover{color:#c4b5fd}
+        /* Animation Keyframes for Pulse Glow */
+        @keyframes pulse-glow{
+            0% {opacity:0.7; filter: drop-shadow(0 0 1px #8b5cf6) drop-shadow(0 0 5px #a78bfa);}
+            50% {opacity:0.9; filter: drop-shadow(0 0 5px #8b5cf6) drop-shadow(0 0 10px #a78bfa);}
+            100% {opacity:0.7; filter: drop-shadow(0 0 @px #8b5cf6) drop-shadow(0 0 5px #a78bfa);}
+        }
+        /* Class to apply pulse effect on logo */
+        .logo-pulse{animation:pulse-glow 2s infinite ease-in-out;will-change:opacity,filter}
+    </style>
+
+    <!-- ==================== LANGUAGE REDIRECTION SCRIPT ==================== -->
+    <script>
+        /* Detect browser language and redirect accordingly */
+        function checkLanguageAndRedirect(){
+            const defaultLang='en', supportedLangs={ar:'ar/', en:'en/'};
+            const userLang=(navigator.language||navigator.userLanguage).toLowerCase().substring(0,2);
+            const redirectPath=supportedLangs[userLang]||supportedLangs[defaultLang];
+            /* window.location.replace(window.location.origin+'/'+redirectPath); */
+        }
+        checkLanguageAndRedirect();
+    </script>
+</head>
+
+<body class="bg-slate-950 text-gray-200 flex flex-col min-h-screen">
+
+    <!-- ==================== LOADING CONTAINER ==================== -->
+    <div class="loading-container flex flex-col items-center justify-center flex-1 text-center" role="status" aria-live="polite">
+        
+        <!-- Studio Logo -->
+        <img src="./assets/imgs/SLogo.webp" alt="Orpita Studio Logo" width="120" height="40"
+            class="h-16 w-auto mb-6 logo-pulse" loading="eager" decoding="async"
+            onerror="this.src='./assets/imgs/SLogoBlack.png'">
+
+        <!-- Loading Message -->
+        <h1 class="text-xl md:text-2xl font-semibold tracking-wide">
+            Preparing the Orpita Studio experience…
+        </h1>
+
+        <!-- ==================== FALLBACK LANGUAGE SELECTOR ==================== -->
+        <div id="fallback" class="fallback mt-12 text-sm text-gray-400 hidden">
+            <p>If you are not redirected, please select your preferred language:</p>
+            <p class="mt-4 flex items-center justify-center gap-4">
+                <a href="/en/" class="underline underline-offset-4">English (Default)</a>
+                <span class="text-gray-600">|</span>
+                <a href="/ar/" class="underline underline-offset-4">العربية</a>
+            </p>
+        </div>
+
+        <!-- ==================== NOSCRIPT FALLBACK ==================== -->
+        <noscript>
+            <div class="mt-12 text-sm text-gray-400">
+                <p>Please enable JavaScript to continue.</p>
+                <p class="mt-4"><a href="/en/">English</a> | <a href="/ar/">العربية</a></p>
+            </div>
+        </noscript>
+    </div>
+
+    <!-- ==================== SHOW FALLBACK AFTER TIMEOUT ==================== -->
+    <script>
+        setTimeout(()=>{
+            const fallback=document.getElementById('fallback');
+            if(fallback) fallback.classList.remove('hidden');
+        },2500);
+    </script>
+
+</body>
+</html>
