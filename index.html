@@ -67,7 +67,7 @@
             const defaultLang='en', supportedLangs={ar:'ar/', en:'en/'};
             const userLang=(navigator.language||navigator.userLanguage).toLowerCase().substring(0,2);
             const redirectPath=supportedLangs[userLang]||supportedLangs[defaultLang];
-            /* window.location.replace(window.location.origin+'/'+redirectPath); */
+            window.location.replace(window.location.origin+'/'+redirectPath);
         }
         checkLanguageAndRedirect();
     </script>
