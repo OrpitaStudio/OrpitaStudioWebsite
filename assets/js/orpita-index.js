@@ -113,10 +113,10 @@ function initHeroAnimation() {
     return;
   }
 
-  const swapInterval = 3500;
-  const slideOutDuration = 500;
+  const swapInterval = 4500;
+  const slideOutDuration = 250;
   const slideInDuration = 500;
-  const lineAppearDelay = 100;
+  const lineAppearDelay = 150;
 
   const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -145,11 +145,11 @@ function initHeroAnimation() {
     dynamicLine2.style.animation = `slideUpIn ${slideInDuration / 1000}s forwards`;
   };
 
-  const initialDelay = 1100;
-  const initialDuration = 800;
+  const initialDelay = 150;
+  const initialDuration = 150;
   const startIntervalTimer = initialDelay + initialDuration;
 
   setTimeout(() => {
     setInterval(changeHeroLines, swapInterval);
   }, startIntervalTimer);
-}
+                                    }
