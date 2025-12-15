@@ -62,23 +62,27 @@ function initParticles() {
 
   tsParticles.load("tsparticles", {
     fpsLimit: 60,
-    background: { color: "#030712" },
+    background: {
+  color: {
+    value: "linear-gradient(180deg, #938912 0%, #666666 100%)"
+  }
+},
     particles: {
-      number: { value: 60, density: { enable: true, value_area: 720 } },
+      number: { value:60, density: { enable: true, value_area: 700 } },
       color: { value: ["#8b5cf6", "#a78bfa", "#c4b5fd"] },
       shape: { type: "circle" },
-      opacity: { value: 0.4, random: true },
+      opacity: { value: 0.75, random: true },
       size: { value: { min: 1, max: 3 } },
       links: {
         enable: true,
         distance: 150,
         color: "#7c3aed",
-        opacity: 0.5,
+        opacity: 0.75,
         width: 1
       },
       move: {
         enable: true,
-        speed: 1,
+        speed: 1.2,
         direction: "none",
         out_mode: "out",
         random: true,
@@ -107,4 +111,4 @@ function initScrollAnimations() {
   }, { threshold: 0.2 });
 
   animatedElements.forEach(el => observer.observe(el));
-}
+    }
