@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Allow: /en
+
+Sitemap: https://orpita-studio.web.app/sitemap.xml
