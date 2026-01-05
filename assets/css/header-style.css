@@ -1,0 +1,299 @@
+/* =========================================
+   ORPITA DESIGN SYSTEM (No-Build Version)
+   ========================================= */
+:root {
+    --primary-violet: #7c3aed;
+    --primary-hover: #6d28d9;
+    --glass-bg: rgba(15, 23, 42, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --text-muted: #9ca3af;
+}
+
+/* --- Header Main Style --- */
+.main-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    padding: 1rem 0;
+    transition: all 0.3s ease;
+}
+
+.main-header.scrolled {
+    background: rgba(3, 7, 18, 0.85);
+    backdrop-filter: blur(12px);
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+}
+
+/* --- Navigation Pill --- */
+.nav-pill {
+    display: none;
+    align-items: center;
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    padding: 0.5rem 1.5rem;
+    border-radius: 9999px;
+    border: 1px solid var(--glass-border);
+}
+@media (min-width: 1024px) { .nav-pill { display: flex; } }
+
+.nav-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: color 0.3s ease;
+}
+.nav-link:hover { color: var(--primary-violet); }
+
+/* --- Dropdown Menu --- */
+.dropdown-wrapper {
+    position: absolute;
+    left: 0; top: 100%;
+    margin-top: 0.5rem;
+    width: 12rem;
+    background: rgba(15, 23, 42, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.group:hover .dropdown-wrapper {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-link {
+    display: block;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+}
+.dropdown-link:hover {
+    background: rgba(124, 58, 237, 0.15);
+    color: #a78bfa;
+}
+
+/* --- Action Button (Play Now) --- */
+.btn-orpita {
+    background: var(--primary-violet);
+    color: white;
+    padding: 0.6rem 1.5rem;
+    border-radius: 9999px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
+    transition: all 0.3s ease;
+}
+.btn-orpita:hover {
+    background: var(--primary-hover);
+    box-shadow: 0 0 25px rgba(124, 58, 237, 0.5);
+    transform: scale(1.05);
+}/* =========================================
+   ORPITA DESIGN SYSTEM (No-Build Version)
+   ========================================= */
+:root {
+    --primary-violet: #7c3aed;
+    --primary-hover: #6d28d9;
+    --glass-bg: rgba(15, 23, 42, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --text-muted: #9ca3af;
+}
+
+/* --- Header Main Style --- */
+.main-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    padding: 1rem 0;
+    transition: all 0.3s ease;
+}
+
+.main-header.scrolled {
+    background: rgba(3, 7, 18, 0.85);
+    backdrop-filter: blur(12px);
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+}
+
+/* --- Navigation Pill --- */
+.nav-pill {
+    display: none;
+    align-items: center;
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    padding: 0.5rem 1.5rem;
+    border-radius: 9999px;
+    border: 1px solid var(--glass-border);
+}
+@media (min-width: 1024px) { .nav-pill { display: flex; } }
+
+.nav-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: color 0.3s ease;
+}
+.nav-link:hover { color: var(--primary-violet); }
+
+/* --- Dropdown Menu --- */
+.dropdown-wrapper {
+    position: absolute;
+    left: 0; top: 100%;
+    margin-top: 0.5rem;
+    width: 12rem;
+    background: rgba(15, 23, 42, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.group:hover .dropdown-wrapper {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-link {
+    display: block;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+}
+.dropdown-link:hover {
+    background: rgba(124, 58, 237, 0.15);
+    color: #a78bfa;
+}
+
+/* --- Action Button (Play Now) --- */
+.btn-orpita {
+    background: var(--primary-violet);
+    color: white;
+    padding: 0.6rem 1.5rem;
+    border-radius: 9999px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
+    transition: all 0.3s ease;
+}
+.btn-orpita:hover {
+    background: var(--primary-hover);
+    box-shadow: 0 0 25px rgba(124, 58, 237, 0.5);
+    transform: scale(1.05);
+}
+/* تنسيق المنيو المنبثق */
+.mobile-overlay {
+    position: fixed;
+    top: 80px; /* يظهر تحت الهيدر مباشرة */
+    right: 20px;
+    width: 250px; /* عرض المنيو */
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 14px;
+    z-index: 60;
+    
+    /* حالة الإخفاء: تصغير وشفافية */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-40px) scale(0.95);
+    transition: all .5s cubic-bezier(0.3, 1.6, 0.6, 1); /* تأثير ارتداد مرن */
+}
+
+/* حالة الظهور */
+.mobile-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.mobile-nav-link {
+    display: block;
+    padding: 14px 0px 0px 0px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.8rem;
+    color: #cbd5e1;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    transition: 0.3s;
+}
+
+.mobile-nav-link:last-child { border-bottom: none; }
+
+.mobile-nav-link:hover {
+    background: rgba(124, 58, 237, 0.1);
+    color: #a78bfa;
+    padding-left: 8px; /* حركة بسيطة عند الهوفر */
+}
+
+.mobile-nav-small-link {
+    display: block;
+    padding: 2px 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.2rem;
+    color: #ffffff;
+    transition: 0.3s;
+}
+
+.mobile-nav-small-link:hover {
+    background: rgba(124, 58, 237, 0.1);
+    color: #a78bfa;
+    padding-left: 12px; /* حركة بسيطة عند الهوفر */
+}
+
+.burger-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 18px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 70; /* ليكون فوق المنيو */
+}
+
+.burger-btn span {
+    width: 100%;
+    height: 2px;
+    background-color: #e2e8f0; /* لون الخطوط */
+    border-radius: 2px;
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+    transform-origin: center;
+}
+
+/* حالة التحول لعلامة X */
+.burger-btn.open span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+    background-color: #a78bfa; /* يتغير للبنفسجي عند الفتح */
+}
+
+.burger-btn.open span:nth-child(2) {
+    opacity: 0;
+    transform: translateX(-10px);
+}
+
+.burger-btn.open span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+    background-color: #a78bfa;
+}
