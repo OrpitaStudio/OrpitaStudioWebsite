@@ -5,59 +5,31 @@ function renderGames() {
     if (!wrapper) return;
     
     wrapper.innerHTML = myGames.map(game => `
-        <div class="swiper-slide">
-            <div class="bg-slate-800/50 rounded-2xl flex flex-col gap-6 h-full w-full border-2 border-slate-700 overflow-hidden shadow-xl transition-transform duration-300 hover:border-violet-500/50 group transition-all">
-                <img src="${game.image}" alt="${game.title}" 
-                     class="w-full h-48 object-cover flex-shrink-0 group-hover:scale-110 transition-transform" 
-                     style="mask-image: linear-gradient(to bottom, black 75%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 75%, transparent 100%);">
+        <div class="swiper-slide h-auto">
+            <div class="bg-slate-800/50 rounded-2xl flex flex-col gap-6 h-full w-full border-2 border-slate-700 overflow-hidden shadow-xl hover:border-violet-500/50 group transition-all duration-300">
                 
-                <div class="relative z-10 -mt-12 flex-1 flex flex-col justify-between h-full w-full">
-                    <div class="px-6 pb-6">
-                        <h3 class="text-xl font-bold text-white group-hover:text-violet-200 transition-colors">${game.title}</h3>
-                        <p class="text-sm ${game.statusColor} font-medium mt-1">${game.status}</p>
-                        <p class="text-gray-400 mt-3 text-sm leading-relaxed line-clamp-3">
-                            ${game.description}
-                        </p>
-                    </div>
-                </div>
-                <div class="px-6 pb-6">
-                 <a href="${game.link}" class="inline-block self-start mt-4 bg-slate-700 hover:bg-violet-600 text-white text-sm font-medium py-2 px-6 rounded-full transition-all duration-300 ${game.status === 'Not available' ? 'opacity-50' : ''}">
-                             View Details
-                 </a>
-                 </div>
-            </div>
-        </div>
-    `).join('');
-}
-
-function renderStoryArticles() {
-    const container = document.getElementById('story-grid');
-    if (!container) return;
-    
-    container.innerHTML = storyArticles.map((article, index) => `
-        <div class="opacity-0 animate-on-scroll" style="animation-delay: ${0.2 * index}s;">
-            <div class="bg-slate-800/50 rounded-2xl flex flex-col gap-6 h-full w-full border-2 border-slate-700 overflow-hidden shadow-xl transition-all duration-300 hover:border-violet-500/50 group">
-                
-                <div class="relative w-full h-48 overflow-hidden flex-shrink-0">
-                    <img src="${article.img}" alt="${article.title}" 
-                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                <div class="overflow-hidden">
+                    <img src="${game.image}" alt="${game.title}" 
+                         class="w-full h-48 object-cover flex-shrink-0 group-hover:scale-110 transition-transform duration-500" 
                          style="mask-image: linear-gradient(to bottom, black 75%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 75%, transparent 100%);">
                 </div>
-
-                <div class="relative z-10 -mt-12 flex-1 flex flex-col justify-between h-full w-full">
-                    <div class="px-6 pb-6">
-                        <h3 class="text-xl font-bold text-white group-hover:text-violet-200 transition-colors">${article.title}</h3>
-                        <p class="text-sm text-violet-400 font-medium mt-1">${article.subtitle}</p>
-                        <p class="text-gray-400 mt-3 text-sm leading-relaxed line-clamp-3">
-                            ${article.text}
-                        </p>
-                    </div>
+                
+                <div class="relative z-10 -mt-12 flex-1 flex flex-col px-6 pb-2">
+                    <h4 class="text-xl font-bold text-white group-hover:text-violet-200 transition-colors">${game.title}</h4>
+                    <p class="text-sm ${game.statusColor} font-medium mt-1">${game.status}</p>
+                    <p class="text-gray-400 mt-3 text-sm leading-relaxed line-clamp-3">
+                        ${game.description}
+                    </p>
                 </div>
 
-                <div class="px-6 pb-6">
-                    <a href="${article.link}" class="inline-block self-start mt-2 bg-slate-700 hover:bg-violet-600 text-center text-white text-sm font-medium py-2 px-6 rounded-full transition-all duration-300 shadow-md">
-                        Read more
-                    </a>
+                <div class="px-6 pb-6 mt-auto">
+                    ${game.showButton ? `
+                        <a href="${game.link}" 
+                           aria-label="${game.buttonText || 'View Details'} regarding ${game.title}"
+                           class="inline-block bg-slate-700 hover:bg-violet-600 text-white text-sm font-medium py-2 px-6 rounded-full transition-all duration-300 transform hover:scale-105">
+                           ${game.buttonText || 'View Details'}
+                        </a>
+                    ` : ''}
                 </div>
             </div>
         </div>
@@ -99,7 +71,9 @@ const myGames = [
         statusColor: "text-red-400",
         image: "/assets/imgs/games/one-more-day/one-more-day-cover.webp",
         description: "One More Day is a narrative-focused game where you step into the shoes of Dr. Zain, facing tense hospital situations.",
-        link: "./games/one-more-day"
+        link: "./games/one-more-day/",
+        showButton: true,
+       buttonText: "View game"
     },
     {
         title: "Minesetter",
@@ -107,7 +81,9 @@ const myGames = [
         statusColor: "text-yellow-400",
         image: "/assets/imgs/games/minesetter/minesetter-comming-soon.webp",
         description: "A reversed version of the classic Minesweeper game, but with entirely new rules.",
-        link: "#"
+        link: "./games/minesetter/",
+        showButton: false,
+        buttonText: "View Project"
     },
     {
         title: "more game coming soon",
@@ -115,36 +91,12 @@ const myGames = [
         statusColor: "text-purple-400",
         image: "/assets/imgs/games/new-game/new-game-comming-soon.webp",
         description: "New games are coming soon, stay tuned!",
-        link: "#"
+        link: "",
+        showButton: false,
+        buttonText: "View Project"
     }
     
 ];
-
-const storyArticles = [
-    {
-        title: "Join orpita studio !",
-        subtitle: "Everything starts with a step",
-        img: "/assets/imgs/ourstory/call-for-new-members.webp",
-        text: "Our goal is to grow and expand to serve more players worldwide...",
-        link: "#"
-    },
-    {
-        title: "Orpita joined GMTK 2025",
-        subtitle: "Taking the plunge. Accepting the challenge.",
-        img: "/assets/imgs/ourstory/orpita-goined-gmtk2025.webp",
-        text: "Creating a legacy of stories and logical challenges through indie games...",
-        link: "./blog/orpita-gmtk2025"
-    },
-    {
-        title: "Who we sre",
-        subtitle: "Meet our team",
-        img: "/assets/imgs/ourstory/who-we-are-cover.webp",
-        text: "A startup studio born in Alexandria, driven by passion and creativity...",
-        link: "./about"
-    }
-];
-
-
 
 // Initialize all functions SPECIFIC to the index page
 function initIndexPage() {
@@ -287,9 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. ابني البيانات الأول (الترتيب مهم جداً)
     try {
         renderGames();
-        renderStoryArticles();
         renderSocialLinks();
-        console.log("Data Rendered Successfully");
     } catch (e) {
         console.error("Error rendering data:", e);
     }
@@ -299,7 +249,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // 3. شغل الـ Swiper والـ Animations بعد ما الكروت تكون "اتولدت" فعلاً
         if (typeof Swiper !== 'undefined') {
             initSwiper();
-            console.log("Swiper Initialized");
         } else {
             console.error("Swiper is not defined! Check your CDN link.");
         }
