@@ -15,7 +15,7 @@ function renderGames() {
                 </div>
                 
                 <div class="relative z-10 -mt-12 flex-1 flex flex-col px-6 pb-2">
-                    <h4 class="text-xl font-bold text-white group-hover:text-violet-200 transition-colors">${game.title}</h4>
+                    <h3 class="text-xl font-bold text-white group-hover:text-violet-200 transition-colors">${game.title}</h3>
                     <p class="text-sm ${game.statusColor} font-medium mt-1">${game.status}</p>
                     <p class="text-gray-400 mt-3 text-sm leading-relaxed line-clamp-3">
                         ${game.description}
