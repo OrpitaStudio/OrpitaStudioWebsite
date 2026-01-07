@@ -182,9 +182,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         await new Promise(resolve => loadComponent('footer-placeholder', '/assets/html/footer.html', resolve));
         updateCurrentYear();
         
-        // 3. حمل أي حاجة تانية
-        await new Promise(resolve => loadComponent('open-positon-placeholder', '/en/about/join-us/open-positions.html', resolve));
-        
         // في الآخر خالص شغل سكريبت الصفحة
         if (typeof initIndexPage === 'function') initIndexPage();
         
