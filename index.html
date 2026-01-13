@@ -1,128 +1,257 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
+    
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-JFJ907933V"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-JFJ907933V');
-</script>
-    <!-- ==================== META TAGS ==================== -->
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JFJ907933V"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JFJ907933V');
+    </script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orpita Studio | Indie Games from Egypt</title>
-    <meta name="description" content="Orpita is an Egyptian indie game studio exploring new ways to create games through creative mechanics and immersive experiences.">
+    <title>Orpita Game Studio | Loading...</title>
+    
+    <meta name="description" content="Orpita Game Studio | Independent game studio bringing fresh ideas to life. At Orpita, we design games with heart, creativity, and a passion for unique player experiences.">
     <meta name="author" content="Orpita Studio">
-    <link rel="icon" href="./assets/imgs/SLogoBlack.png" type="image/png">
-    <link rel="apple-touch-icon" href="./assets/imgs/SLogoBlack.png">
-    <link rel="canonical" href="https://orpita-studio.web.app/">
-    <link rel="canonical" href="https://orpita-studio.web.app/">
-    <!-- ==================== OPEN GRAPH ==================== -->
-    <meta property="og:title" content="Orpita Studio | Indie Games from Egypt">
-    <meta property="og:description" content="Orpita is an Egyptian indie game studio exploring new ways to create games through creative mechanics and immersive experiences.">
-    <meta property="og:image" content="https://orpita-studio.web.app/assets/imgs/LinkCover.png">
-    <meta property="og:url" content="https://orpita-studio.web.app/">
+    <meta name="theme-color" content="#7c3aed">
+    
     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://orpita-studio.web.app/">
+    <meta property="og:title" content="Orpita Game Studio">
+    <meta property="og:description" content="Independent game studio bringing fresh ideas to life. Designing games with heart and creativity.">
+    <meta property="og:image" content="https://orpita-studio.web.app/assets/imgs/og-cover.webp">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Orpita Game Studio">
+    <meta name="twitter:description" content="Independent game studio bringing fresh ideas to life.">
+    <meta name="twitter:image" content="https://orpita-studio.web.app/assets/imgs/og-cover.webp">
 
-    <!-- ==================== STRUCTURED DATA ==================== -->
-    <script type="application/ld+json">
-    {
-        "@context":"https://schema.org",
-        "@type":"Organization",
-        "name":"Orpita Studio",
-        "url":"https://orpita-studio.web.app/",
-        "logo":"https://orpita-studio.web.app/assets/imgs/SLogoBlack.png",
-        "email":"OrpitaStudios@gmail.com",
-        "description":"Orpita is an indie game studio based in Egypt, creating narrative-driven interactive experiences.",
-        "sameAs":[
-            "https://www.linkedin.com/company/orpita-game-studio/",
-            "https://www.youtube.com/@OrpitaStudio",
-            "https://www.facebook.com/OrpitaStudio",
-            "https://www.instagram.com/orpitastudio"
-        ]
-    }
-    </script>
+    <link rel="icon" href="/assets/imgs/sm-logo.webp">
+    <link rel="canonical" href="https://orpita-studio.web.app/">
 
-    <!-- ==================== STYLES & FONTS ==================== -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./assets/css/style.css">
+    <link rel="preload" as="image" href="./assets/imgs/SLogo.webp">
+    <link rel="preload" href="/assets/fonts/orbitron/Orbitron-Bold.ttf" as="font" type="font/ttf" crossorigin>
 
-    <!-- ==================== INLINE CSS ==================== -->
     <style>
-        body{font-family:'Inter',sans-serif;background:#020617;color:#e5e7eb}
-        .loading-container{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center}
-        .fallback a{color:#a78bfa;font-weight:bold;text-decoration:none;transition:color .3s}
-        .fallback a:hover{color:#c4b5fd}
-        /* Animation Keyframes for Pulse Glow */
-        @keyframes pulse-glow{
-            0% {opacity:0.7; filter: drop-shadow(0 0 1px #8b5cf6) drop-shadow(0 0 5px #a78bfa);}
-            50% {opacity:0.9; filter: drop-shadow(0 0 5px #8b5cf6) drop-shadow(0 0 10px #a78bfa);}
-            100% {opacity:0.7; filter: drop-shadow(0 0 @px #8b5cf6) drop-shadow(0 0 5px #a78bfa);}
+        /* Reset & Basics */
+        :root {
+            --primary: #7c3aed; /* Orpita Purple */
+            --bg-color: #020617; /* Slate 950 essentially */
+            --text-color: #e2e8f0;
         }
-        /* Class to apply pulse effect on logo */
-        .logo-pulse{animation:pulse-glow 2s infinite ease-in-out;will-change:opacity,filter}
+        
+        @font-face {
+            font-family: 'Orbitron';
+            src: url('/assets/fonts/orbitron/Orbitron-Bold.ttf') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Container */
+        .loader-container {
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Logo Styling */
+        .logo {
+            width: 140px;
+            height: auto;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 15px rgba(124, 58, 237, 0.4));
+            animation: breathe 3s infinite ease-in-out;
+        }
+
+        /* Text Styling */
+        h1 {
+            font-family: 'Orbitron', sans-serif; /* Gaming Font */
+            font-size: 1.25rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #fff, #a78bfa, #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shine 3s linear infinite;
+        }
+
+        /* Progress Bar */
+        .progress-wrapper {
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+            animation: loadProgress 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        /* Fallback Links (Hidden initially) */
+        .fallback-nav {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #64748b;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none; /* disabled until visible */
+        }
+        .fallback-nav.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .fallback-nav a {
+            color: #94a3b8;
+            text-decoration: none;
+            margin: 0 10px;
+            transition: color 0.3s;
+        }
+        .fallback-nav a:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.9; } }
+        @keyframes shine { to { background-position: 200% center; } }
+        @keyframes loadProgress { 0% { width: 0%; } 40% { width: 70%; } 100% { width: 100%; } }
+
     </style>
 
-    <!-- ==================== LANGUAGE REDIRECTION SCRIPT ==================== -->
-    <script>
-        /* Detect browser language and redirect accordingly */
-        function checkLanguageAndRedirect(){
-            const defaultLang='en', supportedLangs={ar:'ar/', en:'en/'};
-            const userLang=(navigator.language||navigator.userLanguage).toLowerCase().substring(0,2);
-            const redirectPath=supportedLangs[userLang]||supportedLangs[defaultLang];
-            window.location.replace(window.location.origin+'/'+redirectPath);
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Orpita Studio",
+            "url": "https://orpita-studio.web.app/",
+            "logo": "https://orpita-studio.web.app/assets/imgs/og-cover.webp",
+            "email": "orpitastudios@gmail.com",
+            "description": "Orpita Game Studio | Independent game studio bringing fresh ideas to life.",
+            "address": { "@type": "PostalAddress", "addressCountry": "EG", "addressLocality": "Alexandria" },
+            "sameAs": [
+                "https://www.linkedin.com/company/orpita-game-studio/",
+                "https://www.youtube.com/@OrpitaStudio",
+                "https://www.facebook.com/OrpitaStudio",
+                "https://www.instagram.com/orpitastudio"
+            ]
         }
-        checkLanguageAndRedirect();
     </script>
 </head>
 
-<body class="bg-slate-950 text-gray-200 flex flex-col min-h-screen">
+<body>
 
-    <!-- ==================== LOADING CONTAINER ==================== -->
-    <div class="loading-container flex flex-col items-center justify-center flex-1 text-center" role="status" aria-live="polite">
-        
-        <!-- Studio Logo -->
-        <img src="./assets/imgs/SLogo.webp" alt="Orpita Studio Logo" width="120" height="40"
-            class="h-16 w-auto mb-6 logo-pulse" loading="eager" decoding="async"
-            onerror="this.src='./assets/imgs/SLogoBlack.png'">
+    <div class="loader-container">
+        <img src="/assets/imgs/sm-logo-trans.webp" alt="Orpita Studio Logo" class="logo" 
+             width="140" height="46" loading="eager" decoding="async"
+             onerror="this.src='./assets/imgs/sm-logo.webp'"> <h1 id="status-text">Initializing...</h1>
 
-        <!-- Loading Message -->
-        <h1 class="text-xl md:text-2xl font-semibold tracking-wide">
-            Preparing the Orpita Studio experience…
-        </h1>
-
-        <!-- ==================== FALLBACK LANGUAGE SELECTOR ==================== -->
-        <div id="fallback" class="fallback mt-12 text-sm text-gray-400 hidden">
-            <p>If you are not redirected, please select your preferred language:</p>
-            <p class="mt-4 flex items-center justify-center gap-4">
-                <a href="/en/" class="underline underline-offset-4">English (Default)</a>
-                <span class="text-gray-600">|</span>
-                <a href="/ar/" class="underline underline-offset-4">العربية</a>
-            </p>
+        <div class="progress-wrapper">
+            <div class="progress-bar"></div>
         </div>
 
-        <!-- ==================== NOSCRIPT FALLBACK ==================== -->
-        <noscript>
-            <div class="mt-12 text-sm text-gray-400">
-                <p>Please enable JavaScript to continue.</p>
-                <p class="mt-4"><a href="/en/">English</a> | <a href="/ar/">العربية</a></p>
+        <div id="fallback" class="fallback-nav">
+            <p>Select Language:</p>
+            <div>
+                <a href="/en/">English</a>
+                <span>|</span>
+                <a href="/ar/">العربية</a>
             </div>
-        </noscript>
+        </div>
     </div>
 
-    <!-- ==================== SHOW FALLBACK AFTER TIMEOUT ==================== -->
-    <script>
-        setTimeout(()=>{
-            const fallback=document.getElementById('fallback');
-            if(fallback) fallback.classList.remove('hidden');
-        },2500);
-    </script>
+    <noscript>
+        <div style="text-align:center; margin-top:20px; color:#fff;">
+            <p>Please enable JavaScript or select a language:</p>
+            <a href="/en/" style="color:#a78bfa; margin-right:10px;">English</a>
+            <a href="/ar/" style="color:#a78bfa;">العربية</a>
+        </div>
+    </noscript>
 
+    <script>
+        /**
+         * Orpita Game Studio - Smart Redirect Logic
+         * Handles language detection and smooth redirection.
+         */
+        (function() {
+            const CONFIG = {
+                defaultLang: 'en',
+                supportedLangs: { 'ar': 'ar/', 'en': 'en/' },
+                redirectDelay: 1200, // Slightly less than animation to feel snappy
+                fallbackTimeout: 3000
+            };
+
+            function getRedirectPath() {
+                // 1. Check if user already has a saved preference (optional feature)
+                const savedLang = localStorage.getItem('orpita-lang');
+                if (savedLang && CONFIG.supportedLangs[savedLang]) {
+                    return CONFIG.supportedLangs[savedLang];
+                }
+
+                // 2. Check Browser Language
+                const userLang = (navigator.language || navigator.userLanguage).toLowerCase().substring(0, 2);
+                return CONFIG.supportedLangs[userLang] || CONFIG.supportedLangs[CONFIG.defaultLang];
+            }
+
+            function redirect() {
+                const path = getRedirectPath();
+                //const targetUrl = window.location.origin + '/' + path;
+                const targetUrl = window.location.origin + '/en';
+                // Update status text just before jumping
+                const statusEl = document.getElementById('status-text');
+                if(statusEl) statusEl.innerText = "Ready";
+
+                window.location.replace(targetUrl);
+            }
+
+            // Start the sequence
+            window.addEventListener('load', () => {
+                setTimeout(redirect, CONFIG.redirectDelay);
+            });
+
+            // Fallback safety net: If redirect fails for any reason, show links
+            setTimeout(() => {
+                const fallback = document.getElementById('fallback');
+                const progressBar = document.querySelector('.progress-wrapper');
+                const statusEl = document.getElementById('status-text');
+                
+                if (fallback) fallback.classList.add('visible');
+                if (progressBar) progressBar.style.opacity = '0.5';
+                if (statusEl) statusEl.innerText = "Select Language";
+            }, CONFIG.fallbackTimeout);
+
+        })();
+    </script>
 </body>
 </html>

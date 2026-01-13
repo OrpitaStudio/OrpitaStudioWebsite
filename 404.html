@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JFJ907933V"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JFJ907933V');
+    </script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>404 - Page Not Found | Orpita Studio</title>
     <meta name="description" content="The page you requested was not found. Please navigate back to the homepage.">
     
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/assets/css/tailwind-built.css">
     <link rel="stylesheet" href="./assets/css/style.css"> 
     
     <style>
@@ -90,7 +99,7 @@
                 
                 <a 
                     id="report-issue-btn"
-                    href="mailto:OrpitaStudios@gmail.com" 
+                    href="mailto:orpitastudios@gmail.com" 
                     class="text-violet-400 border border-violet-400 font-bold py-3 px-8 rounded-full text-lg hover:bg-violet-900 hover:text-white transition-all duration-300 whitespace-nowrap"
                 >
                     Report an Issue
@@ -143,7 +152,7 @@ USER MESSAGE:
                 // 3. بناء رابط mailto النهائي
                 const subject = encodeURIComponent('Critical 404 Error Report');
                 const body = encodeURIComponent(bodyContent.trim());
-                const mailtoLink = `mailto:OrpitaStudios@gmail.com?subject=${subject}&body=${body}`;
+                const mailtoLink = `mailto:orpitastudios@gmail.com?subject=${subject}&body=${body}`;
 
                 // 4. تعيين الرابط للزر
                 reportButton.href = mailtoLink;

@@ -1,71 +1,32 @@
-
- <link rel="stylesheet" href="/assets/css/header-style.css">
-<header id="main-header" class="main-header">
-  <div class="container mx-auto max-w-7xl px-6 flex items-center justify-between">
-    
-    <div class="flex-shrink-0">
-      <a href="/" class="group">
-        <img src="/assets/imgs/sm-logo-trans.webp" alt="Orpita Logo" class="h-10 w-auto transition-transform duration-300 group-hover:scale-105">
-      </a>
-    </div>
-    
-    <nav class="nav-pill">
-      <ul class="flex items-center gap-2">
-        <li class="relative group">
-          <button class="nav-link flex items-center gap-1">
-            Games
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-300 group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-          
-          <div class="dropdown-wrapper">
-            <div class="p-2 flex flex-col gap-1">
-              <a href="/games" class="dropdown-link">Our games</a>
-              <a href="/games/one-more-day" class="dropdown-link">one more day</a>
-              <a href="/games/minesetter" class="dropdown-link">Minesetter</a>
-              <a href="/games/upcoming" class="dropdown-link">Upcoming Projects</a>
-            </div>
-          </div>
-        </li>
-      </ul>
-    </nav>
-    
-    <div class="flex items-center gap-5">
-      <div class="hidden md:flex items-center gap-2 font-['Orbitron'] text-xs font-bold text-gray-400">
-        <button class="text-violet-400 hover:text-violet-300 transition-colors">EN</button>
-        <span class="text-gray-700">|</span>
-        <button class="hover:text-violet-300 transition-colors">AR</button>
-      </div>
-      
-      <a href="#games" class="btn-orpita hidden lg:block">Play Now</a>
-      
-<button id="mobile-menu-btn" class="lg:hidden burger-btn" aria-label="Open main menu">
-  <span></span>
-  <span></span>
-  <span></span>
-</button>
-    </div>
-  </div>
-</header>
-
-<div id="mobile-menu" class="mobile-overlay">
-  <div class="flex flex-col h-full p-6">
-    <nav class="flex flex-col">
-      <a href="#" data-lang-link="home" class="mobile-nav-link">Home</a>
-      
-      <a href="#" data-lang-link="games" class="mobile-nav-link">Games</a>
-        <a href="#" data-lang-link="games/one-more-day" class="mobile-nav-small-link">One more day</a>
-        <a href="#" data-lang-link="games/minesetter" class="mobile-nav-small-link">Minesetter</a>
+<header id="main-header" class="fixed top-0 left-0 w-full z-50 transition-all duration-300 backdrop-blur-md border-b border-white/5">
+    <div class="w-full px-6 lg:px-12 py-4 flex items-center justify-between">
         
-      <a href="#" data-lang-link="about" class="mobile-nav-link">About</a>
-        <a href="#" data-lang-link="about/join-us" class="mobile-nav-small-link">join us</a>
-        
-      <a href="#" data-lang-link="blog" class="mobile-nav-link">Blog</a>
-    </nav>
-    
-    <div class="mt-auto pt-10 border-t border-white/10 flex flex-col gap-6">
-      <a href="#games" class="btn-orpita text-center py-4">Play Now</a>
-    </div>
-  </div>
+        <div class="flex-shrink-0">
+            <a href="/" class="group flex items-center">
+                <img src="/assets/imgs/sm-logo-trans.webp" alt="Orpita Logo" class="h-10 w-auto transition-transform duration-300 group-hover:scale-105">
+            </a>
+        </div>
+
+        <nav id="main-nav" class="hidden lg:flex items-center gap-8"></nav>
+
+        <div class="flex items-center gap-4">
+<div class="hidden md:flex items-center bg-white/5 rounded-full px-4 py-1.5 border border-white/10">
+    <button id="lang-en" class="text-xs font-bold transition-colors">EN</button>
+    <span class="mx-2 text-white/20">|</span>
+    <button id="lang-ar" class="text-xs font-bold transition-colors">AR</button>
 </div>
+
+            <button id="mobile-menu-btn" class="lg:hidden w-10 h-10 flex flex-col items-center justify-center gap-1.5 bg-violet-600/10 rounded-lg border border-violet-500/20">
+                <span class="w-5 h-0.5 bg-violet-400 rounded-full transition-all duration-300"></span>
+                <span class="w-5 h-0.5 bg-violet-400 rounded-full transition-all duration-300"></span>
+                <span class="w-5 h-0.5 bg-violet-400 rounded-full transition-all duration-300"></span>
+            </button>
+        </div>
+
+    </div>
+
+    <div id="mobile-dropdown" class="absolute top-[calc(100%+0.5rem)] right-6 w-64 bg-slate-900/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl p-4 opacity-0 invisible translate-y-[-10px] transition-all duration-300 lg:hidden pointer-events-none">
+        <nav class="flex flex-col gap-4">
+        </nav>
+    </div>
+</header>

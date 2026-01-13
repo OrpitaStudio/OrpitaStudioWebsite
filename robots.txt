@@ -1,5 +1,27 @@
+# ==========================================
+# ROBOTS.TXT FOR ORPITA GAME STUDIO
+# Optimized for Multi-language & SEO
+# ==========================================
+
 User-agent: *
 Allow: /
-Allow: /en
 
+# Specific Paths for languages
+Allow: /en/
+Allow: /ar/
+
+# Prevent bots from indexing internal asset folders directly
+# (This keeps search results clean from just random CSS/JS files)
+Disallow: /assets/css/
+Disallow: /assets/js/
+Disallow: /assets/vendor/
+
+# Sitemaps - The roadmap for search engines
 Sitemap: https://orpita-studio.web.app/sitemap.xml
+
+# Host - Explicitly defining the main domain
+Host: https://orpita-studio.web.app
+
+# ==========================================
+# END OF FILE
+# ==========================================

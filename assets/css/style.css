@@ -42,8 +42,12 @@ body::before {
     z-index: -10; pointer-events: none;
 }
 
-/* Typography Defaults */
-/* 1. تعريف Orbitron للعناوين */
+/* =============================================================
+   ORPITA TYPOGRAPHY (Multi-language Support)
+   ============================================================= */
+
+/* --- 1. Latin Fonts (Orbitron & Inter) --- */
+
 @font-face {
     font-family: 'Orbitron';
     src: url('/assets/fonts/orbitron/Orbitron-Black.ttf') format('truetype');
@@ -58,7 +62,6 @@ body::before {
     font-display: swap;
 }
 
-/* 2. تعريف Inter للنصوص */
 @font-face {
     font-family: 'Inter';
     src: url('/assets/fonts/inter/Inter_18pt-Regular.ttf') format('truetype');
@@ -73,15 +76,63 @@ body::before {
     font-display: swap;
 }
 
-/* 3. تطبيق الخطوط أوتوماتيكياً */
-h1, h2, h3, h4, h5, h6, h1 span, h2 span, h3 span, h4 span {
-    font-family: 'Orbitron', sans-serif !important;
+/* --- 2. Arabic Fonts (Cairo & Vazirmatn) --- */
+
+/* Cairo - بديل Orbitron للعربي */
+@font-face {
+    font-family: 'Cairo';
+    src: url('/assets/fonts/cairo/Cairo-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-display: swap;
 }
 
-body, p, span, a, button {
-    font-family: 'Inter', sans-serif;
+@font-face {
+    font-family: 'Cairo';
+    src: url('/assets/fonts/cairo/Cairo-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-display: swap;
 }
 
+/* Vazirmatn - بديل Inter للعربي */
+@font-face {
+    font-family: 'Vazirmatn';
+    src: url('/assets/fonts/vazirmatn/Vazirmatn-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Vazirmatn';
+    src: url('/assets/fonts/vazirmatn/Vazirmatn-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-display: swap;
+}
+
+/* --- 3. Auto-Switching Application --- */
+
+/* العناوين: تحاول Orbitron أولاً، لو لقت عربي تستخدم Cairo */
+h1, h2, h3, h4, h5, h6, 
+h1 span, h2 span, h3 span, h4 span,
+.font-title {
+    font-family: 'Orbitron', 'Cairo', sans-serif !important;
+}
+
+/* النصوص: تحاول Inter أولاً، لو لقت عربي تستخدم Vazirmatn */
+body, p, span, a, button, input, select, textarea, .font-body {
+    font-family: 'Inter', 'Vazirmatn', sans-serif;
+}
+
+/* --- 4. Language Specific Adjustments --- */
+
+/* ضبط اتجاه النص وحجمه في حالة اللغة العربية */
+[lang="ar"] {
+    line-height: 1.6; /* العربي بيحتاج مساحة بين السطور أكتر شوية */
+}
+
+[lang="ar"] body {
+    /* الخط العربي أحياناً بيبان أصغر، ممكن نكبره تكبير غير ملحوظ */
+    font-size: 1.02rem; 
+}
 
 /* =========================================
    3. ANIMATIONS (KEYFRAMES)
@@ -153,153 +204,188 @@ body, p, span, a, button {
     animation: gradient-shift 6s linear infinite;
 }
 
-/* Card Animation Utility */
-.card-animate {
-    opacity: 0;
-    animation: fadeInUp 0.8s ease forwards;
-}
-
 /* Theme Container Utility */
 .SectionTheme {
-    opacity: 0; position: relative;
+    /* خصائصك الأساسية */
+    position: relative;
     border-radius: 2rem;
     background: rgba(3, 7, 18, 0.7);
     overflow: hidden;
     border: 2px solid rgba(255, 255, 255, 0.1);
+
+    /* دمج خصائص الـ container و mx-auto و max-w-6xl */
+    width: 100%;
+    max-width: 1152px; /* هذا هو الـ 6xl في تايلويند */
+    margin-left: auto;
+    margin-right: auto;
+
+    /* دمج الـ Padding (p-8 للموبايل و md:p-16 للشاشات الكبيرة) */
+    padding: 2rem; /* p-8 تعادل 32px */
 }
 
-/* =========================================
-   5. HEADER & NAVIGATION
-   ========================================= */
-.header-scrolled {
-    background: rgba(255, 255, 255, 0);
-    backdrop-filter: blur(10px) brightness(1.3);
-    -webkit-backdrop-filter: blur(10px) brightness(0.75);
+/* إضافة الـ Media Query للشاشات الكبيرة (md:p-16) */
+@media (min-width: 768px) {
+    .SectionTheme {
+        padding: 4rem; /* p-16 تعادل 64px */
+    }
 }
+
 /* =========================================
    6. HERO SECTION
    ========================================= */
 .hero-line-container {
-    display: inline-flex; align-items: baseline;
-    flex-wrap: nowrap; width: 100%;
-    opacity: 0; animation: initialSlideUp 0.8s ease-out forwards;
+    display: inline-flex; 
+    align-items: baseline;
+    flex-wrap: nowrap; 
+    width: 100%;
+    opacity: 0; 
+    animation: initialSlideUp 0.8s ease-out forwards;
 }
 
 .static-hero-text { white-space: pre; }
 
 .dynamic-text-container {
-    display: block; position: relative;
-    height: 1.2em; text-align: left;
-    flex-grow: 1; min-width: 0;
+    display: block; 
+    position: relative;
+    height: 1.2em; 
+    /* التعديل هنا: محاذاة تلقائية حسب اتجاه الصفحة */
+    text-align: inherit; 
+    flex-grow: 1; 
+    min-width: 0;
 }
 
-.dynamic-text { display: block; width: 100%; white-space: nowrap; }
+/* حل مخصص للنسخة العربية عشان نضمن الـ Alignment */
+[dir="rtl"] .dynamic-text-container {
+    text-align: right;
+}
+
+[dir="rtl"] .hero-line-container {
+    /* في العربي بنبدأ من اليمين، فنحتاج نتأكد إن الـ flex بيبدأ صح */
+    flex-direction: row; 
+}
+
+.dynamic-text { 
+    display: block; 
+    width: 100%; 
+    white-space: nowrap; 
+}
 /* =========================================
    7. GAMES SECTION (SWIPER) - ORPITA STYLE
    ========================================= */
 
 /* 1. القاعدة الأساسية للكارت */
-#games .swiper-slide {
+.swiper-slide {
     width: 85% !important; 
-    max-width: 400px;
+    max-width: 450px;
     height: auto;
     display: flex;
     flex-direction: column;
     /* تنعيم الحركة واستخدام GPU */
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease !important;
+    /* سرعة متوازنة جداً مع حركة فيزيائية ناعمة */
+    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
     will-change: transform;
     backface-visibility: hidden;
-    opacity: 0.4; /* الكروت الجانبية تكون باهتة */
+    opacity: 0.7; /* الكروت الجانبية تكون باهتة */
 }
 
-/* 2. الكارت النشط (اللي في النص) */
-#games .swiper-slide-active {
+.swiper-slide-active {
     opacity: 1;
     z-index: 10;
 }
 
-/* 3. تظبيط العرض في الشاشات الكبيرة */
-@media (min-width: 1024px) {
-    #games .swiper-slide {
-        width: 350px !important;
-    }
+/* مكان الكونتينر بتاع النقط */
+.swiper-pagination {
+    position: relative; /* أو absolute حسب تصميمك */
+    margin-top: 20px;
+    bottom: 0 !important;
 }
 
-/* 4. تظبيط النقط (Pagination) - بنفسجي Orpita */
-#games .swiper-pagination-bullet { 
+/* ستايل النقط اللي عملناه قبل كدة */
+.swiper-pagination-bullet {
     background: #8b5cf6 !important;
-    transition: all 0.3s ease;
-    opacity: 0.5;
+    width: 8px;
+    height: 8px;
+    opacity: 1;
+    transition: all 0s ease;
 }
 
-#games .swiper-pagination-bullet-active {
-    width: 24px !important;
+.swiper-pagination-bullet-active {
     border-radius: 12px !important;
     opacity: 1;
 }
-
-/* 5. إلغاء الترانزيشن للكروت المنسوخة (لو رجعت للوب مستقبلاً) */
-.swiper-slide-duplicate {
-    transition: none !important;
+/* 3. تظبيط العرض في الشاشات الكبيرة */
+@media (min-width: 1024px) {
+    .swiper-slide {
+        width: 350px !;
+    }
 }
+
 /* =========================================
    8. CARD COMPONENT
    ========================================= */
-.card {
-    background: var(--bg-card);
-    border: 2px solid var(--border-card);
-    border-radius: var(--radius-2xl);
-    overflow: visible;
-    box-shadow: var(--shadow-xl);
-    opacity: 0.8;
-    transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
-
-.card-img {
-    width: 100%; height: 10rem;
-    object-fit: cover; display: block;
-    border-radius: var(--radius-2xl);
-}
 
 /* إخفاء شريط التمرير مع الحفاظ على الحركة */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* عشان الكروت متبقاش لازقة في بعضها في الموبايل */
-@media (max-width: 768px) {
-    #story-grid > div {
-        min-width: 70%; /* الكارت ياخد 85% من الشاشة عشان يبان طرف اللي بعده */
-        snap-align: center;
-    }
+
+.btn-primary {
+    /* الخلفية واللون */
+    background-color: #7c3aed; 
+    color: #ffffff;
+    
+    /* الخط والحجم */
+    font-weight: bold;
+    font-size: 1.125rem;
+    
+    /* المساحات والشكل */
+    padding: 12px 40px;
+    border-radius: 9999px;
+    
+    /* التأثيرات والتحريك */
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    white-space: nowrap;
+    display: inline-block;
+    border: none;
+    cursor: pointer;
 }
 
-.card-body {
-    padding: 1.5rem; display: flex; flex-direction: column;
+/* حالة الـ Hover (لما الماوس ييجي عليه) */
+.btn-primary:hover {
+    background-color: #6d28d9;
+    transform: scale(1.05);
 }
 
-.card-title {
-    font-size: 1.5rem; font-weight: 700;
-    color: var(--text-main);
-    margin-bottom: 0.75rem; line-height: 1.3;
-}
-
-.card-index { color: var(--text-accent); }
-
-.card-text {
-    color: var(--muted); font-size: 1rem;
-    line-height: 1.6; flex: 1; margin-bottom: 1.5rem;
-}
-
-.card-btn {
-    align-self: flex-start;
-    background: var(--btn-bg); color: #ffffff;
-    font-size: 0.875rem; font-weight: 500;
-    padding: 0.5rem 1rem; border-radius: 999px;
+.btn-secondary {
+    /* الخلفية الشفافة واللون */
+    background-color: rgba(255, 255, 255, 0.1); /* white/10 */
+    color: #ffffff;
+    
+    /* الحدود (Border) */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* border-white/20 */
+    
+    /* الخط والحجم */
+    font-weight: bold;
+    font-size: 1.125rem;
+    
+    /* المساحات والشكل */
+    padding: 12px 40px;
+    border-radius: 9999px;
+    display: inline-block;
     text-decoration: none;
-    transition: background 0.3s ease, transform 0.2s ease;
+    
+    /* التأثيرات والتحريك */
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+    white-space: nowrap;
+    cursor: pointer;
 }
 
-.card-btn:hover { background: var(--btn-hover); transform: translateY(-1px); }
-
+/* حالة الـ Hover */
+.btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.2); /* hover:bg-white/20 */
+    border-color: rgba(124, 58, 237, 0.5); /* hover:border-violet-500/50 */
+    color: #ddd6fe; /* hover:text-violet-300 */
+    transform: scale(1.05); /* hover:scale-105 */
+}
