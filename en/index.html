@@ -52,13 +52,57 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     }
     </script>
 
+<style>
+/* 1. المتغيرات الأساسية ولون الخلفية (عشان المتصفح ميرسمش أبيض) */
+:root {
+    --violet-600: #7c3aed;
+    --bg-0: #030712;
+}
+
+body {
+    background-color: #030712; /* لون مبدئي قبل تحميل الجراديانت */
+    margin: 0;
+    color: #e6eef8;
+    font-family: sans-serif; /* خط مؤقت لحد ما يحمل Inter */
+}
+
+/* 2. الخلفية الثابتة (مهمة جداً عشان دي أول حاجة بتظهر) */
+body::before {
+    content: ""; position: fixed; inset: 0;
+    height: 100vh; width: 100vw;
+    background: linear-gradient(180deg, #0F0823 0%, #030712 100%);
+    z-index: -10;
+}
+
+/* 3. تعريف الخطوط (Pre-declaration) */
+/* لازم تسيب تعريف الـ @font-face هنا عشان المتصفح يبدأ يحملهم فوراً */
+@font-face {
+    font-family: 'Orbitron';
+    src: url('/assets/fonts/orbitron/Orbitron-Bold.ttf') format('truetype');
+    font-weight: 700; font-display: swap;
+}
+@font-face {
+    font-family: 'Inter';
+    src: url('/assets/fonts/inter/Inter_18pt-Medium.ttf') format('truetype');
+    font-weight: 500; font-display: swap;
+}
+
+/* 4. ستايل الهيرو الأساسي (عشان الكلام ميبقاش "دش" فوق بعضه) */
+.hero-line-container { display: inline-flex; opacity: 0; }
+</style>
+
+
     <link rel="preload" as="image" href="/assets/imgs/lg-logo-trans.webp">
     <link rel="preload" href="/assets/fonts/orbitron/Orbitron-Bold.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="preload" href="/assets/fonts/inter/Inter_18pt-Regular.ttf" as="font" type="font/ttf" crossorigin>
 
-    <link rel="stylesheet" href="/assets/css/tailwind-built.css">
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
+    <link rel="preload" href="/assets/css/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="/assets/css/style.css"></noscript>
+<link rel="preload" href="/assets/css/tailwind-built.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="/assets/css/tailwind-built.css"></noscript>
+
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css"></noscript>
 </head>
 
 <body class="flex flex-col min-h-screen">
